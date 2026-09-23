@@ -1,0 +1,143 @@
+True or false: RAM is a non-volatile memory.
+True or false: HTML is a programming language.
+True or false: The empty set is a subset of every set.
+Matching type: Match each protocol with its default port.
+The smallest unit of data in a computer is the ____.
+The process of finding and fixing errors in a program is called ____.
+A diagram that shows the flow of a program using symbols is called a ____.
+The SQL command used to change existing data is ____.
+The part of the CPU that performs arithmetic and logical operations is the ____.
+Which of the following is a volatile memory?
+Which of the following is an output device?
+Which company developed the Java programming language?
+Which Linux command lists the files in a directory?
+Which of the following is used to comment a single line in Python?
+Which HTML tag is used for an ordered list?
+Which CSS property controls the space inside an element's border?
+Which of the following is a valid Boolean value in Python?
+Which of the following is a loop structure in C?
+What is the name of the method that runs first in a Java application?
+What is the name of the collection of related web pages under one domain?
+What does URL stand for?
+What does GUI stand for?
+What does ISP stand for?
+What does IDE stand for?
+What does VPN stand for?
+What does PHP stand for?
+What does REST stand for?
+What does UML stand for?
+What is the extension of a Java source file?
+Give the symbol for "if and only if" in logic.
+Give the formula for the probability of the complement of an event.
+Give the formula for the mean of a data set.
+Give two examples of social media platforms.
+Give three examples of web browsers.
+Name the parts of a computer system.
+Name the three branches of the Philippine government.
+Name the author of El Filibusterismo.
+Name the longest river in the Philippines.
+Name the largest island in the Philippines.
+Name the currency of Japan.
+Name the three states of matter.
+Name the first element in the periodic table.
+Name the planet closest to the sun.
+Name the gas that plants absorb from the air.
+Name the bone that protects the brain.
+List the characteristics of a good algorithm.
+List the steps of the software development life cycle.
+List the basic data types in Java.
+List the types of computer networks according to size.
+List the components of a URL.
+List the phases of the moon.
+List the eight parts of speech.
+Enumerate the types of sentences according to purpose.
+Enumerate the types of network topologies.
+Enumerate the basic logic gates.
+Enumerate the properties of a database transaction.
+Enumerate the regions of the Philippines in Luzon.
+Identify the type of sentence: "Close the door."
+Identify the figure of speech used in "Time is a thief."
+Identify the logic gate that has only one input.
+Identify the data type of the value 3.14.
+Identify the HTML element used to create a text input.
+Who invented the telephone?
+Who is known as the Great Plebeian?
+Who formulated the laws of motion?
+Who developed the theory of relativity?
+Who led the Katipunan?
+Who was the first woman president of the Philippines?
+When did World War II end?
+When is Independence Day celebrated in the Philippines?
+Where is the Mayon Volcano located?
+Where did the Battle of Mactan take place?
+What is the boiling point of water at sea level in Celsius?
+What is the atomic number of carbon?
+What is the chemical formula of water?
+What is the square root of 144?
+What is a noun?
+What is an operating system?
+What is a database?
+What is a network?
+What is a pointer in C?
+What is a class in object-oriented programming?
+What is a loop?
+What is a proposition?
+What is a graph in discrete mathematics?
+What is a permutation?
+What is a random variable?
+What is a web server?
+What is a namespace in XML?
+What is an XML element?
+What is an attribute in XML?
+What is middleware?
+What is an ERP system?
+What is a message broker?
+What is malware?
+What is a virus in computing?
+What is two-factor authentication?
+What is the meaning of the term byte?
+What is the meaning of the word "benevolent"?
+Recall the formula for compound interest.
+Recall the three laws of thermodynamics.
+Recall the definition of a set.
+State the Pythagorean theorem.
+State Newton's first law of motion.
+State the law of conservation of energy.
+State the associative law of Boolean algebra.
+State the definition of an injective function.
+Define hardware.
+Define software.
+Define a data structure.
+Define a web service.
+Define system integration.
+Define a sample in statistics.
+Define democracy.
+Define culture.
+Define ecosystem.
+Define inflation.
+Label the parts of the given computer motherboard diagram.
+Label the parts of a flower in the diagram.
+Tukuyin ang kahulugan ng salitang "algoritmo".
+Tukuyin kung ano ang ibig sabihin ng CPU.
+Ano ang tawag sa pinakamaliit na yunit ng datos sa kompyuter?
+Ano ang pambansang wika ng Pilipinas?
+Ano ang kabisera ng Pilipinas?
+Sino ang sumulat ng Noli Me Tangere?
+Sino ang tinaguriang Ama ng Katipunan?
+Kailan ipinagdiriwang ang Araw ng Kalayaan?
+Ibigay ang kahulugan ng pangngalan.
+Ibigay ang tatlong sangay ng pamahalaan.
+Isa-isahin ang mga bahagi ng pananalita.
+Isa-isahin ang mga uri ng network topology.
+Pangalanan ang tatlong uri ng bato.
+Anong lohikong gate ang may isang input lamang?
+Anong utos sa SQL ang ginagamit upang magdagdag ng datos sa talahanayan?
+Ano ang tawag sa set na walang elemento?
+Tama o mali: Ang RAM ay isang uri ng panlabas na memorya.
+Ang tawag sa proseso ng paghahanap at pag-aayos ng mali sa programa ay ____.
+Ibigay ang pormula sa pagkuha ng area ng bilog.
+Ano ang ibig sabihin ng HTML?
+Sino ang pambansang bayani ng Pilipinas?
+Ano ang tawag sa salitang naglalarawan sa pangngalan?
+Ano ang tawag sa pahayag na laging totoo anuman ang halaga ng mga baryabol?
+Ibigay ang simbolo ng unyon ng mga set.

@@ -1,0 +1,101 @@
+What is the output of the following Java code: int x = 7; System.out.println(x / 2);?
+What is the output of print("3" + "4") in Python?
+What is printed by the following code: for i in range(1, 6, 2): print(i)?
+What will be the value of count after the nested loops finish executing?
+What is displayed on the web page when the given HTML and CSS are rendered?
+What does the following SQL query return from the given table?
+What does the XPath expression /school/student[1]/name return from the given XML?
+Which of the following loops runs exactly five times?
+Which of the following statements will cause a compile error?
+Which of the following SQL queries returns the same result as the given query?
+Which of the following truth tables corresponds to the given circuit?
+Which of the following sets is a subset of all the others?
+Which of the following graphs is a tree?
+Which of the following probability assignments is invalid?
+Which of the following statements is logically equivalent to "If p then q"?
+Which of the following is the cause of the slow network in the given scenario?
+Which part of the flowchart creates an endless loop?
+Which assumption was violated in the given statistical analysis?
+Which sentence in the paragraph does not support the main idea?
+Which evidence in the passage best supports the author's claim?
+Which of the following factors most likely caused the decline shown in the graph?
+Why does the given program print the wrong average?
+Why does the given web page look different in two browsers?
+Why does the XML parser report an error at line 5 of the given document?
+Why does the SOAP request fail when the namespace is removed?
+Why do the two students get different answers to the same counting problem?
+Why is the given argument considered invalid?
+Why does the proposed probability model fail for the given situation?
+Compare arrays and linked lists in terms of insertion and access time.
+Compare the SELECT results of INNER JOIN and LEFT JOIN on the given tables.
+Compare TCP and UDP for a live video streaming application.
+Compare the performance of the two SQL queries using the execution plans provided.
+Compare the approaches of the two historians regarding the Cry of Pugad Lawin.
+Compare the characters of Crisostomo Ibarra and Elias.
+Compare the two poems in terms of theme and imagery.
+Compare mitosis and meiosis in terms of their results.
+Compare the economic data of the two regions and identify the key differences.
+Contrast the leadership styles described in the case study.
+Contrast deductive and inductive reasoning using the given examples.
+Differentiate a virus from a worm based on how they spread.
+Differentiate the outputs of the AND and NAND gates for all input combinations.
+Differentiate between an Euler path and a Hamiltonian path in the given graph.
+Distinguish between the necessary and sufficient conditions in the given statement.
+Distinguish the facts from the opinions in the advertisement.
+Examine the given code and determine how many times the function is called recursively.
+Examine the table and identify the functional dependencies.
+Examine the given network configuration and identify the misconfigured device.
+Examine the survey data and identify any pattern among first-year students.
+Examine the painting and describe how the artist uses contrast to create focus.
+Examine the experiment and identify possible sources of error.
+Analyze the given algorithm and state its best-case and worst-case complexity.
+Analyze the given logic circuit and determine its output for all inputs.
+Analyze the given data and determine whether there is a relationship between study hours and grades.
+Analyze the causes and effects of the Martial Law period using the given documents.
+Analyze the structure of the given argument and identify the premises.
+Analyze the given web service response and determine if it matches the WSDL.
+Analyze the message flow between the enrollment and payment systems in the diagram.
+Analyze the propaganda techniques used in the given advertisement.
+Analyze how the setting affects the mood of the story.
+Trace the value of each variable in the given code for three iterations.
+Trace the path taken by a packet from the laptop to the web server in the diagram.
+Trace the steps of the insertion sort on the list 5, 3, 8, 1.
+Debug the given function so that it returns the correct factorial.
+Find the error in the given proof that 1 = 2.
+Find the bug in the given JavaScript form validation code.
+Identify the logical fallacy in the following statement.
+Identify the unstated assumption in the argument.
+Identify which normal form the given table violates and why.
+Identify the bottleneck in the given data pipeline.
+Identify the relationship between temperature and pressure from the data.
+Infer the author's attitude toward technology from the passage.
+Infer the missing step in the given algorithm.
+Deduce the value of x from the given program output.
+Determine whether the given argument form is valid using a truth table.
+Determine whether the given function is one-to-one, onto, both or neither.
+Determine the cause of the deadlock in the given scenario.
+Determine the relationship between the two variables based on the scatter plot.
+Categorize the given errors as syntax, runtime or logic errors.
+Organize the given events in chronological order and explain their connection.
+Break down the problem into smaller subproblems.
+Inspect the given security log and point out the suspicious entries.
+Given the requirements document, determine which requirements conflict with each other.
+Given two XML schemas, determine which one accepts the given document.
+Given the probability tree, determine which branch values are incorrect.
+Given the code, what will happen if the input is a negative number?
+Given the class diagram, determine which classes have a composition relationship.
+Given the following graph, which vertices have odd degree?
+Suriin ang ibinigay na programa at tukuyin kung bakit mali ang output.
+Suriin ang talahanayan ng katotohanan at alamin kung magkapareho ang dalawang pahayag.
+Suriin ang tula at tukuyin ang ginamit na simbolismo.
+Suriin ang mga sanhi at bunga ng Rebolusyong 1896.
+Ihambing ang TCP at UDP batay sa bilis at pagiging maaasahan.
+Ihambing ang mga tauhan sa dalawang akda.
+Pag-ibahin ang kombinasyon at permutasyon gamit ang ibinigay na halimbawa.
+Tukuyin ang mali sa ibinigay na SQL na query.
+Tukuyin ang sanhi ng pagkasira ng network batay sa ibinigay na diagram.
+Alamin kung aling bahagi ng code ang nagdudulot ng walang katapusang loop.
+Ano ang magiging output ng programa kung ang x ay 5?
+Alin sa mga sumusunod na argumento ang hindi balido?
+Batay sa grap, aling buwan ang may pinakamalaking pagbaba ng benta?
+Bakit magkaiba ang sagot ng dalawang mag-aaral sa parehong problema sa pagbibilang?

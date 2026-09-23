@@ -1,0 +1,87 @@
+Create a program that computes and displays a student's general weighted average.
+Create an original story about a student who discovers a new technology.
+Create a website for a local tourist spot with at least three pages.
+Create a truth table and circuit for a voting machine with three voters where the majority wins.
+Create a set of rules for a new sport.
+Create a new recipe using local ingredients and describe its preparation.
+Create an infographic about proper waste segregation.
+Create a database for a school clinic with tables for patients, visits and medicines.
+Create an XML document and its schema for a menu of a restaurant.
+Create a JSON-based API specification for a campus lost-and-found system.
+Create a class diagram for an online shopping system.
+Create an original probability problem involving cards and solve it.
+Design a system that integrates the library and enrollment databases using web services.
+Design an app that helps students manage their study schedules.
+Design a Boolean circuit for a traffic light controller.
+Design a network for a school with two buildings connected by fiber.
+Design a new logo for your organization and explain its elements.
+Design a questionnaire to study students' use of social media.
+Design an experiment to test which paper towel brand absorbs the most water.
+Design a lesson plan for teaching fractions to Grade 4 students.
+Design a website layout that is accessible to visually impaired users.
+Design a data model that captures employees, projects and assignments.
+Develop a program that simulates a queue at a bank teller.
+Develop a mobile-friendly form for registering to an event.
+Develop a proposal for a community recycling program.
+Develop a script that backs up a folder every day.
+Develop an original mnemonic to remember the OSI layers.
+Develop an algorithm to check whether a graph is connected.
+Develop an action plan to improve internet connectivity in the campus.
+Write an original poem about the ocean.
+Write an original essay proposing a solution to traffic congestion.
+Write a program that plays tic-tac-toe against the user.
+Write a program that encrypts a message using a key of your choice.
+Write a function that merges two sorted lists into one sorted list.
+Write a proposal for a capstone project that uses IoT.
+Write a new ending for the story.
+Write a letter to the mayor proposing a solution to a community problem.
+Compose a song about Philippine heroes.
+Compose a persuasive speech on environmental protection.
+Construct an original argument using modus ponens.
+Construct an original graph with 6 vertices that has an Euler circuit.
+Construct a model of the solar system using recycled materials.
+Formulate your own research question about student learning and outline how to study it.
+Formulate a new counting problem that uses both permutations and combinations.
+Formulate a set of hypotheses for the given research problem.
+Propose a new feature for the school portal and describe how it will work.
+Propose a system architecture for a real-time bus tracking app.
+Propose an integration strategy for merging two companies' HR systems.
+Propose a solution to reduce plastic use in the campus.
+Plan a week-long event to promote cybersecurity awareness.
+Plan a database migration from spreadsheets to a relational database.
+Plan an original science fair project and describe its procedure.
+Devise a strategy to win the given game and explain it.
+Devise a test plan for a new web application.
+Invent a device that helps farmers and describe how it works.
+Generate an original set of 5 multiple-choice questions for the topic of sets.
+Generate a new algorithm for sorting names by length then alphabetically.
+Produce a short documentary script about local history.
+Produce a podcast episode outline about digital literacy.
+Build a simple calculator app with a graphical interface.
+Build a web page that fetches and displays data from a public API.
+Build a prototype of a smart home lighting system.
+Make an original board game that teaches probability.
+Make an original comic strip that explains how the internet works.
+Make a business plan for a small online store.
+Prepare an original case study about a system integration failure and how it was solved.
+Prepare a budget proposal for the class outing.
+Sketch the user interface of a food delivery app and explain the flow.
+Outline a mobile app that reminds students of assignment deadlines.
+Draft a set of guidelines for responsible use of AI in the classroom.
+Draft an original research abstract on the use of technology in agriculture.
+Integrate the given modules into a single working application.
+Modify the given program to also handle negative inputs and add a menu.
+Improve the given website design and create a new version.
+Bumuo ng isang programa na magkukuwenta ng average ng mga marka.
+Bumuo ng orihinal na tula tungkol sa kalikasan.
+Bumuo ng plano para sa proyektong pangkomunidad na gumagamit ng teknolohiya.
+Lumikha ng isang disenyo ng database para sa sari-sari store.
+Lumikha ng orihinal na problema na gumagamit ng kombinasyon at lutasin ito.
+Magdisenyo ng isang website para sa inyong barangay.
+Magdisenyo ng lohikong circuit para sa alarma na may tatlong sensor.
+Gumawa ng orihinal na kuwento na may aral tungkol sa katapatan.
+Gumawa ng panukalang proyekto para mapabuti ang internet sa paaralan.
+Sumulat ng orihinal na sanaysay tungkol sa kahalagahan ng edukasyon.
+Sumulat ng liham sa alkalde na nagmumungkahi ng solusyon sa basura.
+Magplano ng isang programa para sa Buwan ng Wika.
+Magmungkahi ng bagong tampok para sa student portal at ilarawan kung paano ito gagana.

@@ -1,0 +1,130 @@
+Solve for x: 2x - 5 = 11.
+Solve the inequality 3x + 2 > 14.
+Find the slope of the line passing through (2, 3) and (6, 11).
+Find the area of a triangle with base 10 cm and height 7 cm.
+Find the perimeter of a square with side 9 m.
+Find the volume of a cube with edge 4 cm.
+Find the 10th term of the arithmetic sequence 3, 7, 11, ...
+Find the sum of the first 20 positive integers.
+Find the value of 2 to the power of 10.
+Find the LCM of 12 and 18.
+Find the prime factorization of 84.
+Find the mode of 3, 5, 5, 7, 8, 5, 9.
+Find the standard deviation of 2, 4, 6, 8.
+Find P(A or B) if P(A) = 0.5, P(B) = 0.3 and P(A and B) = 0.1.
+Find the number of edges in a tree with 15 vertices.
+Find the truth value of (p OR q) AND NOT p when p is false and q is true.
+Find the complement of A = {2,4} if U = {1,2,3,4,5,6}.
+Find A minus B if A = {1,2,3,4} and B = {2,4,6}.
+Find the Cartesian product of {1,2} and {a,b}.
+Compute 8 choose 3.
+Compute 6P2.
+Compute the probability of drawing a king from a standard deck.
+Compute the expected number of heads in 20 tosses of a fair coin.
+Compute the value of x after x = 4; x += 3; x *= 2.
+Compute the total bandwidth needed for 25 users at 2 Mbps each.
+Compute the broadcast address of 172.16.5.0/24.
+Compute the number of hosts in a /28 network.
+Compute the average of the grades 88, 92, 79 and 95.
+Compute the final grade if the quiz is 30%, exam is 40% and project is 30% with scores 85, 90 and 80.
+Compute the 12% VAT of a 1,500-peso purchase.
+Compute the monthly payment if a 12,000-peso gadget is paid in 6 equal installments.
+Compute the density of an object with mass 200 g and volume 50 cubic cm.
+Compute the acceleration of a car that goes from 0 to 20 m/s in 5 seconds.
+Compute the work done when a 10 N force moves an object 3 m.
+Calculate the percentage increase from 250 to 300.
+Calculate the number of possible 6-character passwords using lowercase letters only.
+Calculate how many ways 7 people can sit around a round table.
+Calculate the probability of getting two tails when two coins are tossed.
+Calculate the storage needed for 1,000 images of 2.5 MB each.
+Calculate the time to transfer a 500 MB file at 10 MB per second.
+Convert 0.75 to a percentage.
+Convert 1011 in binary to hexadecimal.
+Convert 255 in decimal to binary.
+Convert 3 hours to seconds.
+Convert the statement "p only if q" into symbolic form.
+Convert the given ERD into relational tables.
+Convert the given JSON object into an equivalent XML document.
+Convert the for loop into a while loop.
+Use the distributive property to simplify 3(x + 4) - 2x.
+Use the given formula to compute the BMI of a person who weighs 60 kg and is 1.6 m tall.
+Use Ohm's law to find the current when V = 12 V and R = 4 ohms.
+Use the rule of product to count the number of 4-digit PINs that start with 0.
+Use a truth table to show the values of p XOR q.
+Use the absorption law to simplify A + A·B.
+Use the given XPath to select all students with grade greater than 90.
+Use SELECT and ORDER BY to list products from most to least expensive.
+Use the COUNT function to count the number of enrolled students.
+Use CSS to center a div horizontally.
+Use JavaScript to display an alert when a button is clicked.
+Use Python's range function to print even numbers from 2 to 20.
+Use a for loop to compute the sum of numbers from 1 to 100.
+Use an if-else statement to print "Pass" if the grade is at least 75.
+Use a switch statement to display the day name for numbers 1 to 7.
+Apply the rule of sum to count the ways to pick one book from 5 math and 7 science books.
+Apply the binomial theorem to expand (a + b) cubed.
+Apply the complement rule to find P(at least one 6) in two rolls of a die.
+Apply Dijkstra's algorithm to the given graph starting from node S.
+Apply the given sorting algorithm to the list 9, 4, 7, 1 and show the result after each pass.
+Apply first normal form to the given table.
+Apply the formula for simple interest to find the interest on 20,000 pesos at 3% for 2 years.
+Write a Python program that asks for the user's name and greets them.
+Write a program that computes the area of a circle given its radius.
+Write a function that returns the largest number in a list.
+Write a function that counts the vowels in a string.
+Write a method that converts Celsius to Fahrenheit.
+Write the SQL query to find the average salary per department.
+Write the SQL statement to delete students who have graduated.
+Write the XML document for a book with title, author and year.
+Write the HTML code to create a numbered list of three fruits.
+Write the CSS code to make all headings red and centered.
+Write the code to read an integer from the keyboard in Java.
+Write a JavaScript function that returns the square of a number.
+Write the Boolean expression for the given truth table.
+Write the negation of "Some students are absent."
+Write the contrapositive of "If it is a square, then it is a rectangle."
+Write the converse of "If a number is even, then it is divisible by 2."
+Write the set {x | x is an even number less than 10} in roster form.
+Write the equation of the line with slope 2 and y-intercept -3.
+Write the chemical equation for the combustion of methane.
+Write a sentence using a gerund as the subject.
+Write the correct form of the verb in the sentence.
+Complete the sentence using the correct preposition.
+Complete the truth table for NOT(p AND q).
+Complete the code so that the function returns the reverse of a list.
+Complete the SQL query so it returns only the top 5 scores.
+Draw the graph of y = 2x + 1.
+Draw the Venn diagram for A union B.
+Draw the tree diagram for tossing a coin three times.
+Draw the ERD for the given description of a student and course.
+Show the steps to compute the GCD of 56 and 98.
+Show that the sum of the first n odd numbers for n = 5 equals 25.
+Demonstrate how to insert a new row into the Students table.
+Demonstrate the use of a try-except block to handle division by zero.
+Perform the matrix addition of the given 2 by 2 matrices.
+Perform the bitwise AND of 1100 and 1010.
+Perform a linear search for 15 in the list 3, 9, 15, 21 and state the number of comparisons.
+Determine the number of diagonals of a hexagon.
+Determine the domain of f(x) = 1/(x - 2).
+Determine the probability of rolling a number less than 3 on a die.
+Determine the output voltage using the given circuit values.
+Determine the next term in the sequence 2, 4, 8, 16, ...
+Estimate the total cost of 12 notebooks at 35 pesos each.
+Lutasin ang halaga ng x: 4x + 3 = 19.
+Lutasin kung ilang paraan maaaring pumili ng 3 kinatawan mula sa 10 mag-aaral.
+Kalkulahin ang probabilidad na makakuha ng ulo sa isang paghagis ng barya.
+Kalkulahin ang average ng mga marka: 85, 90, 78, 92.
+Kuwentahin ang 5! (5 factorial).
+Gamitin ang pormula ng kombinasyon upang makuha ang C(6,2).
+Gamitin ang talahanayan ng katotohanan upang makuha ang halaga ng p AT q.
+Ilapat ang batas ni De Morgan sa pahayag na HINDI (A O B).
+Isulat ang SQL na query na magpapakita ng lahat ng mag-aaral na may markang higit sa 85.
+Isulat ang programa na magpapakita ng mga numero mula 1 hanggang 10.
+I-convert ang 25 sa binary.
+Hanapin ang unyon ng A = {1,2} at B = {2,3}.
+Hanapin ang area ng parihaba na may habang 8 m at lapad na 5 m.
+Ilang paraan maaaring ayusin ang mga titik ng salitang ARAW?
+Ilang subnet ang maaaring gawin mula sa /24 kung gagamit ng /26?
+Kung ang P(A) = 0.6, ano ang P(hindi A)?
+Isagawa ang binary search para sa 40 sa listahang 10, 20, 30, 40, 50.
+Gumawa ng talahanayan ng katotohanan para sa p KUNG q.

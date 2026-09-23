@@ -1,0 +1,132 @@
+Explain in your own words what a network protocol is.
+Explain why a computer needs an operating system.
+Explain why data should be backed up regularly.
+Explain what the term "open source" means.
+Explain why an algorithm must have a finite number of steps.
+Explain the function of the motherboard.
+Explain the purpose of a loop in programming.
+Explain why the result of integer division in some languages drops the decimal part.
+Explain the difference between == and = in programming.
+Explain what a null value means in a database.
+Explain the difference between DELETE and DROP in SQL.
+Explain the purpose of a WHERE clause.
+Explain the meaning of a many-to-many relationship.
+Explain how an XML namespace prevents naming conflicts.
+Explain the role of a WSDL file in a SOAP web service.
+Explain why JSON is often preferred over XML in web APIs.
+Explain the purpose of an enterprise service bus.
+Explain what is meant by loose coupling in system integration.
+Explain the meaning of the biconditional statement.
+Explain why the contrapositive is logically equivalent to the original statement.
+Explain what a universal quantifier means in a statement.
+Explain the difference between the union and intersection of sets.
+Explain why the power set of a set with n elements has 2 to the n elements.
+Explain the meaning of a Hamiltonian path.
+Explain the difference between a walk and a path in a graph.
+Explain why probabilities are always between 0 and 1.
+Explain the meaning of variance in simple terms.
+Explain what a probability distribution shows.
+Explain why the normal curve is symmetric.
+Explain what a sampling error is.
+Explain the meaning of the saying "correlation does not imply causation".
+Explain why plants are called producers.
+Explain how the heart pumps blood.
+Explain why the moon has phases.
+Explain the cause of the seasons on Earth.
+Explain how earthquakes occur.
+Explain what happens during evaporation.
+Explain the difference between a virus and a bacterium.
+Explain the importance of biodiversity.
+Explain the meaning of the idiom "break the ice".
+Explain the message of the poem in your own words.
+Explain the author's purpose in writing the passage.
+Explain the difference between a fact and an opinion.
+Explain the role of the Katipunan in Philippine history.
+Explain why the Galleon Trade was important to the Spanish colonial economy.
+Explain the meaning of separation of powers.
+Explain the concept of human rights.
+Explain the purpose of taxes.
+Explain the meaning of opportunity cost.
+Explain what is meant by globalization.
+Explain what is meant by digital citizenship.
+Explain why plagiarism is considered unethical.
+Describe the parts of an HTML document.
+Describe the role of the registrar's system in a school.
+Describe how a search engine finds web pages.
+Describe what happens when you type a URL in a browser.
+Describe the life cycle of a butterfly.
+Describe the characteristics of the Renaissance period.
+Describe the setting of the story.
+Describe the main character of the novel.
+Describe how a bill becomes a law in the Philippines.
+Describe the function of each layer of the TCP/IP model.
+Describe the difference between a hub and a switch.
+Describe what a truth table for the OR operator looks like.
+Describe the structure of a well-formed XML document.
+Summarize the main points of the lecture on data privacy.
+Summarize the article in one paragraph.
+Summarize the causes of World War I.
+Summarize the events of the EDSA Revolution.
+Summarize the main idea of the second paragraph.
+Interpret the meaning of the graph showing enrollment over five years.
+Interpret the result of the chi-square test in the given output.
+Interpret the given flowchart in words.
+Interpret the meaning of the error message "Syntax error near unexpected token".
+Classify the following animals as vertebrates or invertebrates.
+Classify the following numbers as rational or irrational.
+Classify the following sentences as simple, compound or complex.
+Classify each device as input, output or storage.
+Classify the given statements as propositions or not.
+Give an example of a closed-ended question in a survey.
+Give an example of an event with probability zero.
+Give an example of a function that is not one-to-one.
+Give an example of a real-world use of a queue.
+Give an example of polymorphism in daily life.
+Give an example of a renewable energy source and explain why it is renewable.
+Which of the following best describes the purpose of an abstract class?
+Which of the following best explains why a database uses transactions?
+Which statement best describes the role of the transport layer?
+Which statement correctly explains the meaning of the term "bug"?
+Which of the following correctly describes a proposition?
+Which statement best explains why XML is called extensible?
+Which of the following describes the purpose of the <head> element in HTML?
+Which sentence best expresses the main idea of the passage?
+Which of the following best describes photosynthesis?
+Which of the following best explains the law of supply?
+What is the difference between a compiler error and a runtime error?
+What is the difference between a sample space and an event?
+What is the difference between a hypothesis and a theory?
+What is the significance of the Treaty of Paris of 1898?
+Why is it important to use meaningful variable names?
+Why is encryption important in online banking?
+Why is it important to close a database connection after use?
+Why do we need to normalize a probability distribution?
+Why is the order of operations important in arithmetic?
+Why do metals conduct electricity?
+Why is water called the universal solvent?
+Why is the Philippines prone to typhoons?
+Why do we need laws in society?
+Paraphrase the following statement: "Knowledge is power."
+Restate the given theorem in simpler words.
+Illustrate how a binary search reduces the search space.
+Illustrate the difference between stack and heap memory with a simple example.
+Ipaliwanag ang kahalagahan ng operating system sa kompyuter.
+Ipaliwanag kung bakit mahalaga ang password sa seguridad.
+Ipaliwanag ang pagkakaiba ng hardware at software.
+Ipaliwanag sa sariling salita ang kahulugan ng algoritmo.
+Ipaliwanag kung bakit mahalaga ang primary key sa database.
+Ilarawan ang papel ng Katipunan sa rebolusyon.
+Ilarawan ang katangian ng pangunahing tauhan sa kuwento.
+Ilarawan ang proseso ng fotosintesis.
+Bakit mahalaga ang pag-back up ng mga datos?
+Bakit tinaguriang pambansang bayani si Jose Rizal?
+Bakit mahalaga ang pagboto sa isang demokrasya?
+Ibuod ang pangunahing ideya ng talata.
+Ibuod ang mga pangyayari sa kuwento.
+Ipahayag sa sariling salita ang kahulugan ng tautolohiya.
+Magbigay ng halimbawa ng pangyayaring may probabilidad na zero.
+Magbigay ng halimbawa ng input device at ipaliwanag ang gamit nito.
+Uriin ang mga sumusunod na aparato kung input o output.
+Alin sa mga sumusunod ang pinakamahusay na naglalarawan sa layunin ng foreign key?
+Ano ang pagkakaiba ng permutasyon at kombinasyon?
+Ipaliwanag ang ibig sabihin ng kasabihang "Ang hindi lumingon sa pinanggalingan ay hindi makararating sa paroroonan."

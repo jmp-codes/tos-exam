@@ -1,0 +1,82 @@
+Evaluate the given website based on its usability and accessibility.
+Evaluate the effectiveness of the school's anti-bullying policy.
+Evaluate whether the given algorithm is efficient enough for large inputs.
+Evaluate the proposed solution to the flooding problem in the barangay.
+Evaluate the credibility of the given online source.
+Evaluate the argument presented in the editorial.
+Evaluate the quality of the given database design.
+Evaluate the given integration plan in terms of cost, risk and maintainability.
+Evaluate the claim that XML is obsolete.
+Evaluate the student's solution and give it a score based on the rubric.
+Judge whether the given proof is complete and correct.
+Judge the appropriateness of the chart used to present the data.
+Judge whether the character's decision in the story was right.
+Judge the effectiveness of the speaker's persuasive techniques.
+Justify the use of a linked list instead of an array for the playlist application.
+Justify why the chosen sample size is adequate.
+Justify your choice of network cable for the given distance and speed requirements.
+Justify whether the government should regulate social media.
+Justify the choice of primary key for the given table.
+Defend the position that coding should be taught in elementary schools.
+Defend your choice of cloud provider for the school.
+Defend or reject the proposal to use biometric attendance.
+Critique the logic of the given argument.
+Critique the design of the given mobile app interface.
+Critique the methodology of the given research study.
+Critique the given essay's organization and use of evidence.
+Assess the potential risks of connecting the school's systems to a third-party payment gateway.
+Assess the reliability of the survey results given the sampling method.
+Assess the strengths and weaknesses of the given project proposal.
+Assess whether the given test cases are enough to ensure correctness.
+Assess the impact of the new policy on student performance using the given data.
+Recommend the most suitable database for a real-time chat application and justify.
+Recommend a data backup strategy for a small business and explain why.
+Recommend whether the company should upgrade its network and support your answer.
+Recommend the best algorithm for scheduling classes and justify your choice.
+Decide whether the given statement is a valid conclusion from the premises and justify.
+Decide which of the two job offers is better given the stated priorities.
+Decide whether it is ethical to use students' data for marketing. Justify.
+Which of the following is the most appropriate response to a data breach? Justify.
+Which of the two proposed APIs would you choose for the mobile app, and why?
+Which solution best addresses both performance and security concerns? Explain.
+Which of the given arguments is the strongest? Support your answer.
+Which counting method is the most efficient for this problem? Justify your answer.
+Which of the proposed designs would you approve for implementation? Explain.
+Which statistical measure best represents the typical income in the data set? Justify.
+Which of the following decisions best reflects ethical behavior? Explain.
+Is the use of a recursive solution justified for this problem? Explain.
+Is the conclusion of the experiment valid based on the data? Justify.
+Is XML or JSON the better format for the government data exchange? Defend your answer.
+Is the given sorting algorithm the right choice for data that is almost sorted? Explain.
+Is the use of a global variable acceptable in this program? Justify.
+Is the given survey question biased? Explain.
+Is it fair to judge a student's ability based on a single exam? Defend your view.
+Would you recommend the use of AI tools in writing school essays? Justify.
+Would the proposed network design meet the needs of 500 users? Explain your judgment.
+Do you agree with the author's conclusion? Support your answer with evidence.
+Do the benefits of the proposed system outweigh its costs? Justify.
+Should the school allow students to use their own devices on the network? Defend your position.
+Should the registrar migrate to a cloud-based system? Weigh the pros and cons.
+Should the function be rewritten for efficiency or readability? Justify your choice.
+How well does the given solution meet the requirements? Justify your rating.
+Rate the effectiveness of the three proposed solutions and justify your ranking.
+Rank the given passwords from strongest to weakest and justify your ranking.
+Prioritize the bugs in the given list and justify the order.
+Verify the correctness of the given proof and point out if it is acceptable.
+Validate the given SQL design against the stated business rules and give your judgment.
+Appraise the historical accuracy of the film based on known sources.
+Weigh the advantages and disadvantages of online classes and give your conclusion.
+Argue whether technology has improved communication.
+Select the best approach to integrate the legacy system and justify your selection.
+Pangatwiranan kung bakit mas angkop ang database kaysa spreadsheet sa sistema ng barangay.
+Pangatwiranan ang iyong sagot: Mas mabuti ba ang online na klase kaysa harapang klase?
+Tayahin ang bisa ng ibinigay na argumento.
+Tayahin ang kahusayan ng ibinigay na algoritmo para sa malaking datos.
+Husgahan kung tama ang desisyon ng pangunahing tauhan.
+Ipagtanggol ang iyong posisyon tungkol sa paggamit ng cellphone sa paaralan.
+Alin sa mga mungkahing solusyon ang pinakamainam? Ipaliwanag ang iyong pagpili.
+Alin ang mas angkop gamitin sa sistemang ito, XML o JSON? Pangatwiranan.
+Makatwiran ba ang konklusyon ng pag-aaral batay sa datos? Ipaliwanag.
+Sang-ayon ka ba sa pananaw ng may-akda? Patunayan ang iyong sagot.
+Suriin at husgahan ang kredibilidad ng ibinigay na balita.
+Magbigay ng rekomendasyon kung dapat bang lumipat sa cloud ang paaralan at ipaliwanag kung bakit.
