@@ -1,0 +1,130 @@
+What is the output of the following Python code: x = [1,2,3]; print(x[::-1])?
+Compare the time complexity of bubble sort and merge sort and explain which scales better.
+Identify the error in the following SQL statement: SELECT name FROM students WHERE grade > 90 ORDER name;
+Differentiate between the SAX and DOM approaches to parsing XML in terms of memory and access.
+Trace the execution of the loop and determine the final value of the variable total.
+Given the truth table, determine whether the two propositions are logically equivalent.
+Examine the network diagram and identify the single point of failure.
+Analyze the given ERD and identify which relationship violates third normal form.
+Which part of the following Java code causes the NullPointerException?
+Determine why the recursive function below never terminates.
+Contrast the client-server and peer-to-peer network models in terms of scalability and control.
+Categorize the following requirements as functional or non-functional.
+Given the argument "If it rains the ground is wet. The ground is wet. Therefore it rained," identify the logical fallacy.
+Examine the circuit and determine which gate is redundant.
+Analyze the relationship between the number of vertices and edges in a tree.
+What will happen to the output if the condition in line 3 is changed from < to <=?
+Distinguish between the causes and effects of the Philippine Revolution as described in the passage.
+Break down the steps of the given algorithm and identify which step dominates its running time.
+Compare the probability of getting at least one six in four rolls of a die with getting two sixes in one roll of two dice.
+Given two data sets with the same mean but different standard deviations, analyze which is more consistent.
+Inspect the given HTML and determine why the CSS rule is not applied.
+Determine whether the relation {(1,2),(2,1),(1,1)} is symmetric, reflexive, or transitive and explain.
+Analyze the given XML document and determine whether it is well-formed.
+Why does the following web service call return a 500 error? Examine the request and response.
+Compare the use of REST and SOAP for integrating a mobile app with a school enrollment system.
+Identify which of the following arguments is valid using the rules of inference.
+Examine the survey results and infer which factor most influenced student satisfaction.
+Differentiate the characteristics of a complete graph and a bipartite graph using the given examples.
+Given the code, what is printed when the function is called with n = 4?
+Trace the XSLT transformation and determine the output HTML.
+Find the logic error in the program that computes the average of a list.
+Compare the outputs of the two SQL queries and explain why they return different row counts.
+Analyze why the binary search fails on the given unsorted list.
+Determine which of the two Boolean expressions has fewer gates after simplification and explain why.
+Given the log file, identify the sequence of events that led to the system crash.
+Analyze the given poem and identify how the author uses imagery to convey loss.
+Compare the economic policies of two presidents based on the given data.
+Examine the graph of the function and determine where it is increasing or decreasing.
+Differentiate between correlation and causation using the given scatter plot.
+Which assumption in the given probability solution is incorrect?
+Analyze the given class diagram and identify which class should be abstract.
+Investigate why the web page loads slowly using the network timing data provided.
+Compare the security risks of storing passwords in plain text versus hashing with salt.
+Identify the relationship between the input size and running time from the table of measurements.
+Given the packet capture, determine which protocol is being used and why.
+Examine the proof and identify the step where the reasoning is invalid.
+Organize the following functions from slowest to fastest growth: n log n, n squared, log n, 2 to the n.
+Analyze the scenario and determine whether permutations or combinations should be used.
+Deduce the missing value in the truth table given the output column.
+What is the output of the following JavaScript: console.log(typeof null)?
+Examine the Java code and determine how many objects are created.
+Analyze the effect of removing the index on the query performance shown in the execution plan.
+Compare the two sorting algorithms on the nearly sorted input and explain which performs better.
+Given the Venn diagram, determine which region represents students taking neither subject.
+Determine whether the given graph has an Euler circuit and justify using vertex degrees.
+Identify which component of the system is the bottleneck based on the performance metrics.
+Analyze the given dataset for outliers and explain their effect on the mean.
+Given the requirements, determine which parts of the system should be integrated through a message queue.
+Compare how the two XML documents differ in structure.
+What would be the result of executing the following SQL transaction if the second statement fails?
+Examine the loop and determine how many times the print statement executes.
+Differentiate the roles of the model, view and controller in the given application code.
+Analyze the security log and identify the likely type of attack.
+Compare the advantages and disadvantages of using a star topology versus a mesh topology for the campus network.
+Determine what causes the infinite loop in the following while statement.
+Identify the flaw in the following argument about the sum of two odd numbers.
+Given the code snippet, explain why the output is 10 instead of 11.
+Analyze how changing the sample size affects the width of the confidence interval in the given example.
+Compare the given two poems in terms of tone and structure.
+Determine the main argument of the editorial and the evidence used to support it.
+Classify each statement in the passage as fact or opinion and explain your basis.
+Analyze the chart and identify the month with the greatest increase in sales.
+Examine the experiment design and identify the control and variables.
+Given the state diagram, determine what input sequence leads to the accept state.
+Which line of the following Python code raises an IndexError?
+Analyze whether the given relation is a function and justify.
+Determine whether the two sets are equal by examining their elements.
+Given the output of the program, infer the value of the input.
+Determine why the two computed probabilities in the solution do not add up to one.
+Analyze the circuit diagram and write its Boolean expression.
+Differentiate between the behaviors of the pre-increment and post-increment operators in the given code.
+Compare the given two database designs and determine which has more redundancy.
+Examine the API response and determine which field is causing the integration error.
+Trace how the data flows between the three systems in the integration diagram.
+Identify which of the given test cases would detect the bug in the function.
+Analyze the given scenario to determine which counting principle applies.
+Compare Rizal's and Bonifacio's approaches to reform based on the given readings.
+Given the historical timeline, determine the events that led to martial law.
+Examine the argument and separate the premises from the conclusion.
+Analyze the code and determine its time complexity in Big-O notation.
+What is printed by the following C code: int a = 5; printf("%d", a++ + ++a);?
+Determine which of the following graphs are isomorphic by comparing their properties.
+Analyze the relationship between the two variables in the regression output.
+Break down the given URL into its protocol, domain, path and query components and explain each.
+Compare the outcomes of the two experiments and infer why the results differ.
+Examine the given XSD and determine why the XML document fails validation.
+Identify the redundant subexpression in the Boolean function.
+Given the user feedback, determine which usability principle the interface violates.
+Examine the code and identify which variable is out of scope.
+Determine how the output changes when the list is passed by reference instead of by value.
+Analyze the probability tree and identify the error in the branch values.
+Compare the growth of the two populations using the given table.
+Why does the given CSS layout break on mobile screens? Inspect the rules.
+Deduce the rule that generates the sequence 2, 6, 12, 20, 30.
+Differentiate the three normal forms using the given unnormalized table.
+a = 3; b = a; a = 7. What is the value of b?
+Which of the following arguments uses the fallacy of affirming the consequent?
+A program prints 0 1 2 instead of 1 2 3. Which part of the loop is most likely wrong?
+A web page shows the old data even after the database was updated. Which of the following is the most likely cause?
+Which line in the code causes the output to repeat twice?
+The query below returns no rows even though matching data exists. What is the problem?
+Which of the following truth assignments makes the compound statement false?
+In the given code, which variable holds the largest value after execution?
+A student computed P(A or B) = 1.2. Which step in the solution caused this impossible result?
+Two XML documents contain the same data but only one passes validation. What is the difference?
+Which of the following graphs does not have an Euler path?
+for x in [1,2,3]: total = x — what is the value of total after the loop, and why?
+Which of the following explains why the login works on one browser but not another?
+The integration fails only when the payload is large. Which component should be examined first?
+Which step of the proof uses an invalid inference?
+Given the output 1 3 5 7, which loop produced it?
+Which of the following is the root cause of the duplicate records in the report?
+If the condition x > 5 is changed to x >= 5, which test case produces a different result?
+Which of the following relations is transitive but not symmetric?
+Two teams used different sample sizes and got different results. Which factor explains the difference?
+What does the following function return when given an empty list?
+Which of the following circuits produces the same output as the given expression?
+The data in the report does not match the source system. Where in the process could the mismatch occur?
+Which of the following sequences of events leads to the deadlock?
+Looking at the error message, which part of the XML is malformed?

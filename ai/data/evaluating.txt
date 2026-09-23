@@ -1,0 +1,115 @@
+Which sorting algorithm is most appropriate for a list of one million nearly sorted records? Justify your choice.
+Evaluate whether REST or SOAP is the better choice for the school's enrollment integration and defend your answer.
+Judge whether the given database design is adequate for the library system and recommend improvements.
+Justify why the proposed network topology is suitable for a campus with three buildings.
+Assess the security of the login system described and recommend the most important fix.
+Critique the given user interface design based on usability principles.
+Which of the proposed solutions is the most efficient for the problem? Support your answer.
+Defend or refute the claim that recursion is always less efficient than iteration.
+Evaluate the validity of the argument and justify your conclusion using rules of inference.
+Decide whether a message queue or direct API calls would be better for integrating the payroll and HR systems, and explain.
+Appraise the strengths and weaknesses of the given research methodology.
+Recommend the best data structure for implementing an undo feature and justify your recommendation.
+Verify whether the proposed proof is correct and explain any flaws you find.
+Which algorithm would you choose to find the shortest route for delivery trucks, and why?
+Assess the reliability of the sources cited in the given article.
+Evaluate the effectiveness of the government's policy using the given data.
+Judge which of the two essays presents a stronger argument and explain your reasoning.
+Is the conclusion of the study supported by the data? Justify your answer.
+Prioritize the following software requirements for the first release and justify your ranking.
+Critique the given code for readability and maintainability, and suggest improvements.
+Evaluate whether the given sampling method is appropriate for estimating student satisfaction.
+Decide whether the use of a binomial model is appropriate for the given scenario and justify.
+Assess whether the XML schema adequately validates the student records and recommend changes.
+Evaluate the trade-offs between using SAX and DOM for processing a 2 GB XML file and recommend one.
+Which cloud service model is most appropriate for a small school that wants to host its website? Defend your choice.
+Argue for or against the use of open-source software in government offices.
+Evaluate the ethical implications of collecting student location data in a mobile app.
+Judge whether the test cases provided are sufficient to verify the function and justify.
+Assess the scalability of the proposed system architecture for 10,000 concurrent users.
+Is it correct to say that every tautology is a valid argument form? Defend your answer.
+Evaluate the claim that the probability of winning increases after several losses.
+Critique the given proof by mathematical induction.
+Which of the given Boolean implementations is the most cost-effective? Justify based on gate count.
+Recommend a backup strategy for the registrar's database and justify it.
+Evaluate the accuracy of the historical account using primary sources.
+Assess the credibility of the news report and explain your criteria.
+Determine whether the given investment option is the best choice for the family and justify.
+Evaluate the given marketing strategy for a local business and recommend improvements.
+Critique the author's use of evidence in the given editorial.
+Justify whether the use of a hash table is appropriate for the given search problem.
+Evaluate which of the two database indexes is better for the given query workload.
+Assess the risks of deploying the update without testing and recommend a course of action.
+Which is the best approach to handle errors in the web service: retry, fail fast, or queue? Justify.
+Defend the choice of programming language for the proposed mobile application.
+Evaluate the fairness of the grading rubric and suggest revisions.
+Judge the effectiveness of the given algorithm in terms of time and space and recommend an alternative if needed.
+Evaluate whether the website meets accessibility standards and justify your assessment.
+Rate the given passwords from weakest to strongest and justify your ranking.
+Decide whether the given graph model accurately represents the road network and justify.
+Evaluate the strengths of the counting method used in the solution and determine if a simpler method exists.
+Assess whether the hypothesis test conclusion is valid given the sample size.
+Which of the two project plans is more feasible given the budget and timeline? Justify.
+Critique the integration design for single points of failure and propose improvements.
+Evaluate the appropriateness of using XSLT versus a programming language for transforming the report.
+Determine whether the security measures are sufficient to protect against SQL injection and justify.
+Justify the choice between a relational and a NoSQL database for the attendance system.
+Evaluate the impact of the proposed change on system performance and recommend whether to proceed.
+Assess the quality of the given unit tests and recommend additional cases.
+Judge whether the conclusion "all swans are white" is justified by the observations.
+Evaluate which of the given definitions of a function is most precise.
+Is the given algorithm correct for all inputs? Defend your answer with an example.
+Evaluate the argument that social media has improved political participation.
+Justify whether the use of the pigeonhole principle is appropriate in the given proof.
+Critique the design of the given logic circuit in terms of speed and cost.
+Assess which of the proposed APIs better follows REST principles and explain.
+Evaluate the performance of the classification model using the confusion matrix and recommend next steps.
+Which plan offers the best value for a family of four based on the given rates? Justify your choice.
+Evaluate the reliability of the survey instrument and recommend improvements.
+Recommend whether the company should migrate to the cloud based on the cost analysis.
+Determine which of the given solutions to the counting problem is correct and justify.
+Evaluate the soundness of the argument presented in the passage.
+Critically assess the claim that artificial intelligence will replace teachers.
+Justify whether the proposed normalization level is appropriate for a reporting database.
+Judge the validity of using the sample mean to represent the data set with extreme outliers.
+Evaluate the given project's risk management plan.
+Assess the effectiveness of the error messages in the given application from the user's perspective.
+Evaluate whether the proposed encryption method is adequate for storing grades.
+Which of the options best balances security and usability for student login? Defend your answer.
+Evaluate the given code review comments and decide which should be addressed first.
+Assess whether the XML web service meets the stated requirements of the client.
+Determine the most appropriate statistical test for the research question and justify your choice.
+Critique the use of color and layout in the given poster design.
+Evaluate the historical significance of the Treaty of Paris of 1898 for the Philippines.
+Is the given use of a combination formula correct for the problem? Justify your answer.
+Appraise the environmental impact of the proposed project.
+Evaluate whether the chosen sorting algorithm is stable and whether stability matters in the given case.
+Decide whether the given probability model is realistic and justify.
+Evaluate the teacher's claim that the class average improved significantly.
+Assess the maintainability of the system integration approach using point-to-point connections.
+Recommend the most suitable testing strategy for the integrated modules and justify.
+Is linear search a good choice for a list of 5 elements? Explain.
+A barangay wants to track residents' records. Should it use a spreadsheet or a database? Defend your answer.
+A classmate says a sample of 15 friends represents the whole university. Is the conclusion reasonable?
+Two solutions to the same problem give 60 and 360. Which is correct and why?
+Which of the proposed backup schedules offers the best protection for the least cost?
+Should the school buy a ready-made system or build its own given a small budget? Justify.
+Which of the three designs best meets the user's needs? Support your choice.
+Is the proposed network design enough for 200 users? Explain your judgment.
+Which approach is better for sending grade notifications: email or SMS? Defend your choice.
+Would you recommend using recursion for computing the 1000th Fibonacci number? Why or why not?
+Is the given password policy too strict, too weak, or appropriate? Justify.
+Which of the two integration approaches is easier to maintain in the long run? Explain.
+Is it reasonable to conclude that the new teaching method caused the higher scores? Explain.
+Which of the following is the most convincing argument for using open-source software in schools?
+Was the programmer right to use a global variable in this case? Justify.
+A vendor claims their system is 99% secure. How would you judge this claim?
+Which of the proposed fixes is best for the performance problem? Defend your answer.
+Is the claim "the more tests we run, the fewer bugs remain" always true? Justify.
+Should the table be normalized to 3NF for this reporting system? Defend your position.
+Which proposal gives the best balance of cost and reliability? Justify your answer.
+Do the results of the survey support the conclusion drawn by the researchers?
+Is a mesh topology worth the cost for a small office? Explain.
+Which of the two essays uses evidence more effectively? Justify.
+Which answer to the counting problem would you accept, and why?
+Is it appropriate to use the mean to describe these salaries? Explain.

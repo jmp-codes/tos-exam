@@ -1,0 +1,30 @@
+Remembering	Which of the following is a valid Python identifier?
+Remembering	The logic gate that outputs 1 only when all inputs are 1 is called the ____.
+Remembering	In SQL, the clause that sorts the result set is ____.
+Remembering	HTTP status code 404 means ____.
+Remembering	Which symbol represents set intersection?
+Understanding	Which statement best describes the purpose of normalization?
+Understanding	Why is SAX parsing described as event-driven?
+Understanding	A student says "p → q is false whenever p is false." What is wrong with this statement?
+Understanding	Which of the following is an example of a one-to-many relationship?
+Understanding	What does it mean when an XML document is well-formed?
+Applying	If a class has 12 boys and 8 girls, how many ways can a team of 2 boys and 1 girl be formed?
+Applying	A die is rolled twice. What is P(sum = 10)?
+Applying	What is the value of NOT(1 AND 0) OR 0?
+Applying	What is 110101 in decimal?
+Applying	Given A = {a,b,c}, how many elements does its power set have?
+Analyzing	x = 5; y = x; x = 10. What is the value of y in Python?
+Analyzing	A query returns duplicate rows even with a WHERE clause. Which of the following is the most likely cause?
+Analyzing	Which of the following arguments is invalid?
+Analyzing	for i in range(3): print(i*i) — what are the printed values?
+Analyzing	The web service returns data in XML but the mobile app expects JSON. Where in the integration does the problem occur?
+Evaluating	A school must choose between building its own system and buying a ready-made one. Which option is better given a small budget and a two-month deadline?
+Evaluating	Two students solved the same counting problem and got 120 and 720. Which answer is correct and why?
+Evaluating	Is bubble sort a good choice for sorting 10 items? Explain.
+Evaluating	Which of the proposed password policies offers the best protection without hurting usability?
+Evaluating	A survey of 20 friends is used to describe all students in the university. Is this conclusion reasonable?
+Creating	Draft an ERD for a canteen ordering system with menu items, orders and customers.
+Creating	Write an original problem that can be solved using the pigeonhole principle.
+Creating	Outline a system that sends an SMS to parents whenever a student is marked absent.
+Creating	Put together a set of API endpoints for a clinic appointment system.
+Creating	Make a Boolean expression and circuit for a security alarm with three sensors.

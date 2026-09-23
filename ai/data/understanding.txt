@@ -1,0 +1,144 @@
+Explain the difference between a compiler and an interpreter.
+Describe how a stack differs from a queue.
+Why is a primary key important in a relational database?
+Summarize the purpose of the transport layer in the OSI model.
+In your own words, what does it mean for two sets to be disjoint?
+Explain why the empty set is a subset of every set.
+Describe the role of the DNS in accessing a website.
+Which of the following best describes encapsulation?
+Explain what happens when a function calls itself without a base case.
+Give an example of a real-life situation that can be modeled as a graph.
+Why do we use normalization in database design?
+Classify the following as hardware or software: keyboard, operating system, monitor, web browser.
+Explain the meaning of the statement "p implies q" in everyday language.
+What is the main idea of the principle of inclusion and exclusion?
+Describe the difference between permutations and combinations.
+Why does a binary search require the list to be sorted?
+Interpret the meaning of a p-value of 0.03 in a hypothesis test.
+Explain how asynchronous messaging differs from synchronous messaging.
+Give an example of a tautology in everyday language.
+Summarize the steps involved in the TCP three-way handshake.
+Which statement best explains why HTTPS is more secure than HTTP?
+Explain the purpose of an XML schema.
+Describe the function of a firewall in a network.
+Paraphrase the definition of a function in set theory.
+Why is inheritance useful in object-oriented programming?
+Explain the difference between RAM and ROM.
+Describe what an index does in a database.
+Illustrate with an example the difference between a class and an object.
+Why is the sum of all probabilities in a sample space equal to one?
+Explain the meaning of the term polymorphism.
+Discuss the importance of version control in software development.
+Explain the difference between the World Wide Web and the Internet.
+Which of the following best describes the purpose of a foreign key?
+Explain why photosynthesis is important to life on Earth.
+Describe the causes of the Philippine Revolution of 1896.
+Explain the theme of Noli Me Tangere.
+Summarize the plot of the story in three sentences.
+Explain what a variable represents in an algebraic expression.
+Describe the difference between weather and climate.
+Why do we need a base case in recursion?
+Explain the difference between a local and a global variable.
+Describe how data is organized in a relational table.
+Explain the role of a web service in system integration.
+Why is the XML DOM parser more memory intensive than SAX?
+Describe what the XPath expression //book/title selects in general terms.
+Explain what a truth table shows.
+Interpret the Venn diagram showing A inside B.
+Describe the meaning of the complement of an event.
+Explain the difference between independent and dependent events.
+Which of the following best explains the pigeonhole principle?
+Explain the purpose of the SELECT statement in SQL.
+Describe how cookies are used by websites.
+Explain in your own words what an algorithm is.
+Why are comments used in programming?
+Describe the difference between a LAN and a WAN.
+Explain why passwords should be hashed before being stored.
+What is the purpose of the return statement in a function?
+Explain how a for loop differs from a while loop.
+Explain the relationship between a client and a server.
+Describe what happens during the boot process of a computer.
+Explain what is meant by a binomial distribution.
+Explain why the expected value of a fair die roll is 3.5.
+Describe the difference between an edge and a vertex in a graph.
+Explain the difference between an injective and a surjective function.
+What does it mean when we say that an algorithm has O(n) time complexity?
+Explain the importance of testing in software development.
+Describe the purpose of an API in an application.
+Explain what cloud computing means.
+Why is it important to validate user input on a web form?
+Explain the purpose of the CSS box model.
+Describe the difference between HTML and CSS.
+Explain what happens when a user submits a form on a web page.
+Give an example of a one-to-many relationship in a database.
+Explain the difference between a syntax error and a logic error.
+Describe the role of the operating system in managing memory.
+Explain why Boolean algebra is used in digital circuit design.
+Explain the meaning of the idempotent law in Boolean algebra.
+Describe how an if-else statement controls program flow.
+Summarize the advantages of object-oriented programming.
+Explain the concept of a closed set of operations.
+Explain the difference between a sample and a population.
+Describe the water cycle.
+Explain the law of supply and demand.
+Explain the difference between active and passive voice.
+Explain why the sky appears blue.
+Describe the characteristics of a good thesis statement.
+Explain the significance of the EDSA People Power Revolution.
+Describe the function of the respiratory system.
+Explain the difference between a simile and a metaphor.
+Explain how vaccines help the body fight disease.
+Describe the difference between mean and median.
+Explain what the standard deviation tells us about a data set.
+Translate the statement "All students passed" into symbolic logic and explain its meaning.
+Explain the purpose of a mutex in concurrent programming.
+Describe the role of middleware in integrating software systems.
+Explain what JSON is used for in web applications.
+Explain why REST APIs are described as stateless.
+Explain the purpose of XSLT.
+Describe the difference between authentication and authorization.
+Explain what a digital certificate does.
+Explain the difference between a process and a thread.
+Describe how a hash table stores data.
+Explain the meaning of the term bandwidth.
+Explain what an IP subnet mask is used for.
+Explain the purpose of the GROUP BY clause.
+Describe the difference between an abstract class and an interface.
+Explain what is meant by responsive web design.
+Explain why a graph with an odd number of odd-degree vertices cannot exist.
+Explain the meaning of the phrase "the order does not matter" in counting problems.
+Predict in general terms what happens to the probability of an event as the number of favorable outcomes increases.
+Explain what a contradiction is in propositional logic.
+Explain the meaning of a converse of a conditional statement.
+Explain the difference between discrete and continuous data.
+Describe the purpose of a use case diagram.
+Explain the purpose of an entity relationship diagram.
+Which of the following best describes the role of the router?
+Explain why a byte can represent 256 different values.
+Explain the concept of abstraction in programming.
+Describe the function of the ALU in a CPU.
+A student claims that a conditional statement is false when its hypothesis is false. What is wrong with this claim?
+Which of the following situations shows a many-to-many relationship?
+Which statement correctly describes what a foreign key does?
+What does it mean for a function to be one-to-one?
+Which of the following explains why HTTP is called a stateless protocol?
+Which statement best describes the difference between a set and a list?
+What does it mean when two propositions are logically equivalent?
+Which of the following is the best example of an input validation rule?
+Why is an XML document that is well-formed not always valid?
+Which statement best explains why we use functions in programming?
+A friend says a byte and a bit are the same. How would you correct them?
+Which of the following situations is an example of a dependent event?
+What does the term "mutually exclusive" mean in probability?
+Which of the following best explains why a tree has no cycles?
+What is the meaning of the result "404 Not Found" returned by a web server?
+Which sentence correctly describes the role of middleware?
+Why is it said that order matters in permutations?
+Which of the following best illustrates abstraction?
+What happens to a local variable after the function ends?
+Why do web browsers need the DNS before loading a page?
+Which of the following restates De Morgan's law correctly in words?
+Why can two different XML documents follow the same schema?
+Which of the following describes the purpose of a primary key in simple terms?
+What is the difference between an argument and a parameter?
+Why is it important for an API to have documentation?

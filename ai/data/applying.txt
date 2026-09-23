@@ -1,0 +1,142 @@
+How many ways can 3 officers be chosen from 8 students for president, vice president and secretary?
+Compute the value of 5 factorial.
+Convert the decimal number 45 to binary.
+Construct a truth table for the proposition p AND NOT q.
+Simplify the Boolean expression A + AB.
+A bag has 4 red and 6 blue marbles. What is the probability of drawing a red marble?
+Write an SQL query that selects all students whose grade is above 85.
+Calculate the number of subsets of a set with 5 elements.
+Use De Morgan's law to rewrite NOT (A AND B).
+Solve for x: 3x + 7 = 22.
+A coin is tossed 4 times. What is the probability of getting exactly 2 heads?
+How many different committees of 4 can be formed from 10 teachers?
+Given A = {1,2,3} and B = {2,3,4}, find A union B.
+Given A = {1,2,3,4} and B = {3,4,5}, find A intersection B.
+Write a Python function that returns the sum of a list of numbers.
+Evaluate the expression (T AND F) OR T.
+Compute the expected value of a random variable that takes values 1, 2, 3 with probabilities 0.2, 0.5, 0.3.
+Using the formula for combinations, find C(7,3).
+Find the variance of the data set 2, 4, 4, 4, 5, 5, 7, 9.
+Apply the distributive law to expand A(B + C).
+Write the HTML code to display an image named logo.png.
+Create a CSS rule that makes all paragraphs blue.
+Using a loop, write a program that prints the numbers 1 to 10.
+Determine the subnet mask for a network that needs 30 hosts.
+Convert the hexadecimal number 2F to decimal.
+How many edges does a complete graph with 6 vertices have?
+Find the degree of each vertex in the given graph.
+A password has 4 digits. How many possible passwords are there if digits can repeat?
+Write an XPath expression that selects all title elements under book.
+Use the given XML document to write an XSLT template that outputs each student's name.
+Determine the output value of the circuit when A = 1, B = 0 and C = 1.
+Compute the mean of the scores 78, 85, 90, 92 and 80.
+In how many ways can the letters of the word MATH be arranged?
+Solve the system of equations x + y = 10 and x - y = 2.
+Find the probability of rolling a sum of 7 with two dice.
+Given P(A) = 0.4 and P(B) = 0.5 and A and B are independent, find P(A and B).
+Write a Java method that checks whether a number is even.
+Using the binomial formula, find the probability of 3 successes in 5 trials with p = 0.5.
+Draw the Venn diagram for A intersect B complement.
+Simplify the expression NOT(NOT A).
+Apply the inclusion-exclusion principle to find how many students take Math or English if 20 take Math, 15 take English and 5 take both.
+What is 25% of 480?
+Compute the area of a rectangle with length 12 cm and width 5 cm.
+Use the Pythagorean theorem to find the hypotenuse of a right triangle with legs 6 and 8.
+Write an SQL statement to update the price of product 101 to 250.
+Implement a function that reverses a string in Python.
+Calculate the network address of 192.168.10.37/24.
+Apply the pigeonhole principle to show that among 13 people, two were born in the same month.
+Find the number of bit strings of length 8.
+Write a loop that computes the factorial of n.
+Evaluate the following expression when x = 3: 2x squared plus 4x minus 1.
+Complete the truth table for p implies q.
+Use the given data to construct a frequency distribution table.
+Write the negation of the statement "All students passed the exam."
+Translate the sentence "If it rains, then the game is cancelled" into symbolic form using p and q.
+Find the inverse of the function f(x) = 2x + 3.
+Using the provided class diagram, write the Java class definition for Student.
+Write a JavaScript function that validates that an email field is not empty.
+Create a form in HTML with fields for name and email.
+Given the relation R = {(1,2),(2,3)}, find R composed with R.
+Determine whether the relation {(1,1),(2,2),(1,2)} on {1,2} is reflexive.
+Convert the Boolean expression AB + AC into its factored form.
+A class of 40 students has 25 girls. If one student is chosen at random, what is the probability that it is a boy?
+How many license plates can be made with 3 letters followed by 3 digits?
+Use Kirchhoff's law to find the current in the given circuit.
+Calculate the speed of a car that travels 150 km in 2.5 hours.
+Write a sentence using the word "ubiquitous" correctly.
+Use the past perfect tense to complete the sentence.
+Compute the simple interest on 10,000 pesos at 5% per year for 3 years.
+Apply the quadratic formula to solve x squared minus 5x plus 6 equals 0.
+Convert 5 kilometers to meters.
+Given the ERD, write the CREATE TABLE statement for the Orders table.
+Write a SELECT query that counts the number of students per course.
+Use a JOIN to list each order with its customer name.
+Write the code to connect to a MySQL database in PHP.
+Use the fetch API to request data from https://example.com/api/items.
+Implement a stack using a Python list with push and pop operations.
+Write a recursive function to compute the nth Fibonacci number.
+Sort the list 5, 2, 9, 1, 7 using bubble sort and show each pass.
+Perform a binary search for 23 in the sorted list 3, 8, 15, 23, 42 and show the steps.
+Traverse the given binary tree in inorder and list the nodes.
+Find the shortest path from A to E in the given weighted graph using Dijkstra's algorithm.
+Compute the checksum of the given data using the stated method.
+Encrypt the word HELLO using a Caesar cipher with a shift of 3.
+Hash the password using the given function and show the result.
+Write the JSON representation of a student with name, age and course.
+Parse the given JSON string in Python and print the value of the name field.
+Use the DOM API to change the text of the element with id "title".
+Write a SOAP request for the GetStudent operation defined in the WSDL.
+Configure the IP address of a host given the network 10.0.0.0/8.
+Find the median of 12, 7, 3, 18, 9.
+A spinner has 8 equal sections numbered 1 to 8. What is the probability of landing on an even number?
+Given f(x) = x mod 5, compute f(17).
+Find the greatest common divisor of 48 and 18 using the Euclidean algorithm.
+Show that 7 divides 49 by finding the integer k.
+How many ways can 5 books be arranged on a shelf?
+In how many ways can a committee of 2 men and 3 women be chosen from 5 men and 6 women?
+Compute the power set of {a, b}.
+Represent the relation on {1,2,3} as a matrix.
+Use the adjacency list to draw the graph.
+Write a regular expression that matches a Philippine mobile number starting with 09.
+Compute the total cost of 3 items priced at 150, 275 and 90 pesos with 12% VAT.
+Write the Python code to read a CSV file and print each row.
+Using Git, write the commands to create a branch named feature and switch to it.
+Calculate the probability of getting at least one head in three coin tosses.
+Given the probability distribution table, compute the mean of X.
+Use the multiplication principle to count the number of outfits from 4 shirts and 3 pants.
+Write the SQL command to create an index on the lastname column.
+Apply the absorption law to simplify A(A + B).
+Compute the Karnaugh map simplification of the given three-variable function.
+Draw the logic circuit for the expression (A + B)C.
+Write a program that determines whether a year is a leap year.
+Use a dictionary in Python to count the frequency of each word in a sentence.
+Given the Java code, fill in the missing line so the loop prints 10 to 1.
+Write the HTML table code for a 2 by 3 table.
+Convert the temperature 98.6 degrees Fahrenheit to Celsius.
+Compute the z-score of a score of 85 if the mean is 75 and standard deviation is 5.
+What is 101101 in decimal?
+What is 37 in binary?
+If 5 people shake hands with each other once, how many handshakes are there?
+A die is rolled once. What is P(number greater than 4)?
+What is the value of (1 OR 0) AND NOT 1?
+Given B = {1,2,3,4}, how many 2-element subsets does B have?
+If P(A) = 0.3, what is P(not A)?
+A student scored 45 out of 60. What is the percentage score?
+If f(x) = 3x - 2, what is f(4)?
+A menu has 3 soups, 5 main dishes and 2 desserts. How many different meals can be ordered?
+What is the result of 17 mod 4?
+How many ways can 6 runners finish first, second and third?
+What is the output of 2 + 3 * 4 using standard operator precedence?
+If a network is 192.168.1.0/26, how many usable hosts does it have?
+What is the truth value of p → q when p is true and q is false?
+Given the list [4, 8, 15, 16], what is the average?
+Using C(10,2), how many games are played in a round robin of 10 teams?
+Two cards are drawn without replacement from a deck. What is the probability both are aces?
+What is the sum of the degrees of all vertices in a graph with 7 edges?
+If a file is 3 MB and the speed is 1 MB per second, how long does the download take?
+Give the SQL query that returns the names of students from Lubang.
+What is the complement of {1,3} in the universal set {1,2,3,4,5}?
+Simplify A + NOT A.
+How many 3-digit numbers can be formed from 1, 2, 3, 4, 5 without repetition?
+Rewrite the statement "not all students passed" using the existential quantifier.

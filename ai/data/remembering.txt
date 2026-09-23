@@ -1,0 +1,145 @@
+What is the full meaning of the acronym HTML?
+Define a proposition in logic.
+What does SQL stand for?
+Which of the following is a primary color of light?
+Who is known as the father of computer science?
+List the four pillars of object-oriented programming.
+What is the default port number of HTTP?
+Name the three types of loops in Java.
+What symbol is used to denote the empty set?
+Identify the logic gate represented by the symbol with a small circle at its output after an AND shape.
+Which of the following is an example of an input device?
+What is the binary equivalent of the decimal number 1?
+State the commutative law of addition in Boolean algebra.
+What is the formula for the number of permutations of n objects taken r at a time?
+What keyword is used to define a function in Python?
+Which HTML tag is used to create a hyperlink?
+What is the capital of the Philippines?
+Who wrote Noli Me Tangere?
+When did the Philippines declare its independence from Spain?
+What layer of the OSI model is responsible for routing?
+Enumerate the seven layers of the OSI model.
+What is the term for a statement that is always true regardless of the truth values of its variables?
+Which data structure follows the Last In, First Out principle?
+What does CPU stand for?
+Recall the definition of a relation in set theory.
+What is the SI unit of force?
+Which command is used to remove a table in SQL?
+What is the chemical symbol for sodium?
+Name the organelle known as the powerhouse of the cell.
+What is a primary key?
+Which of the following is a relational database management system?
+What does XML stand for?
+List the parts of a URL.
+Which protocol is used to send email?
+What is the value of pi rounded to two decimal places?
+Define the term algorithm.
+What is the name of the operator used for logical negation?
+Identify the symbol used for the universal quantifier.
+What is the time complexity notation called that describes the upper bound of an algorithm?
+Which keyword is used to inherit a class in Java?
+What is the file extension of a Python source file?
+Who is the national hero of the Philippines?
+What is the plural form of the word criterion?
+Which planet is known as the Red Planet?
+Define a tautology.
+What is a sample space in probability?
+What is the name of the rule that states P(A or B) = P(A) + P(B) - P(A and B)?
+State De Morgan's laws.
+What is the unit of electrical resistance?
+Which CSS property changes the text color?
+What does IP stand for in networking?
+List three examples of operating systems.
+What is RAM?
+What does the acronym SOAP stand for in web services?
+Which of the following is not a programming language?
+What is a variable?
+Name the two values of a Boolean variable.
+What is the identity law in Boolean algebra?
+What is a leaf node in a tree?
+Define the term cardinality of a set.
+Which HTTP method is used to retrieve data from a server?
+What is the name of the tag that encloses the visible content of an HTML page?
+What year was the World Wide Web invented?
+Which of the following is the correct syntax to print text in Python?
+What is the largest ocean on Earth?
+Give the formula for the area of a circle.
+What is the name of the process by which plants make food using sunlight?
+What does DNS stand for?
+True or false: a byte consists of eight bits.
+What is meant by the term firewall?
+Name the SQL clause used to filter records.
+What is the symbol for logical conjunction?
+Recall the pigeonhole principle.
+What is a compiler?
+Which of the following refers to the physical components of a computer?
+What is an IP address?
+State the definition of a function in mathematics.
+What is a subset?
+Which data type is used to store whole numbers in C?
+What is the name given to a graph with no cycles?
+Define encapsulation.
+What is the meaning of the term debugging?
+What does API stand for?
+List the steps of the scientific method.
+Who was the first president of the Philippines?
+What is an adjective?
+Which organ pumps blood throughout the human body?
+What is a combination in counting?
+What is the complement of a set?
+What is JSON?
+Identify the port number used by HTTPS.
+What is the name of the Python data type that stores key-value pairs?
+What is a foreign key?
+Name the three main types of cloud computing service models.
+What is phishing?
+What does the abbreviation LAN mean?
+What is the name of the law that states that the current through a conductor is proportional to the voltage?
+Which HTML element is used for the largest heading?
+What is a stack overflow?
+State the formula for the number of combinations of n objects taken r at a time.
+What is a binomial experiment?
+Define expected value.
+What is the result type of a comparison operator in most programming languages?
+What is the term for a function that calls itself?
+What is XPath used for?
+What does WSDL stand for?
+Which of the following is a markup language?
+What is a router?
+What is the name of the diagram used to show relationships between sets?
+Name the four basic arithmetic operations.
+What is the term used for the reuse of code through a parent class?
+Which keyword creates an object in Java?
+What is the main function of an operating system?
+What is the definition of a prime number?
+Which SQL statement is used to add new rows to a table?
+Name the Boolean operation that outputs true only when both inputs are true.
+What is an array?
+Identify the part of speech of the word quickly.
+What is the freezing point of water in Celsius?
+Which language is used to style web pages?
+The command used to display the current directory in Linux is ____.
+HTTP status code 200 means ____.
+The binary digit is also called a ____.
+Which of the following is a valid variable name in Java?
+The operator used for exponentiation in Python is ____.
+A graph in which every pair of vertices is connected by an edge is called a ____.
+The SQL keyword used to remove duplicate rows from a result is ____.
+Which symbol represents set union?
+The truth value of a disjunction is false only when ____.
+Port 21 is used by which protocol?
+The number 0 in Boolean algebra represents ____.
+In the OSI model, layer 1 is the ____ layer.
+The tag used to insert a line break in HTML is ____.
+Which of the following file formats is used for web service descriptions?
+A set with no elements is called the ____.
+The Python function that returns the length of a list is ____.
+Which of the following is a valid IPv4 address format?
+The father of the Philippine Constitution is ____.
+The HTML attribute that specifies the URL of a link is ____.
+In C, the format specifier for an integer is ____.
+The value of 0! is defined as ____.
+Which of the following is a logical connective?
+A statement that is always false is called a ____.
+The element at the top of a stack is accessed using the ____ operation.
+Which of these is a NoSQL database?

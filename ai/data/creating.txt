@@ -1,0 +1,100 @@
+Design a database schema for a school library system that tracks books, borrowers and loans.
+Create a web page that displays the class schedule using HTML and CSS.
+Develop a Python program that simulates a simple ATM with deposit and withdraw functions.
+Design a logic circuit that turns on a light when exactly two of three switches are on.
+Propose a system architecture that integrates the enrollment, grading and payment systems.
+Write a program that reads student grades from a file and generates a report with averages and rankings.
+Formulate a hypothesis and design an experiment to test the effect of light on plant growth.
+Compose a short story that uses flashback as its main narrative technique.
+Design an XML schema for representing student records including subjects and grades.
+Create a REST API design for an online attendance system, including endpoints and data formats.
+Develop a mobile app prototype for booking campus facilities.
+Construct a proof that the sum of two even integers is even.
+Devise an algorithm to find duplicate entries in a list of student IDs.
+Plan a network for a small office with 20 computers, a printer and internet access.
+Design a Boolean circuit for a 2-bit binary adder.
+Write a function that integrates data from two different APIs into one report.
+Create a probability game and compute the expected winnings for the player.
+Develop a counting problem based on a real-life situation and provide its solution.
+Design a test plan for the integrated student information system.
+Propose a solution to reduce traffic congestion in your municipality.
+Create an XSLT stylesheet that transforms the student XML into an HTML table.
+Design a web service that returns a student's grades given their ID.
+Write a program that implements the Caesar cipher for encryption and decryption.
+Develop a lesson plan that teaches truth tables to first-year students.
+Create a concept map that connects the main ideas of discrete mathematics.
+Design a user interface for the campus canteen ordering system.
+Construct a graph model for the jeepney routes in your town and propose an efficient route plan.
+Compose an essay arguing for a policy that improves internet access in rural areas.
+Develop a marketing plan for a new local product.
+Design a relational database for a barangay health center.
+Write a Java program that manages an inventory using classes and objects.
+Create a chatbot flow for answering enrollment questions.
+Propose a research study on the effects of online learning on student performance.
+Design an algorithm that schedules exams so that no student has two exams at the same time.
+Develop a simulation of rolling two dice 1000 times and compare with theoretical probabilities.
+Invent a new board game and write its rules.
+Design a secure login system and describe how passwords will be stored.
+Create a program that converts numbers between binary, decimal and hexadecimal.
+Build a small web application that lets users add, edit and delete tasks.
+Design a messaging system that sends asynchronous notifications to students when grades are posted.
+Construct an original proof by contradiction for a given statement.
+Write a poem that expresses the experience of growing up in the province.
+Design a poster promoting environmental awareness on campus.
+Develop a budget plan for a student organization's event.
+Formulate a set of business rules for the online enrollment process.
+Create a data visualization dashboard design for the college's enrollment statistics.
+Propose an integration plan for connecting the library system to the student portal.
+Develop a program that parses an XML file of products and outputs a JSON file.
+Design a Karnaugh map-based minimal circuit for the given specifications and draw it.
+Produce a video script explaining the concept of recursion to high school students.
+Design an entity relationship diagram for a hotel reservation system.
+Create a set of test cases that fully covers the given function.
+Design a recursive algorithm to generate all subsets of a set.
+Develop a plan for migrating the school's records to a cloud platform.
+Write an original word problem that requires the use of the binomial distribution.
+Create a flowchart for the process of enrolling in a subject.
+Design an experiment to compare the speed of two sorting algorithms.
+Develop a Python script that automates generating certificates from a list of names.
+Compose a speech for the opening of the college's intramurals.
+Design a system for tracking the attendance of students using QR codes.
+Create an original logic puzzle and provide its solution using truth tables.
+Develop a web page that uses JavaScript to validate a registration form.
+Design a service-oriented architecture for a municipal permit system.
+Propose improvements to the given algorithm and implement your improved version.
+Write a program that generates a random password meeting given security rules.
+Create a new classification scheme for organizing the computer laboratory equipment.
+Design a middleware component that translates messages between two incompatible systems.
+Develop a grading system that computes final grades from quizzes, exams and projects.
+Construct an original graph problem and solve it using graph algorithms.
+Design an online quiz application with timed questions and automatic scoring.
+Create a program that builds a frequency table and histogram from input data.
+Plan and design a community project that uses technology to help local farmers.
+Formulate a model to predict student enrollment for the next five years.
+Design a set of APIs that allow third-party apps to access class schedules securely.
+Generate a new version of the given algorithm that uses less memory.
+Build a prototype of an IoT device that monitors classroom temperature.
+Design a method to integrate legacy COBOL data into a modern web application.
+Create an interactive tutorial page for learning set operations.
+Develop an original case study about data privacy in Philippine schools.
+Design a truth-table-based decision system for approving scholarship applications.
+Write an original problem that can be solved using combinations.
+Draft a database design for a sari-sari store's inventory.
+Outline a system that notifies parents when a student is absent.
+Put together a set of endpoints for a library borrowing API.
+Make a program that converts grades to their equivalent descriptions.
+Come up with a new use case for web services in local government.
+Sketch the architecture of an online enrollment system.
+Draft an original logic puzzle involving three suspects.
+Write a new function that combines data from two XML files.
+Make a circuit that controls a pump using two water level sensors.
+Draft a user story and acceptance criteria for a password reset feature.
+Put together a plan to test the integration of the payment and enrollment systems.
+Write your own example of a proof by induction and complete it.
+Prepare a data model for tracking faculty teaching loads.
+Build an original probability problem about a raffle and solve it.
+Compose an original algorithm to detect a palindrome.
+Outline a mobile app that helps farmers check market prices.
+Prepare the structure of a JSON message for sending attendance records.
+Make an original Venn diagram problem with three sets and its solution.
+Draft an integration design that lets the clinic system share records with the registrar.
