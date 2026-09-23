@@ -1,0 +1,268 @@
+{
+ "app": "tos-builder",
+ "version": 1,
+ "exported": "2026-09-23",
+ "tos": [
+  {
+   "id": "sample1",
+   "subject": "Integrative Programming and Technologies",
+   "type": "major",
+   "levels": [
+    20,
+    50,
+    30
+   ],
+   "totalItems": 60,
+   "term": "Final",
+   "semester": "2nd",
+   "ay": "2025-2026",
+   "program": "Bachelor of Science in Information Technology",
+   "campus": "Lubang",
+   "dateSubmitted": "2026-05-07",
+   "pctDecimals": 0,
+   "placement": "random",
+   "seed": 580960245,
+   "topics": [
+    {
+     "title": "Lesson 5: Dynamic Programming Web Pages",
+     "subtopics": [
+      "Database creation",
+      "Flexible listings",
+      "Validation"
+     ],
+     "outcomes": [
+      "Learn various techniques for integrating disparate software components, systems, and services, enabling them to design and implement effective integration solutions.",
+      "Gain proficiency in testing and debugging integrated systems to identify and resolve integration issues, ensuring the functionality and quality of the software solution.",
+      "Engage in continuous learning and professional development to stay updated with emerging technologies, tools, and best practices in integrative programming, applying new knowledge to enhance their software development skills and practices.",
+      "Integrate security measures and protocols into integrated software solutions to mitigate risks such as data breaches, unauthorized access, and cyber threats."
+     ],
+     "hours": 10.0
+    },
+    {
+     "title": "Lesson 6: XML Classes in .NET",
+     "subtopics": [
+      "XML parsing (DOM/SAX)",
+      "Writing & validation",
+      "XPath",
+      "XSL/XSLT",
+      "XML Web Services"
+     ],
+     "outcomes": [
+      "Design, develop and test a program that uses SAX or DOM to parse an XML document, XSL, and XSLT to transform a data stream from one format to another."
+     ],
+     "hours": 15.0
+    },
+    {
+     "title": "Lesson 7: Web Services",
+     "subtopics": [
+      "ASP.NET Web Services",
+      "Asynchronous messaging",
+      "Secure transmission"
+     ],
+     "outcomes": [
+      "Design, develop and test a program that uses a messaging service that sends asynchronous messages across the network.",
+      "Analyze the requirements for incorporating messaging services into a software application to facilitate asynchronous communication across networked systems.",
+      "Engage in continuous learning and professional development to stay updated with emerging technologies, tools, and best practices in integrative programming, applying new knowledge to enhance their software development skills and practices.",
+      "Integrate security measures and protocols into integrated software solutions to mitigate risks such as data breaches, unauthorized access, and cyber threats."
+     ],
+     "hours": 10.0
+    },
+    {
+     "title": "Lesson 8: Project Development",
+     "subtopics": [
+      "Integration of existing module",
+      "Testing and debugging strategies",
+      "Security verification",
+      "Documentation and presentation"
+     ],
+     "outcomes": [
+      "Gain proficiency in testing and debugging integrated systems to identify and resolve integration issues, ensuring the functionality and quality of the software solution.",
+      "Engage in continuous learning and professional development to stay updated with emerging technologies, tools, and best practices in integrative programming, applying new knowledge to enhance their software development skills and practices.",
+      "Integrate security measures and protocols into integrated software solutions to mitigate risks such as data breaches, unauthorized access, and cyber threats."
+     ],
+     "hours": 8.5
+    }
+   ],
+   "overrides": {},
+   "sigs": {
+    "prepared": {
+     "name": "JOSHUA MIGUEL V. PAGILAGAN",
+     "title": "Instructor I"
+    },
+    "reviewed": {
+     "name": "MARIA KRISTINA S. TANGI, MSIT",
+     "title": "Program Chair, BSIT"
+    },
+    "approved": {
+     "name": "",
+     "title": "Dean"
+    }
+   },
+   "order": 0,
+   "updatedAt": 1790134134075,
+   "college": ""
+  },
+  {
+   "id": "sample2",
+   "subject": "Integrative Programming and Technologies 2",
+   "type": "major",
+   "levels": [
+    20,
+    50,
+    30
+   ],
+   "totalItems": 60,
+   "term": "Final",
+   "semester": "2nd",
+   "ay": "2025-2026",
+   "program": "Bachelor of Science in Information Technology",
+   "campus": "Lubang",
+   "dateSubmitted": "2026-05-07",
+   "pctDecimals": 1,
+   "placement": "random",
+   "seed": 856707953,
+   "topics": [
+    {
+     "title": "Lesson 4: Database Integration and Data Management",
+     "subtopics": [
+      "Relational Database Integrations (SQL)",
+      "Introduction to NoSQL database into applications",
+      "Data modeling and query management"
+     ],
+     "outcomes": [
+      "Develop competence in full-stack development, encompassing frontend, backend, and database components, enabling them to create end-to-end solutions that meet functional and non-functional requirements."
+     ],
+     "hours": 15.0
+    },
+    {
+     "title": "Lesson 5: Software Security and Cryptographic Practices",
+     "subtopics": [
+      "Secure coding practices",
+      "Authentication and authorization",
+      "Cryptographic principles",
+      "Encryption and decryption techniques"
+     ],
+     "outcomes": [
+      "Compare and contrast the different encrypting and decrypting techniques that ensure the security of data.",
+      "Understand theoretical knowledge about cryptographic concepts such as confidentiality, integrity, and authentication."
+     ],
+     "hours": 15.0
+    },
+    {
+     "title": "Lesson 6: Agile Development and Integrative Full-Stack Project",
+     "subtopics": [
+      "Agile principles (Scrum, Kanban)",
+      "Sprint planning and iteration",
+      "Full-stack integrative project development",
+      "UX evaluation and refinement"
+     ],
+     "outcomes": [
+      "Develop full-stack development skills, including frontend development (HTML/CSS, JavaScript), backend development (server-side scripting, databases), and integration with third party APIs and services, to create end-to-end solutions for diverse application domains.",
+      "Develop competence in full-stack development, encompassing frontend, backend, and database components, enabling them to create end-to-end solutions that meet functional and non-functional requirements.",
+      "Design user-friendly interfaces and experiences for integrative programming projects, applying UX design principles and considering user feedback to optimize usability and satisfaction.",
+      "Apply agile methodologies such as Scrum or Kanban to manage integrative programming projects, participating in iterative development cycles and adapting to changing requirements and priorities."
+     ],
+     "hours": 13.5
+    }
+   ],
+   "overrides": {},
+   "sigs": {
+    "prepared": {
+     "name": "JOSHUA MIGUEL V. PAGILAGAN",
+     "title": "Instructor I"
+    },
+    "reviewed": {
+     "name": "MARIA KRISTINA S. TANGI, MSIT",
+     "title": "Program Chair, BSIT"
+    },
+    "approved": {
+     "name": "",
+     "title": "Dean"
+    }
+   },
+   "order": 1,
+   "updatedAt": 1790134134075,
+   "college": ""
+  },
+  {
+   "id": "sample3",
+   "subject": "Discreet Mathematics",
+   "type": "minor",
+   "levels": [
+    30,
+    50,
+    20
+   ],
+   "totalItems": 60,
+   "term": "Final",
+   "semester": "2nd",
+   "ay": "2025-2026",
+   "program": "Bachelor of Science in Information Technology",
+   "campus": "Lubang",
+   "dateSubmitted": "2026-05-07",
+   "pctDecimals": 1,
+   "placement": "random",
+   "seed": 351208907,
+   "topics": [
+    {
+     "title": "Chapter 3. Boolean Algebra",
+     "subtopics": [
+      "Boolean Algebra",
+      "Laws of Boolean Algebra",
+      "Rules of Boolean Algebra",
+      "Simplifying Boolean Expression"
+     ],
+     "outcomes": [
+      "Analyze the usage of logic gates in evaluating Boolean expressions.",
+      "Solve solving complex Boolean expressions through the application of truth tables and logical laws (identity, distributive, commutative, domination)",
+      "Demonstrate the ability to convert Boolean expressions to logic gates and vice versa, showcasing creativity and mastery in applying discrete mathematics concepts."
+     ],
+     "hours": 9.0
+    },
+    {
+     "title": "Chapter 4. Counting",
+     "subtopics": [
+      "The Basics of Counting",
+      "The Pigeonhole Principle",
+      "Permutations",
+      "Combinations"
+     ],
+     "outcomes": [
+      "Demonstrate the application of basic computing principles, specifically in the computation of permutations and combinations",
+      "Analyze probabilistic outcomes. This involves assessing the significance of expected values in discrete random variables, interpreting their implications, and critically analyzing the results.",
+      "Evaluate the variances of discrete random variables, assessing the spread or dispersion of probabilistic outcomes."
+     ],
+     "hours": 9.0
+    },
+    {
+     "title": "Chapter 5. Discrete Probability",
+     "subtopics": [
+      "Introduction of Discrete Probability",
+      "Discrete Probability Distributions",
+      "The Binomial Probability Distributions"
+     ],
+     "outcomes": [],
+     "hours": 7.5
+    }
+   ],
+   "overrides": {},
+   "sigs": {
+    "prepared": {
+     "name": "JOSHUA MIGUEL V. PAGILAGAN",
+     "title": "Instructor I"
+    },
+    "reviewed": {
+     "name": "MARIA KRISTINA S. TANGI, MSIT",
+     "title": "Program Chair, BSIT"
+    },
+    "approved": {
+     "name": "",
+     "title": "Dean"
+    }
+   },
+   "order": 2,
+   "updatedAt": 1790134134075,
+   "college": ""
+  }
+ ]
+}
