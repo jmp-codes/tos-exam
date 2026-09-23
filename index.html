@@ -176,6 +176,39 @@ details.how code{font-family:var(--mono);font-size:12px;background:var(--sunk);p
 
 .empty{padding:40px 20px;text-align:center;color:var(--muted)}
 .empty h3{font-family:var(--display);color:var(--ink);font-size:22px;margin:0 0 6px}
+.vtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:-8px;overflow-x:auto}
+.vtabs button{border:0;background:transparent;padding:10px 14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.vtabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.vtabs .cnt{font-family:var(--mono);font-size:11px;background:var(--sunk);border-radius:999px;padding:1px 7px;margin-left:4px}
+.qpanel{border:1px solid var(--line);background:var(--sunk);border-radius:var(--r);padding:12px 14px;margin:10px 0;display:flex;flex-direction:column;gap:8px}
+.qpanel textarea{border:1px solid var(--line-strong);border-radius:var(--r);padding:8px;background:var(--surface);width:100%;font-family:var(--mono);font-size:12.5px;line-height:1.5}
+.qpanel.err{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.qpanel .row,.qact{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button.chip{cursor:pointer;font:inherit;font-size:12.5px}
+.qsplit{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin:4px 0 14px}
+.qbar-h{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-bottom:4px}
+.qbar-h .mono{font-family:var(--mono);color:var(--ink)}
+.qbar-t{position:relative;height:14px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.qbar-t i{position:absolute;left:0;top:0;bottom:0;display:block}
+.qbar-t i.pl{background:var(--head);opacity:.9}
+.qbar-t i.dt{top:4px;bottom:4px;background:var(--accent)}
+.qbar-t i.dt.over{background:var(--warn)}
+.qlist{display:flex;flex-direction:column;gap:10px}
+.qcard{border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.qcard.st-match{border-left-color:var(--ok)} .qcard.st-miss{border-left-color:var(--bad)} .qcard.st-unclear{border-left-color:var(--warn)}
+.qhead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.qn{font-family:var(--mono);font-weight:500;font-size:15px;min-width:2ch}
+.pill{font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.pill.st-match{background:var(--ok-soft);color:var(--ok)} .pill.st-miss{background:var(--bad-soft);color:var(--bad)} .pill.st-unclear{background:var(--warn-soft);color:var(--warn)}
+.qmeta{font-size:12.5px;color:var(--muted)}
+.qstem{margin:0;max-width:90ch}
+.qch{margin:4px 0 0;padding-left:22px;max-width:90ch}
+.qch li.ans{font-weight:600}
+.qlevel{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;font-size:13px}
+.qwhy{font-size:12.5px;color:var(--muted);flex-basis:100%}
+.qset{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.qset select{border:1px solid var(--line-strong);border-radius:var(--r);padding:3px 6px;background:var(--surface);max-width:100%}
+.qver{border-top:1px dashed var(--line-strong);padding-top:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:var(--r);font-size:13px;z-index:20;max-width:calc(100% - 32px);box-shadow:0 6px 24px rgba(0,0,0,.2)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:no-preference){.btn,.lib-item{transition:background .12s,border-color .12s}}
@@ -249,6 +282,7 @@ function normalize(d){
   n.campus = String(n.campus||"").replace(/\s*campus\s*$/i,"");
   if(n.sigs.approved.title==="Director for Instruction") n.sigs.approved={name:"",title:"Dean"};
   if(n.sigs.reviewed.title==="Program Chair") n.sigs.reviewed.title="Program Chair, BSIT";
+  n.questions = Array.isArray(d.questions) ? d.questions.map(q=>({id:q.id||("q"+Math.random().toString(36).slice(2,9)),n:+q.n||0,stem:q.stem||"",choices:q.choices||[],answer:q.answer||"",ai:q.ai||null,manual:q.manual||null,history:q.history||[]})) : [];
   n.topics = (d.topics||[]).map(t=>({title:t.title||"", subtopics:t.subtopics||[], outcomes:t.outcomes||[], hours:+t.hours||0}));
   if(!n.topics.length) n.topics=[{title:"",subtopics:[],outcomes:[],hours:0}];
   n.levels = (d.levels && d.levels.length===3) ? d.levels.map(Number) : [...(PRESETS[n.type]||PRESETS.major)];
@@ -362,7 +396,8 @@ function fmtPct(x,dec){ return (+x).toFixed(dec).replace(/(\.\d*?)0+$/,"$1").rep
 /* ---------------- persistence ---------------- */
 const saveTimers = {};
 function setStatus(kind,text){ const s=document.getElementById("status"); s.className="status "+kind; document.getElementById("statusText").textContent=text; }
-function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({lib,currentId})); }catch(e){} }
+const clean = d => JSON.parse(JSON.stringify(d,(k,v)=>k.startsWith("_")?undefined:v));
+function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({lib:lib.map(clean),currentId})); }catch(e){} }
 function persist(d){
   d.updatedAt = Date.now();
   cacheLocal();
@@ -370,7 +405,7 @@ function persist(d){
   setStatus("saving","Saving…");
   clearTimeout(saveTimers[d.id]);
   saveTimers[d.id] = setTimeout(async()=>{
-    try{ await db.collection("tos").doc(d.id).set(JSON.parse(JSON.stringify(d))); setStatus("ok","All changes saved"); }
+    try{ await db.collection("tos").doc(d.id).set(clean(d)); setStatus("ok","All changes saved"); }
     catch(e){ setStatus("local","Couldn’t reach saved storage — kept in this browser"); }
   }, 700);
 }
@@ -391,9 +426,9 @@ async function init(){
       mode="db";
       if(remote.length){
         const byId = new Map(remote.map(d=>[d.id,d]));
-        for(const d of lib){ const r=byId.get(d.id); if(!r || (d.updatedAt||0)>(r.updatedAt||0)){ byId.set(d.id,d); db.collection("tos").doc(d.id).set(JSON.parse(JSON.stringify(d))).catch(()=>{}); } }
+        for(const d of lib){ const r=byId.get(d.id); if(!r || (d.updatedAt||0)>(r.updatedAt||0)){ byId.set(d.id,d); db.collection("tos").doc(d.id).set(clean(d)).catch(()=>{}); } }
         lib=[...byId.values()];
-      } else { for(const d of lib) db.collection("tos").doc(d.id).set(JSON.parse(JSON.stringify(d))).catch(()=>{}); }
+      } else { for(const d of lib) db.collection("tos").doc(d.id).set(clean(d)).catch(()=>{}); }
       lib.sort((a,b)=>(a.order??0)-(b.order??0)||(a.updatedAt||0)-(b.updatedAt||0));
       if(!lib.find(d=>d.id===currentId)) currentId = lib[0]?.id || null;
       cacheLocal(); renderAll(); setStatus("ok","All changes saved");
@@ -425,7 +460,8 @@ function renderWork(){
     return;
   }
   const L=d.levels;
-  w.innerHTML = `
+  if(qView==="questions"){ w.innerHTML = tabsHTML(d) + questionsViewHTML(d); renderQuestions(); return; }
+  w.innerHTML = tabsHTML(d) + `
   <section class="sec" aria-labelledby="h-details">
     <div class="sec-head"><h2 id="h-details">Exam details</h2>
       <div class="sp"><button class="btn sm ghost" type="button" data-act="dup">Duplicate</button><button class="btn sm danger" type="button" data-act="del" id="btnDel">Delete</button></div>
@@ -663,6 +699,408 @@ function restoreFile(f){
   r.readAsText(f);
 }
 
+/* ---------------- Questions: Bloom's check & level rewrite ---------------- */
+const BLOOM = ["Remembering","Understanding","Applying","Analyzing","Evaluating","Creating"];
+const COL_OF = {Remembering:0,Understanding:0,Applying:1,Analyzing:1,Evaluating:2,Creating:2,Synthesizing:2};
+const COL_NAMES = ["Remembering/Understanding","Applying/Analyzing","Synthesizing/Evaluating"];
+const COL_SHORT = ["R/U","Ap/An","S/E"];
+// Keyword patterns, lowest to highest. The highest level found wins.
+const VERBS = [
+  ["Remembering", ["define","list","name","identify","recall","recognize","state","label","enumerate","match","memorize","what is","what are","who","when","where","which of the following is","refers to","is called","known as","stands for","stand for","true or false","give the","what does"]],
+  ["Understanding", ["explain","describe","summarize","interpret","classify","discuss","paraphrase","illustrate","give an example","why","purpose of","main idea","meaning of","means","restate","translate","predict"]],
+  ["Applying", ["apply","compute","calculate","solve","use","demonstrate","determine","find the value","find","how many","how much","implement","execute","convert","simplify","show that","sketch","draw","construct a truth table","evaluate the expression","evaluate the following expression","write the","perform","complete the"]],
+  ["Analyzing", ["analyze","analyse","compare","contrast","differentiate","distinguish","examine","categorize","trace","debug","infer","deduce","what is the output","output of","identify the error","find the error","which error","what went wrong","relationship between","what will happen","break down","inspect"]],
+  ["Evaluating", ["evaluate","judge","justify","critique","assess","defend","argue","recommend","prioritize","appraise","verify","validate","which is the best","best approach","most appropriate","most effective","most efficient","support your","decide whether","is it correct"]],
+  ["Creating", ["design","create","develop","formulate","propose","compose","devise","invent","write a program","write a function","generate","build","synthesize","integrate","construct a","plan a","produce"]]
+];
+const VERB_RX = VERBS.map(([lvl,words])=>[lvl, words.map(w=>[w,new RegExp("(^|[^a-z])"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"([^a-z]|$)","i")])]);
+function verbLevel(text){
+  const t=" "+String(text||"").toLowerCase()+" ";
+  let best=null;
+  VERB_RX.forEach(([lvl,list],k)=>{
+    for(const [w,rx] of list){
+      if(rx.test(t)){
+        // "evaluate the expression/value" is computing, not judging
+        if(lvl==="Evaluating" && w==="evaluate" && /evaluate\s+(the\s+)?(following\s+)?(expression|value|function|integral|sum|product|limit|polynomial)/i.test(t)) continue;
+        if(!best || k>best.k) best={k,level:lvl,col:COL_OF[lvl],kw:w};
+        break;
+      }
+    }
+  });
+  return best ? {level:best.level,col:best.col,kw:best.kw} : null;
+}
+
+let qView = "tos";
+const rewrites = {};           // question id -> {status, versions, error, target}
+const aiBusy = {};             // question id -> true
+let aiEngine = null;           // "claude" | "key" | null
+let sampleFn = null;
+const AI_LS = "tos-builder-ai-v1";
+function aiSettings(){ try{ return JSON.parse(localStorage.getItem(AI_LS)||"{}"); }catch(e){ return {}; } }
+function saveAiSettings(s){ try{ localStorage.setItem(AI_LS, JSON.stringify(s)); }catch(e){} }
+async function detectAI(){
+  try{ sampleFn = window.claude?.use ? await window.claude.use("sample") : null; }catch(e){ sampleFn=null; }
+  refreshEngine(); if(qView==="questions") renderQuestions();
+}
+function refreshEngine(){ aiEngine = sampleFn ? "claude" : (aiSettings().key ? "key" : null); }
+
+async function askAI(prompt){
+  refreshEngine();
+  if(aiEngine==="claude"){
+    try{ return await sampleFn.json(prompt, {modelTier:"default"}); }
+    catch(e){ throw new Error(e && e.code==="not_granted" ? "AI use wasn’t allowed in this view." : e && e.code==="rate_limited" ? "Too many AI requests at once. Wait a moment and try again." : "The AI couldn’t answer just now. Try again."); }
+  }
+  const s=aiSettings(); if(!s.key) throw new Error("Add your Anthropic API key in AI settings first.");
+  let res;
+  try{
+    res = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":s.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:s.model||"claude-sonnet-5",max_tokens:4000,messages:[{role:"user",content:prompt}]})});
+  }catch(e){ throw new Error("Couldn’t reach the AI service. Check your internet connection."); }
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok){
+    const m = data?.error?.message || res.statusText;
+    if(res.status===401) throw new Error("The API key was rejected. Check it in AI settings.");
+    if(res.status===404) throw new Error(`Model not found (${s.model}). Pick another model in AI settings.`);
+    throw new Error("AI error: "+m);
+  }
+  const text=(data.content||[]).map(c=>c.text||"").join("");
+  return parseLooseJSON(text);
+}
+function parseLooseJSON(t){
+  try{ return JSON.parse(t); }catch(e){}
+  const f=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(f){ try{ return JSON.parse(f[1]); }catch(e){} }
+  const a=Math.min(...["{","["].map(ch=>{const i=t.indexOf(ch);return i<0?1e9:i;})), b=Math.max(t.lastIndexOf("}"),t.lastIndexOf("]"));
+  if(a<1e9&&b>a){ try{ return JSON.parse(t.slice(a,b+1)); }catch(e){} }
+  throw new Error("The AI reply couldn’t be read. Try again.");
+}
+
+/* ---- parsing pasted / imported questions ---- */
+function parseQuestions(text){
+  const lines=String(text||"").replace(/\r/g,"").split("\n").map(s=>s.replace(/ /g," ").trim());
+  const qs=[]; let cur=null;
+  const pushChoices=(str)=>{ // a) x  b) y  on one line
+    const parts=str.split(/\s+(?=\(?[a-hA-H][\.\)]\s)/);
+    for(const p of parts){ const m=p.match(/^\(?([a-hA-H])[\.\)]\s*(.*)$/); if(m) cur.choices.push(m[2].trim()); else if(cur.choices.length) cur.choices[cur.choices.length-1]+=" "+p; else cur.stem+=" "+p; }
+  };
+  for(const t of lines){
+    if(!t) continue;
+    let m;
+    if((m=t.match(/^(?:answer|ans|key|correct answer)\s*[:\-–]\s*(.+)$/i)) && cur){ cur.answer=m[1].trim(); continue; }
+    if((m=t.match(/^(\d{1,3})\s*[\.\)\-:]\s*(.*)$/))){
+      cur={n:+m[1],stem:"",choices:[],answer:""}; qs.push(cur);
+      const rest=m[2]; const cm=rest.search(/\s\(?[aA][\.\)]\s/);
+      if(cm>0 && /\s\(?[bB][\.\)]\s/.test(rest)){ cur.stem=rest.slice(0,cm).trim(); pushChoices(rest.slice(cm).trim()); } else cur.stem=rest;
+      continue;
+    }
+    if(cur && /^\(?[a-hA-H][\.\)]\s/.test(t)){ pushChoices(t); continue; }
+    if(cur){ if(cur.choices.length) cur.choices[cur.choices.length-1]+=" "+t; else cur.stem+=(cur.stem?" ":"")+t; }
+    else { cur={n:qs.length+1,stem:t,choices:[],answer:""}; qs.push(cur); }
+  }
+  return qs.filter(q=>q.stem||q.choices.length);
+}
+async function docxToText(file){
+  if(typeof JSZip==="undefined") throw new Error("The Word reader didn’t load. Check your connection and reload.");
+  const zip=await JSZip.loadAsync(await file.arrayBuffer());
+  const xml=await zip.file("word/document.xml").async("string");
+  const numXml=zip.file("word/numbering.xml")?await zip.file("word/numbering.xml").async("string"):"";
+  const dp=new DOMParser(), W="http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  const fmt={};
+  if(numXml){
+    const nd=dp.parseFromString(numXml,"application/xml"); const abs={};
+    for(const a of nd.getElementsByTagNameNS(W,"abstractNum")){ const id=a.getAttributeNS(W,"abstractNumId"); abs[id]={}; for(const l of a.getElementsByTagNameNS(W,"lvl")){ const f=l.getElementsByTagNameNS(W,"numFmt")[0]; abs[id][l.getAttributeNS(W,"ilvl")]=f?f.getAttributeNS(W,"val"):"decimal"; } }
+    for(const n of nd.getElementsByTagNameNS(W,"num")){ const a=n.getElementsByTagNameNS(W,"abstractNumId")[0]; fmt[n.getAttributeNS(W,"numId")]=abs[a?.getAttributeNS(W,"val")]||{}; }
+  }
+  const doc=dp.parseFromString(xml,"application/xml"); const out=[]; let qn=0, cn=0;
+  for(const p of doc.getElementsByTagNameNS(W,"p")){
+    let text=""; for(const n of p.getElementsByTagNameNS(W,"*")){ if(n.localName==="t") text+=n.textContent; else if(n.localName==="tab") text+=" "; else if(n.localName==="br") text+=" "; }
+    text=text.trim(); const np=p.getElementsByTagNameNS(W,"numPr")[0];
+    const sty=p.getElementsByTagNameNS(W,"pStyle")[0]?.getAttributeNS(W,"val")||"";
+    if(!np && text && /list\s*number/i.test(sty)){ qn++; cn=0; out.push(qn+". "+text); continue; }
+    if(!np && text && /list\s*(letter|alpha)/i.test(sty)){ out.push(String.fromCharCode(97+(cn++))+") "+text); continue; }
+    if(np && text){
+      const id=np.getElementsByTagNameNS(W,"numId")[0]?.getAttributeNS(W,"val"), lv=np.getElementsByTagNameNS(W,"ilvl")[0]?.getAttributeNS(W,"val")||"0";
+      const f=(fmt[id]||{})[lv]||"decimal";
+      if(/letter/i.test(f)){ out.push(String.fromCharCode(97+(cn++))+") "+text); continue; }
+      if(f!=="bullet"){ qn++; cn=0; out.push(qn+". "+text); continue; }
+    }
+    if(/^\d{1,3}\s*[\.\)]/.test(text)){ qn=parseInt(text,10); cn=0; }
+    out.push(text);
+  }
+  return out.join("\n");
+}
+
+/* ---- planned level per item number from the TOS ---- */
+function plannedMap(d){
+  const c=compute(d), map={};
+  c.ids.forEach((row,i)=>row.forEach((nums,j)=>nums.forEach(n=>{ map[n]={i,j}; })));
+  return {map,c};
+}
+function effLevel(q){
+  if(q.manual) return {level:q.manual, col:COL_OF[q.manual], src:"You"};
+  if(q.ai) return {level:q.ai.level, col:COL_OF[q.ai.level], src:"AI"};
+  const v=verbLevel(q.stem); return v ? {level:v.level, col:v.col, src:"Keyword", kw:v.kw} : null;
+}
+
+/* ---- rendering ---- */
+function tabsHTML(d){
+  const n=(d.questions||[]).length;
+  return `<nav class="vtabs" role="tablist" aria-label="Views">
+    <button type="button" role="tab" data-view="tos" aria-selected="${qView==="tos"}">Table of Specifications</button>
+    <button type="button" role="tab" data-view="questions" aria-selected="${qView==="questions"}">Questions${n?` <span class="cnt">${n}</span>`:""}</button></nav>`;
+}
+function questionsViewHTML(d){
+  return `<section class="sec" aria-labelledby="h-q">
+    <div class="sec-head"><h2 id="h-q">Exam questions</h2>
+      <p>Paste or import your questions. Each one is checked against the cognitive level the TOS planned for its item number.</p>
+      <div class="sp">
+        <button class="btn sm" type="button" data-qa="toggleAdd">${(d.questions||[]).length?"Add or replace questions":"Add questions"}</button>
+        <button class="btn sm ghost" type="button" data-qa="import">Import .docx / .txt</button>
+        <button class="btn sm ghost" type="button" data-qa="settings">AI settings</button>
+        <input type="file" id="fileQ" accept=".docx,.txt,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+      </div>
+    </div>
+    <div id="qAdd"></div><div id="qSettings"></div>
+    <div id="qArea"></div>
+  </section>`;
+}
+let qAddOpen=false, qSettingsOpen=false, qFilter="all";
+function renderQAdd(d){
+  const el=document.getElementById("qAdd"); if(!el) return;
+  if(!qAddOpen){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="qpanel">
+    <label class="lbl" for="qPaste">Paste questions</label>
+    <textarea id="qPaste" rows="9" placeholder="1. What is a tautology?&#10;a) A statement that is always true&#10;b) A statement that is always false&#10;c) ...&#10;Answer: a&#10;&#10;2. How many ways can 3 officers be chosen from 8 students?&#10;a) 56  b) 336  c) 512  d) 24&#10;Answer: b">${esc(d._draft||"")}</textarea>
+    <p class="hint">Number each question (1. or 1)). Choices can be a) b) c) on their own lines or on one line. An “Answer: b” line is optional.</p>
+    <div class="row"><button class="btn primary sm" type="button" data-qa="addAppend">Add to list</button><button class="btn sm" type="button" data-qa="addReplace">Replace all questions</button><button class="btn sm ghost" type="button" data-qa="toggleAdd">Cancel</button></div>
+  </div>`;
+}
+function renderQSettings(){
+  const el=document.getElementById("qSettings"); if(!el) return;
+  if(!qSettingsOpen){ el.innerHTML=""; return; }
+  const s=aiSettings();
+  el.innerHTML = sampleFn ? `<div class="qpanel"><b>AI is connected through your Claude account.</b><p class="hint">No API key is needed here. Each AI check or rewrite uses your own Claude usage, and the first one asks your permission.</p><div class="row"><button class="btn sm ghost" type="button" data-qa="settings">Close</button></div></div>`
+  : `<div class="qpanel">
+    <b>Connect AI with your own Anthropic API key</b>
+    <p class="hint">Create a key at console.anthropic.com → API Keys. It is saved only in this browser on this computer. It is never put in your TOS data, backups or GitHub. Usage is billed to your Anthropic account.</p>
+    <div class="grid" style="margin-top:8px">
+      <div class="f span2"><label for="aiKey">API key</label><input id="aiKey" type="password" autocomplete="off" placeholder="sk-ant-…" value="${esc(s.key||"")}"></div>
+      <div class="f"><label for="aiModel">Model</label><input id="aiModel" list="aiModels" value="${esc(s.model||"claude-sonnet-5")}"><datalist id="aiModels"><option value="claude-sonnet-5"><option value="claude-haiku-4-5-20251001"><option value="claude-opus-5-5"></datalist></div>
+    </div>
+    <div class="row"><button class="btn primary sm" type="button" data-qa="saveKey">Save</button>${s.key?`<button class="btn sm danger" type="button" data-qa="removeKey">Remove key</button>`:""}<button class="btn sm ghost" type="button" data-qa="settings">Close</button></div>
+  </div>`;
+}
+function renderQuestions(){
+  const d=cur(); const area=document.getElementById("qArea"); if(!d||!area) return;
+  renderQAdd(d); renderQSettings();
+  const qs=(d.questions||[]).slice().sort((a,b)=>a.n-b.n);
+  const {map,c}=plannedMap(d);
+  const aiLine = aiEngine==="claude" ? `<span class="chip ok">AI: your Claude account</span>` : aiEngine==="key" ? `<span class="chip ok">AI: your API key</span>` : `<button class="chip warn" type="button" data-qa="settings">AI not connected. Keyword check only (set up)</button>`;
+  if(!qs.length){
+    area.innerHTML=`<div class="chips">${aiLine}</div><div class="empty" style="padding:24px 8px"><h3>No questions yet</h3><p>Add the exam’s questions to check each one’s Bloom’s level against the TOS${c.totalCells?` (items 1–${c.totalCells})`:""}.</p></div>`;
+    return;
+  }
+  const det=[0,0,0]; let match=0, miss=0, unclear=0, unplanned=0;
+  const rows=qs.map(q=>{ const p=map[q.n], e=effLevel(q); let st;
+    if(!p) { st="unplanned"; unplanned++; } else if(!e){ st="unclear"; unclear++; } else if(e.col===p.j){ st="match"; match++; } else { st="miss"; miss++; }
+    if(e) det[e.col]++; return {q,p,e,st}; });
+  const planned=c.colSums;
+  const filters=[["all","All",qs.length],["miss","Mismatched",miss],["unclear","Unclear",unclear],["match","Matching",match]].concat(unplanned?[["unplanned","Not in TOS",unplanned]]:[]);
+  const shown=rows.filter(r=>qFilter==="all"||r.st===qFilter);
+  area.innerHTML=`
+    <div class="chips">${aiLine}
+      <span class="chip ${miss?"bad":"ok"}"><b>${match}</b>&nbsp;match · <b>${miss}</b>&nbsp;mismatched · <b>${unclear}</b>&nbsp;unclear</span>
+      <span class="chip">Missing items <b>${Math.max(0,c.totalCells-qs.filter(q=>map[q.n]).length)}</b></span></div>
+    <div class="qsplit">
+      ${[0,1,2].map(j=>{ const pl=planned[j]||0, dt=det[j]; const max=Math.max(pl,dt,1);
+        return `<div class="qbar"><div class="qbar-h"><span>${COL_NAMES[j]}</span><span class="mono">${dt} / ${pl} planned</span></div>
+          <div class="qbar-t"><i class="pl" style="width:${pl/max*100}%"></i><i class="dt ${dt===pl?"eq":dt>pl?"over":"under"}" style="width:${dt/max*100}%"></i></div></div>`; }).join("")}
+    </div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Filter questions">${filters.map(([k,t,n])=>`<button type="button" data-qf="${k}" aria-pressed="${qFilter===k}">${t} ${n}</button>`).join("")}</div>
+      <button class="btn sm" type="button" data-qa="checkAll" ${aiEngine?"":"disabled"}>${aiBusy.__all?"Checking…":"Check all with AI"}</button>
+      <button class="btn sm" type="button" data-qa="exportQ">Export questions (.docx)</button>
+      <button class="btn sm ghost danger" type="button" data-qa="clearQ">Clear all</button>
+    </div>
+    <div class="qlist">${shown.map(r=>qCardHTML(d,r)).join("") || `<p class="hint">No questions in this group.</p>`}</div>`;
+}
+function qCardHTML(d,{q,p,e,st}){
+  const topic = p ? d.topics[p.i] : null;
+  const rw = rewrites[q.id];
+  const stLabel = {match:"Matches TOS", miss:"Doesn’t match TOS", unclear:"Level unclear", unplanned:"Not in TOS"}[st];
+  const target = p ? p.j : (e ? e.col : 1);
+  return `<article class="qcard st-${st}" data-qid="${q.id}">
+    <div class="qhead">
+      <span class="qn">${q.n}</span>
+      <span class="pill st-${st}">${stLabel}</span>
+      <span class="qmeta">Planned: <b>${p?COL_NAMES[p.j]:"—"}</b>${topic?` · ${esc(topic.title||"Topic "+(p.i+1))}`:""}</span>
+    </div>
+    <div class="qbody">
+      <p class="qstem">${esc(q.stem)}</p>
+      ${q.choices.length?`<ol class="qch" type="a">${q.choices.map((ch,k)=>`<li class="${q.answer&&q.answer.trim().toLowerCase().startsWith(String.fromCharCode(97+k))?"ans":""}">${esc(ch)}</li>`).join("")}</ol>`:""}
+      ${q.answer?`<p class="hint">Answer: ${esc(q.answer)}</p>`:""}
+    </div>
+    <div class="qlevel">
+      <span>Detected: ${e?`<b>${e.level}</b> <span class="hint">(${COL_SHORT[e.col]} · ${e.src}${e.kw?` “${esc(e.kw)}”`:""})</span>`:`<span class="hint">no Bloom’s keyword found</span>`}</span>
+      ${q.ai&&q.ai.reason?`<span class="qwhy">AI: ${esc(q.ai.reason)}</span>`:""}
+      <label class="qset">Set level <select data-qset="${q.id}"><option value="">Auto</option>${BLOOM.map(b=>`<option ${q.manual===b?"selected":""}>${b}</option>`).join("")}</select></label>
+    </div>
+    <div class="qact">
+      <button class="btn sm" type="button" data-qa="check" ${aiEngine&&!aiBusy[q.id]?"":"disabled"}>${aiBusy[q.id]==="check"?"Checking…":"Check with AI"}</button>
+      <label class="qset">Rewrite as <select data-qtarget="${q.id}">${[0,1,2].map(j=>`<option value="${j}" ${j===(rw?.target??target)?"selected":""}>${COL_NAMES[j]}</option>`).join("")}</select></label>
+      <button class="btn sm primary" type="button" data-qa="rewrite" ${aiEngine&&!aiBusy[q.id]?"":"disabled"}>${aiBusy[q.id]==="rewrite"?"Writing…":"Rewrite"}</button>
+      <button class="btn sm ghost" type="button" data-qa="edit">Edit</button>
+      ${q.history&&q.history.length?`<button class="btn sm ghost" type="button" data-qa="undo">Undo rewrite</button>`:""}
+      <button class="btn sm ghost danger" type="button" data-qa="delQ">Remove</button>
+    </div>
+    ${q._editing?`<div class="qpanel"><label class="lbl" for="qe-${q.id}">Edit question ${q.n}</label><textarea id="qe-${q.id}" rows="6">${esc(qToText(q))}</textarea><div class="row"><button class="btn primary sm" type="button" data-qa="saveEdit">Save</button><button class="btn sm ghost" type="button" data-qa="edit">Cancel</button></div></div>`:""}
+    ${rw?rewriteHTML(q,rw):""}
+  </article>`;
+}
+function rewriteHTML(q,rw){
+  if(rw.error) return `<div class="qpanel err">${esc(rw.error)}</div>`;
+  if(!rw.versions) return `<div class="qpanel"><span class="hint">Writing ${COL_NAMES[rw.target]} versions… this can take up to a minute.</span></div>`;
+  return `<div class="qpanel"><b>${COL_NAMES[rw.target]} versions</b>
+    ${rw.versions.map((v,k)=>`<div class="qver">
+      <p class="qstem"><span class="pill">${esc(v.level||"")}</span> ${esc(v.question)}</p>
+      ${v.choices&&v.choices.length?`<ol class="qch" type="a">${v.choices.map((ch,m)=>`<li class="${String(v.answer||"").trim().toLowerCase().startsWith(String.fromCharCode(97+m))?"ans":""}">${esc(ch)}</li>`).join("")}</ol>`:""}
+      <p class="hint">Answer: ${esc(v.answer||"—")}${v.why?` · ${esc(v.why)}`:""}</p>
+      <button class="btn sm primary" type="button" data-qa="useVer" data-k="${k}">Use this version</button></div>`).join("")}
+    <div class="row"><button class="btn sm ghost" type="button" data-qa="closeRw">Dismiss</button></div>
+    <p class="hint">Check the answer key before using a version, especially for computations.</p></div>`;
+}
+function qToText(q){ return `${q.n}. ${q.stem}\n${q.choices.map((c,k)=>`${String.fromCharCode(97+k)}) ${c}`).join("\n")}${q.answer?`\nAnswer: ${q.answer}`:""}`; }
+
+/* ---- AI prompts ---- */
+function subjectContext(d){
+  return `Subject: ${d.subject||"(unnamed)"} — ${d.program||""}.\nTopics:\n`+d.topics.map((t,i)=>`${i+1}. ${t.title}${t.subtopics.length?" ("+t.subtopics.join("; ")+")":""}`).join("\n");
+}
+async function aiClassify(d, list){
+  const prompt = `You are an assessment specialist. Classify each exam question by the Bloom's revised taxonomy level of the thinking a typical student must do to answer it: Remembering, Understanding, Applying, Analyzing, Evaluating, or Creating. Judge the whole task (stem and choices), not just the verb. For example, computing an answer to a new problem is Applying even if the stem says "what is".\n\n${subjectContext(d)}\n\nQuestions:\n${list.map(q=>qToText(q)).join("\n\n")}\n\nReply with only JSON in this shape: {"results":[{"n":1,"level":"Applying","reason":"one short sentence"}]}`;
+  const r = await askAI(prompt);
+  return (r&&r.results)||(Array.isArray(r)?r:[]);
+}
+async function aiRewrite(d, q, targetCol, p){
+  const topic = p ? d.topics[p.i] : null;
+  const lv = targetCol===0?"Remembering or Understanding":targetCol===1?"Applying or Analyzing":"Evaluating or Creating (Synthesizing)";
+  const prompt = `You are an assessment specialist helping a college teacher in the Philippines. Rewrite the exam question below so it measures ${lv} in Bloom's revised taxonomy, while staying on the same topic and learning outcome.\n\n${subjectContext(d)}\n${topic?`\nThis item belongs to: ${topic.title}\nLearning outcomes:\n${topic.outcomes.map(o=>"- "+o).join("\n")||"- (none listed)"}\n`:""}\nOriginal question:\n${qToText(q)}\n\nRules:\n- Write 3 different versions.\n- ${q.choices.length?`Keep it multiple choice with exactly ${q.choices.length} choices, one clearly correct answer and plausible distractors based on common mistakes.`:"Keep the same question type as the original."}\n- To raise the level, give the student a scenario, data, code or a problem to work on. Don't just change the verb. To lower it, ask for recall or explanation of the key idea.\n- Keep it answerable in about the same time as a normal exam item. Use clear, simple English.\n- Double-check that the correct answer is actually correct.\n\nReply with only JSON in this shape: {"versions":[{"level":"Applying","question":"stem text","choices":["choice a","choice b"],"answer":"b","why":"one sentence on why it is this level"}]}`;
+  const r = await askAI(prompt);
+  const v = (r&&r.versions)||[];
+  if(!v.length) throw new Error("The AI didn’t return any versions. Try again.");
+  return v.map(x=>({level:x.level||"", question:String(x.question||""), choices:Array.isArray(x.choices)?x.choices.map(c=>String(c).replace(/^\(?[a-hA-H][\.\)]\s*/,"")):[], answer:String(x.answer||""), why:String(x.why||"")}));
+}
+
+/* ---- events ---- */
+function qid(){ return "q"+Math.random().toString(36).slice(2,9); }
+function addQuestions(d, parsed, replace){
+  if(replace) d.questions=[];
+  d.questions=d.questions||[];
+  for(const p of parsed){
+    const ex=d.questions.find(q=>q.n===p.n);
+    if(ex && !replace){ Object.assign(ex,{stem:p.stem,choices:p.choices,answer:p.answer,ai:null,manual:null}); }
+    else d.questions.push({id:qid(),n:p.n,stem:p.stem,choices:p.choices,answer:p.answer,ai:null,manual:null,history:[]});
+  }
+}
+document.addEventListener("click", async e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  const d=cur(); if(!d) return;
+  if(b.dataset.view){ qView=b.dataset.view; renderWork(); return; }
+  if(b.dataset.qf){ qFilter=b.dataset.qf; renderQuestions(); return; }
+  const a=b.dataset.qa; if(!a) return;
+  const card=b.closest(".qcard"); const q=card?(d.questions||[]).find(x=>x.id===card.dataset.qid):null;
+  if(a==="toggleAdd"){ qAddOpen=!qAddOpen; renderQAdd(d); if(qAddOpen) document.getElementById("qPaste")?.focus(); return; }
+  if(a==="settings"){ qSettingsOpen=!qSettingsOpen; renderQSettings(); return; }
+  if(a==="import"){ document.getElementById("fileQ")?.click(); return; }
+  if(a==="saveKey"){ const k=document.getElementById("aiKey").value.trim(), m=document.getElementById("aiModel").value.trim()||"claude-sonnet-5"; saveAiSettings({key:k,model:m}); refreshEngine(); qSettingsOpen=false; renderQuestions(); toast(k?"AI connected":"Key removed"); return; }
+  if(a==="removeKey"){ saveAiSettings({}); refreshEngine(); renderQuestions(); toast("Key removed from this browser"); return; }
+  if(a==="addAppend"||a==="addReplace"){
+    const txt=document.getElementById("qPaste").value; const parsed=parseQuestions(txt);
+    if(!parsed.length){ toast("No questions found. Number each one, e.g. “1. …”."); return; }
+    addQuestions(d,parsed,a==="addReplace"); d._draft=""; qAddOpen=false; persist(d); renderWork(); toast(`Added ${parsed.length} question${parsed.length>1?"s":""}`); return;
+  }
+  if(a==="clearQ"){ if(!b.classList.contains("armed")){ b.classList.add("armed"); b.textContent="Confirm clear"; setTimeout(()=>{ if(b.isConnected){ b.classList.remove("armed"); b.textContent="Clear all"; } },4000); return; } d.questions=[]; persist(d); renderWork(); return; }
+  if(a==="exportQ"){ exportQuestionsDocx(d); return; }
+  if(a==="checkAll"){
+    const list=(d.questions||[]).slice().sort((x,y)=>x.n-y.n); aiBusy.__all=true; renderQuestions();
+    try{
+      for(let k=0;k<list.length;k+=15){
+        const chunk=list.slice(k,k+15); const res=await aiClassify(d,chunk);
+        for(const r of res){ const qq=d.questions.find(x=>x.n===+r.n); if(qq && COL_OF[r.level]!==undefined) qq.ai={level:r.level,reason:r.reason||""}; }
+        persist(d); renderQuestions();
+      }
+      toast("AI check finished");
+    }catch(err){ toast(err.message); }
+    delete aiBusy.__all; renderQuestions(); return;
+  }
+  if(!q) return;
+  if(a==="check"){
+    aiBusy[q.id]="check"; renderQuestions();
+    try{ const res=await aiClassify(d,[q]); const r=res.find(x=>+x.n===q.n)||res[0]; if(r&&COL_OF[r.level]!==undefined){ q.ai={level:r.level,reason:r.reason||""}; persist(d); } else toast("The AI didn’t return a level. Try again."); }
+    catch(err){ toast(err.message); }
+    delete aiBusy[q.id]; renderQuestions(); return;
+  }
+  if(a==="rewrite"){
+    const target=+(card.querySelector(`[data-qtarget]`)?.value ?? 1);
+    const {map}=plannedMap(d);
+    rewrites[q.id]={target}; aiBusy[q.id]="rewrite"; renderQuestions();
+    try{ rewrites[q.id].versions=await aiRewrite(d,q,target,map[q.n]); }catch(err){ rewrites[q.id].error=err.message; }
+    delete aiBusy[q.id]; renderQuestions(); return;
+  }
+  if(a==="useVer"){
+    const v=rewrites[q.id]?.versions?.[+b.dataset.k]; if(!v) return;
+    q.history=q.history||[]; q.history.push({stem:q.stem,choices:q.choices,answer:q.answer,ai:q.ai,manual:q.manual});
+    q.stem=v.question; q.choices=v.choices; q.answer=v.answer; q.ai=COL_OF[v.level]!==undefined?{level:v.level,reason:v.why||"Rewritten by AI"}:null; q.manual=null;
+    delete rewrites[q.id]; persist(d); renderQuestions(); toast(`Question ${q.n} updated`); return;
+  }
+  if(a==="closeRw"){ delete rewrites[q.id]; renderQuestions(); return; }
+  if(a==="undo"){ const h=q.history.pop(); if(h){ Object.assign(q,h); persist(d); renderQuestions(); toast("Rewrite undone"); } return; }
+  if(a==="edit"){ q._editing=!q._editing; renderQuestions(); if(q._editing) document.getElementById("qe-"+q.id)?.focus(); return; }
+  if(a==="saveEdit"){
+    const p=parseQuestions(document.getElementById("qe-"+q.id).value)[0];
+    if(p){ const moved = p.n!==q.n && d.questions.some(x=>x!==q&&x.n===p.n); if(moved){ toast(`Item ${p.n} already exists`); return; } Object.assign(q,{n:p.n,stem:p.stem,choices:p.choices,answer:p.answer,ai:null}); }
+    q._editing=false; persist(d); renderQuestions(); return;
+  }
+  if(a==="delQ"){ d.questions=d.questions.filter(x=>x!==q); persist(d); renderWork(); return; }
+});
+document.addEventListener("change", async e=>{
+  const el=e.target; const d=cur(); if(!d) return;
+  if(el.dataset.qset){ const q=d.questions.find(x=>x.id===el.dataset.qset); if(q){ q.manual=el.value||null; persist(d); renderQuestions(); } return; }
+  if(el.dataset.qtarget){ const r=rewrites[el.dataset.qtarget]; if(r&&!r.versions) r.target=+el.value; return; }
+  if(el.id==="fileQ"){
+    const f=el.files[0]; el.value=""; if(!f) return;
+    try{
+      const text = /\.docx$/i.test(f.name) ? await docxToText(f) : await f.text();
+      qAddOpen=true; d._draft=text; renderQAdd(d); toast("Check the imported text, then add it to the list.");
+    }catch(err){ toast(err.message||"Couldn’t read that file."); }
+  }
+});
+document.addEventListener("input", e=>{ if(e.target.id==="qPaste"){ const d=cur(); if(d) d._draft=e.target.value; } });
+
+/* ---- export questions ---- */
+async function exportQuestionsDocx(d){
+  if(typeof JSZip==="undefined"){ toast("The Word exporter didn’t load. Check your connection and reload."); return; }
+  const qs=(d.questions||[]).slice().sort((a,b)=>a.n-b.n); if(!qs.length){ toast("Add questions first."); return; }
+  try{
+    const zip=await JSZip.loadAsync(ASSETS.tpl,{base64:true});
+    let rid=null;
+    if(d.logo&&d.logo.src){ rid="rIdLogo1"; zip.file("word/media/logo1.jpeg", d.logo.src.split(",")[1], {base64:true});
+      let rels=await zip.file("word/_rels/document.xml.rels").async("string"); rels=rels.replace("</Relationships>",`<Relationship Id="${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/logo1.jpeg"/></Relationships>`); zip.file("word/_rels/document.xml.rels",rels); }
+    const F={sz:24};
+    let body = headerXML(d, rid, "EXAMINATION");
+    body += P(R("Directions: Read each question carefully and choose the best answer.",{i:true,sz:24}),{after:200});
+    for(const q of qs){
+      body += P(R(`${q.n}.`,F)+R("",{tab:1,sz:24})+R(q.stem,F),{ind:440,after:q.choices.length?40:200});
+      q.choices.forEach((c,k)=>{ body += P(R(`${String.fromCharCode(97+k)}.`,F)+R("",{tab:1,sz:24})+R(c,F),{ind:880,hang:440,after:k===q.choices.length-1?200:0}); });
+    }
+    body += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>` + P(R("ANSWER KEY",{b:true,sz:24}),{jc:"center",after:200});
+    const {map}=plannedMap(d);
+    body += qs.map(q=>{ const e=effLevel(q), p=map[q.n]; return P(R(`${q.n}. ${q.answer||"—"}`,F)+R(`    (${e?e.level:"level unclear"}${p?`; TOS: ${COL_NAMES[p.j]}`:""})`,{i:true,sz:20})); }).join("");
+    zip.file("word/document.xml", ASSETS.doc_open + body + ASSETS.sect + "</w:body></w:document>");
+    const blob=await zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    await offerFile(`Exam - ${(d.subject||"Untitled").replace(/[\\/:*?"<>|]/g,"")} - ${d.term}.docx`, blob);
+  }catch(err){ console.error(err); toast("Couldn’t build the Word file."); }
+}
+
+
 /* ---------------- right-side logo ---------------- */
 function rightLogoSrc(d){ return (d.logo && d.logo.src) || ASSETS.logoRight; }
 async function setLogo(d, file){
@@ -707,7 +1145,7 @@ function TC(w, paras, o={}){
   return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.span?`<w:gridSpan w:val="${o.span}"/>`:""}${o.vm==="restart"?'<w:vMerge w:val="restart"/>':o.vm?'<w:vMerge/>':""}${o.shd?HEAD_SHD:""}<w:vAlign w:val="${o.va||"center"}"/></w:tcPr>${paras||P("")}</w:tc>`;
 }
 const COLS=[4220,4280,990,1030,1150,1600,1130,1440];
-function headerXML(d, logoRid){
+function headerXML(d, logoRid, title){
   const sp = s => P(R(s),{jc:"center"});
   const rule = '<w:pBdr><w:bottom w:val="thinThickSmallGap" w:sz="24" w:space="1" w:color="000000"/></w:pBdr>';
   const sem = d.semester==="Summer" ? "Summer" : d.semester;
@@ -722,7 +1160,7 @@ function headerXML(d, logoRid){
     + sp("Tele/Fax: (043) 491-1460")
     + P(R(headingText(d),{font:"Old English Text MT",sz:32}),{jc:"center",before:200})
     + P(R(`${d.campus||"____"} Campus`,{sz:24}),{jc:"center",bdr:rule,after:240})
-    + P(R("TABLE OF SPECIFICATIONS",{b:true}),{jc:"center",before:120,after:240})
+    + P(R(title||"TABLE OF SPECIFICATIONS",{b:true}),{jc:"center",before:120,after:240})
     + P(R(d.subject||"_".repeat(40),{b:true,sz:24}),{jc:"center"})
     + P(exam,{jc:"center",after:240})
     + P(R("Curricular Program: ",{i:true})+R(blank(d.program,30),{i:true,u:!!d.program})+R("",{tab:1})+R("Date Submitted: ",{i:true})+R(blank(longDate(d.dateSubmitted),20),{i:true,u:!!d.dateSubmitted}),
@@ -784,6 +1222,7 @@ async function exportDocx(docs, filename){
 }
 
 init();
+detectAI();
 </script>
 
 </body>
