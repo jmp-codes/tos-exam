@@ -1,0 +1,12 @@
+Chapter 5. Discrete Probability
+
+Probability is the measure of how likely an event is to happen. The probability of an event is computed as P = f / t, where f is the number of favorable outcomes and t is the total number of outcomes. A sample space is the set of all possible outcomes of an experiment. An event is a subset of the sample space.
+
+5.1 Types of Events
+The types of events are independent events, dependent events and mutually exclusive events. Two events are independent if the outcome of one does not affect the other. For example, tossing a coin and rolling a die are independent events. Mutually exclusive events are events that cannot happen at the same time.
+
+5.2 Expected Value
+Expected value is the average result of an experiment repeated many times. The expected value is used to decide whether a game or an investment is worth it. When the probability of winning increases, the expected value increases.
+
+5.3 Bayes' Theorem
+Bayes' theorem is a formula that is used to update a probability when new evidence is given. For example, a spam filter uses Bayes' theorem to decide whether an email is spam. Ignoring prior probabilities leads to wrong conclusions.

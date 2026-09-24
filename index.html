@@ -204,6 +204,18 @@ button.chip{cursor:pointer;font:inherit;font-size:12.5px}
 .qstem{margin:0;max-width:90ch}
 .qch{margin:4px 0 0;padding-left:22px;max-width:90ch}
 .qch li.ans{font-weight:600}
+.tblwrap{overflow-x:auto;margin-top:12px}
+.examtbl{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
+.examtbl th,.examtbl td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+.examtbl thead th{font-size:12px;color:var(--muted);font-weight:600}
+.examtbl td.num{text-align:center;font-family:var(--mono,ui-monospace,monospace);white-space:nowrap}
+.examtbl td.full{color:#1f7a3f;font-weight:600}
+.examtbl td.part{color:#9a5b00}
+.examtbl td.acts{white-space:nowrap}
+.examtbl td.acts .btn{margin:2px 0}
+.gaps{margin:6px 0 6px 18px;padding:0;font-size:13px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.examtbl th{position:relative}
 .filebox .filehead{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
 .filebox .filehead .btn{margin-left:auto}
 .secpick{border:0;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:4px 14px}
@@ -226,7 +238,8 @@ button.chip{cursor:pointer;font:inherit;font-size:12.5px}
 .mypat li{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .qver{border-top:1px dashed var(--line-strong);padding-top:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:var(--r);font-size:13px;z-index:20;max-width:calc(100% - 32px);box-shadow:0 6px 24px rgba(0,0,0,.2)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.examtbl th{position:relative}
 @media (prefers-reduced-motion:no-preference){.btn,.lib-item{transition:background .12s,border-color .12s}}
 </style>
 </head>
@@ -479,6 +492,7 @@ function renderWork(){
   const L=d.levels;
   if(qView==="questions"){ w.innerHTML = tabsHTML(d) + questionsViewHTML(d); renderQuestions(); return; }
   if(qView==="generate"){ w.innerHTML = tabsHTML(d) + generateViewHTML(d); renderGenResults(); return; }
+  if(qView==="exam"){ w.innerHTML = tabsHTML(d) + examViewHTML(d); return; }
   w.innerHTML = tabsHTML(d) + `
   <section class="sec" aria-labelledby="h-details">
     <div class="sec-head"><h2 id="h-details">Exam details</h2>
@@ -959,7 +973,7 @@ const BloomAI = (() => {
 })();
 if(typeof module!=="undefined") module.exports=BloomAI;
 
-/* QGen v2.2 — offline question generator for TOS Builder.
+/* QGen v2.3 — offline question generator for TOS Builder.
    Reads a sentence or paragraph for definitions, names, dates, lists, steps, examples, classifications,
    formulas, causes, relationships, comparisons, purposes and limitations, then fills Bloom's-level
    question patterns. Every pattern has an id so the app can rank patterns by what teachers keep and
@@ -979,12 +993,13 @@ const QGen = (() => {
   const lc = s => { s=trimP(s); if(/^[A-Z]{2,}|^[A-Z][a-z]*[A-Z]/.test(s)) return s; const w=s.split(" ")[0]; if(/^[A-Z]/.test(w) && new RegExp("[a-z,;:]\\s+"+reEsc(w)+"\\b").test(CUR)) return s; return s.charAt(0).toLowerCase()+s.slice(1); };
   const isName = s => /^([A-Z][a-z]+\.?\s+){1,3}[A-Z][a-z]+\.?$/.test(trimP(s).replace(/^(the|an?)\s+/i,""));
   function termCase(t){ t=trimP(t); if(!t) return t; const f=t.split(" ")[0]; if(/^[A-Z0-9]{2,}/.test(f)||/[a-z][A-Z]/.test(f)||/^[A-Z][a-z]+'s$/.test(f)) return t;
-    if(/^[A-Z]/.test(t)){ if(new RegExp("[a-z,;:]\\s+"+reEsc(f)+"\\b").test(CUR)) return t; return t.charAt(0).toLowerCase()+t.slice(1); } return t; }
+    if(/^[A-Z]/.test(t)){ if(/\b[A-Z][a-z]+(?:'s|s'|’s)(\s|$)/.test(t)) return t; if(new RegExp("(?:[a-z,;:]|\\b(?:A|An|The))[ \\t]+"+reEsc(f)+"\\b").test(CUR.replace(/^[^\n]{0,90}[^.!?:;\n]$/gm,""))) return t; return t.charAt(0).toLowerCase()+t.slice(1); } return t; }
   function sentences(text){
     // a short title-like line (a heading) followed by a new line that starts with a capital ends a sentence
     text=String(text||"").replace(/\r/g,"").replace(/^([0-9A-Z][^\n]{0,70}?[^.!?:;,\s-])[ \t]*\n(?=\s*[A-Z0-9"“])/gm,(m0,l)=>/\b(and|or|the|of|a|an|to|in|for|with|is|are|ng|ang|at|sa)$/i.test(l)?m0:l+".\n");
+    text=text.replace(/([A-Za-z0-9)])!(?=\s*[\/*)(,+×=\-]|\s*$|\s+(?:where|and|ways|is|are)\b|,)/gm,"$1<bang>");
     return text.replace(/\s+/g," ").replace(/(\b(e\.g|i\.e|etc|vs|Dr|Mr|Mrs|Ms))\./g,"$1<dot>").replace(/(\d)\.(\d)/g,"$1<dot>$2")
-      .match(/[^.!?]+[.!?]?/g)?.map(s=>s.replace(/<dot>/g,".").trim()).filter(s=>s.split(" ").length>=3) || [];
+      .match(/[^.!?]+[.!?]?/g)?.map(s=>s.replace(/<dot>/g,".").replace(/<bang>/g,"!").trim()).filter(s=>s.split(" ").length>=3) || [];
   }
   function isFilipino(text){ const w=String(text).toLowerCase().match(/[a-zñ']+/g)||[]; const f=w.filter(x=>/^(ang|ng|mga|ay|sa|na|at|ito|kung|para|nito|siya|upang|dahil|hindi|tulad|halimbawa)$/.test(x)).length; return w.length>0 && f/w.length>0.12; }
   function splitItems(s){ return trimP(s).replace(/\s+etc$/i,"").split(/\s*,\s*(?:and\s+|or\s+|at\s+)?|\s+and\s+|\s+at\s+|\s+or\s+|;\s*/).map(noArt).filter(x=>x && x.split(" ").length<=6); }
@@ -1088,7 +1103,7 @@ const QGen = (() => {
       (s.match(/(?<=[a-z,]\s)(?:[A-Z][a-z]+\s?){2,3}/g)||[]).forEach(w=>addTerm(w,1));
     }
     if(ordered.length>=2 && !F.steps.length) F.steps.push({process:"",steps:ordered,src:"",ordered:true});
-    F.defs.forEach(d=>{ d.term=termCase(d.term); d.head=(d.def.toLowerCase().replace(/^(an?|the)\s+/,"").split(/\s+/)[0]||""); d.entity=/^[A-Z]/.test(d.term)&&!/^[A-Z]{2,}/.test(d.term); d.tool=IT.test(text)||F.purposes.some(p=>same(p.term,d.term)); });
+    F.defs.forEach(d=>{ d.term=termCase(d.term); d.head=(d.def.toLowerCase().replace(/^(an?|the)\s+/,"").split(/\s+/)[0]||""); d.entity=/^[A-Z]/.test(d.term)&&!/^[A-Z]{2,}/.test(d.term)&&!/\b(theorem|law|map|principle|rule|method|algorithm|gate|table|test|model|equation|formula|diagram|circuit|distribution|search|sort|code|protocol)s?$/i.test(d.term); d.tool=IT.test(text)||F.purposes.some(p=>same(p.term,d.term)); });
     F.termList=[...F.terms.values()].filter(x=>x.w>=1).sort((a,b)=>b.w-a.w).map(x=>termCase(x.t));
     F.main=F.defs[0]?.term||F.lists[0]?.subject||F.purposes[0]?.term||F.termList[0]||"";
     return F;
@@ -1114,7 +1129,7 @@ const QGen = (() => {
   function parseFormula(expr, where, name){
     const m=String(expr).match(/^\s*([A-Za-z]\w*)\s*=\s*(.+?)\s*$/); if(!m) return null;
     const lhs=m[1], rhs=m[2].replace(/×|·/g,"*").replace(/÷/g,"/");
-    if(!/^[\w\s*\/+\-().^]+$/.test(rhs)) return null;
+    if(!/^[\w\s*\/+\-().^!]+$/.test(rhs)) return null;
     const ids=[...new Set(rhs.match(/[A-Za-z]\w*/g)||[])].filter(v=>!/^(pi|sqrt)$/i.test(v));
     if(!ids.length || ids.length>4) return null;
     const f={name:trimP(name).replace(/^the\s+/i,""), expr:`${lhs} = ${m[2].trim()}`, lhs, rhs, vars:{}};
@@ -1124,8 +1139,10 @@ const QGen = (() => {
     return f;
   }
   function evalFormula(f, vals){
-    try{ const js=f.rhs.replace(/\^/g,"**").replace(/\bpi\b/gi,"Math.PI").replace(/\bsqrt\b/gi,"Math.sqrt");
-      const fn=new Function(...Object.keys(vals), `return (${js});`); const r=fn(...Object.values(vals)); return Number.isFinite(r)?r:null; }catch(e){ return null; }
+    try{ let js=f.rhs.replace(/\^/g,"**").replace(/\bpi\b/gi,"Math.PI").replace(/\bsqrt\b/gi,"Math.sqrt");
+      for(let k=0;k<6 && /!/.test(js);k++) js=js.replace(/(\w+|\([^()]*\))!/g,"__f($1)");
+      const __f=x=>{ if(x<0||x>170||Math.round(x)!==x) return NaN; let p=1; for(let i=2;i<=x;i++) p*=i; return p; };
+      const fn=new Function("__f",...Object.keys(vals), `return (${js});`); const r=fn(__f,...Object.values(vals)); return Number.isFinite(r)?r:null; }catch(e){ return null; }
   }
   const fmtNum = x => { const r=Math.round(x*100)/100; return Math.abs(r)>=1000 ? r.toLocaleString("en-US") : String(r); };
   function niceValue(v, meaning, r){
@@ -1137,8 +1154,16 @@ const QGen = (() => {
     return 2+Math.floor(r()*48);
   }
   function numberProblem(f, r){
-    const inputs=Object.keys(f.vars).filter(v=>v!==f.lhs); const vals={};
-    for(const v of inputs) vals[v]=niceValue(v,f.vars[v].mean,r);
+    const inputs=Object.keys(f.vars).filter(v=>v!==f.lhs); let vals={};
+    const fact=/!/.test(f.rhs);
+    for(let tries=0;tries<30;tries++){
+      vals={}; for(const v of inputs) vals[v]=fact ? 2+Math.floor(r()*9) : niceValue(v,f.vars[v].mean,r);
+      // a part (chosen, selected, favorable) can't be larger than its whole
+      const part=inputs.find(v=>/chosen|selected|taken|favou?rable|success/i.test(f.vars[v].mean)), whole=inputs.find(v=>v!==part && /number of|total/i.test(f.vars[v].mean));
+      if(part && whole && vals[part]>vals[whole]) [vals[part],vals[whole]]=[vals[whole],vals[part]];
+      if(part && whole && fact && vals[part]===vals[whole]) continue;
+      const a=evalFormula(f,vals); if(a!==null && a>=0 && (!fact || Math.round(a)===a)) break;
+    }
     if(inputs.length===2 && /\//.test(f.rhs)){ const [a,b]=f.rhs.split("/").map(x=>x.trim()); if(vals[a]!==undefined && vals[b]!==undefined && /favorable|favourable/.test(f.vars[a].mean) && vals[a]>vals[b]) [vals[a],vals[b]]=[vals[b],vals[a]]; }
     const ans=evalFormula(f,vals); if(ans===null) return null;
     const desc=inputs.map(v=>{ const mn=f.vars[v].mean, u=f.vars[v].unit; return mn ? `the ${mn.replace(/^the\s+/i,"")} (${v}) is ${fmtNum(vals[v])}${u?" "+u:""}` : `${v} = ${fmtNum(vals[v])}`; });
@@ -1146,7 +1171,9 @@ const QGen = (() => {
     const list=desc.length>1 ? desc.slice(0,-1).join(", ")+" and "+desc[desc.length-1] : desc[0];
     const stem=`If ${list}, use ${f.expr} to compute ${f.vars[f.lhs].mean?`the ${target.replace(/^the\s+/i,"")} (${f.lhs})`:f.lhs}.`;
     const wrong=new Set(); const vs=Object.values(vals);
-    [ans*10, ans/10, vs.reduce((a,b)=>a+b,0), vs.length>=2?vs[0]/vs[1]:ans+1, vs.length>=2?vs[1]/vs[0]:ans-1, ans*2, ans/2, ans+vs[0]].forEach(x=>{ if(Number.isFinite(x) && Math.abs(x-ans)>1e-9) wrong.add(fmtNum(x)); });
+    if(fact){ const F_=x=>{ let p=1; for(let i=2;i<=x;i++) p*=i; return p; }; const [x,y]=[Math.max(...vs),Math.min(...vs)];
+      [ans*F_(y), ans/F_(y), Math.pow(x,y), x*y, F_(x), F_(x)/F_(y), ans+x].forEach(z=>{ if(Number.isInteger(z) && z>0 && z!==ans) wrong.add(fmtNum(z)); }); }
+    else [ans*10, ans/10, vs.reduce((a,b)=>a+b,0), vs.length>=2?vs[0]/vs[1]:ans+1, vs.length>=2?vs[1]/vs[0]:ans-1, ans*2, ans/2, ans+vs[0]].forEach(x=>{ if(Number.isFinite(x) && Math.abs(x-ans)>1e-9) wrong.add(fmtNum(x)); });
     wrong.delete(fmtNum(ans));
     return {stem, answer:fmtNum(ans)+(tu?" "+tu:""), answerNum:fmtNum(ans), wrong:[...wrong].slice(0,5), unit:tu};
   }
@@ -1336,7 +1363,7 @@ const QGen = (() => {
     for(const p of F.purposes){
       const pt=(/^(an?|the)\s/i.test(p.term)||/^[A-Z]{2,}/.test(p.term)||/s$/.test(p.term))?termCase(p.term):(/^[aeiou]/i.test(p.term)?"an ":"a ")+termCase(p.term);
       const purpose=p.purpose.replace(/^to\s+/i,""), S={term:pt,purpose};
-      const actor=hasCtx?`In ${ctx}, someone`:IT_T?"An IT staff member":"A student";
+      const actor=fixed?`In ${fixed}, someone`:IT_T?"An IT staff member":"A student";
       const tools=[...D,...F.purposes.map(x=>x.term),...F.classes.map(c=>c.item),...terms].filter(x=>!same(x,p.term));
       push("U.purp.what","Understanding","short",{stem:`What is the purpose of ${pt}?`,answer:cap(p.purpose)},S,p.src);
       push("A.purp.situation","Applying","case",mc(`${actor} needs to ${p.helps?"help "+purpose:purpose}. Which of the following should be used?`, termCase(p.term), tools, r),S,p.src);
@@ -1961,7 +1988,8 @@ function tabsHTML(d){
   return `<nav class="vtabs" role="tablist" aria-label="Views">
     <button type="button" role="tab" data-view="tos" aria-selected="${qView==="tos"}">Table of Specifications</button>
     <button type="button" role="tab" data-view="questions" aria-selected="${qView==="questions"}">Questions${n?` <span class="cnt">${n}</span>`:""}</button>
-    <button type="button" role="tab" data-view="generate" aria-selected="${qView==="generate"}">Generate questions</button></nav>`;
+    <button type="button" role="tab" data-view="generate" aria-selected="${qView==="generate"}">Generate questions</button>
+    <button type="button" role="tab" data-view="exam" aria-selected="${qView==="exam"}">Build exam from TOS</button></nav>`;
 }
 function questionsViewHTML(d){
   return `<section class="sec" aria-labelledby="h-q">
@@ -2193,13 +2221,13 @@ document.addEventListener("click", async e=>{
     delete rewrites[q.id]; persist(d); renderQuestions(); toast(`Question ${q.n} updated`); return;
   }
   if(a==="alsoOk"){ const e=effLevel(q); if(e&&e.also){ q.also=e.also.level; if(!q.manual) q.manual=e.level; teach(q,q.manual,d.subject); persist(d); renderQuestions(); toast("Saved both levels. Our AI will learn from them on the next retrain."); } return; }
-  if(a==="confirm"){ const e=effLevel(q); if(e){ q.manual=e.level; teach(q,e.level,d.subject); persist(d); renderQuestions(); toast("Saved. Our AI will learn from it on the next retrain."); } return; }
+  if(a==="confirm"){ const e=effLevel(q); if(e){ q.manual=e.level; q.auto=false; teach(q,e.level,d.subject); persist(d); renderQuestions(); toast("Saved. Our AI will learn from it on the next retrain."); } return; }
   if(a==="closeRw"){ delete rewrites[q.id]; renderQuestions(); return; }
   if(a==="undo"){ const h=q.history.pop(); if(h){ Object.assign(q,h); persist(d); renderQuestions(); toast("Rewrite undone"); } return; }
   if(a==="edit"){ q._editing=!q._editing; renderQuestions(); if(q._editing) document.getElementById("qe-"+q.id)?.focus(); return; }
   if(a==="saveEdit"){
     const p=parseQuestions(document.getElementById("qe-"+q.id).value)[0];
-    if(p){ const moved = p.n!==q.n && d.questions.some(x=>x!==q&&x.n===p.n); if(moved){ toast(`Item ${p.n} already exists`); return; } Object.assign(q,{n:p.n,stem:p.stem,choices:p.choices,answer:p.answer,ai:null}); }
+    if(p){ const moved = p.n!==q.n && d.questions.some(x=>x!==q&&x.n===p.n); if(moved){ toast(`Item ${p.n} already exists`); return; } Object.assign(q,{n:p.n,stem:p.stem,choices:p.choices,answer:p.answer,ai:null,auto:false}); }
     q._editing=false; persist(d); renderQuestions(); return;
   }
   if(a==="delQ"){ d.questions=d.questions.filter(x=>x!==q); persist(d); renderWork(); return; }
@@ -2209,7 +2237,7 @@ document.addEventListener("change", async e=>{
   if(el.dataset.qalso){ const q=d.questions.find(x=>x.id===el.dataset.qalso); if(q){ q.also=el.value||null; const e=effLevel(q); if(q.also && e){ if(!q.manual) q.manual=e.level; teach(q,q.manual,d.subject); } else if(q.manual) teach(q,q.manual,d.subject); persist(d); renderQuestions(); } return; }
   if(el.id==="qTypeFilter"){ qTypeFilter=el.value; renderQuestions(); return; }
   if(el.dataset.qtype){ const q=d.questions.find(x=>x.id===el.dataset.qtype); if(q){ q.qtype=el.value||null; persist(d); renderQuestions(); } return; }
-  if(el.dataset.qset){ const q=d.questions.find(x=>x.id===el.dataset.qset); if(q){ q.manual=el.value||null; teach(q,q.manual,d.subject); persist(d); renderQuestions(); } return; }
+  if(el.dataset.qset){ const q=d.questions.find(x=>x.id===el.dataset.qset); if(q){ q.manual=el.value||null; q.auto=false; teach(q,q.manual,d.subject); persist(d); renderQuestions(); } return; }
   if(el.dataset.qtarget){ const r=rewrites[el.dataset.qtarget]; if(r&&!r.versions) r.target=+el.value; return; }
   if(el.id==="fileBank"){
     const f=el.files[0]; el.value=""; if(!f) return;
@@ -2239,11 +2267,15 @@ async function exportQuestionsDocx(d){
     const F={sz:24};
     let body = headerXML(d, rid, "EXAMINATION");
     // consecutive items of the same type form one test part with its own directions
-    const parts=[]; for(const q of qs){ const t=qTypeOf(q).type; const last=parts[parts.length-1]; if(last&&last.type===t) last.qs.push(q); else parts.push({type:t,qs:[q]}); }
+    let parts=[]; for(const q of qs){ const t=qTypeOf(q).type; const last=parts[parts.length-1]; if(last&&last.type===t) last.qs.push(q); else parts.push({type:t,qs:[q]}); }
+    const nTypes=new Set(parts.map(p=>p.type)).size;
+    // items of the same type are scattered (random placement): one part per type, keeping the TOS item numbers
+    if(parts.length>nTypes+2){ const g={}; qs.forEach(q=>{ const t=qTypeOf(q).type; (g[t]=g[t]||[]).push(q); }); parts=QType.ORDER.filter(t=>g[t]).map(t=>({type:t,qs:g[t]})); }
+    const rangeText=a=>{ const n=a.map(q=>q.n); const out=[]; for(let k=0;k<n.length;k++){ let e=k; while(e+1<n.length&&n[e+1]===n[e]+1) e++; out.push(e>k?`${n[k]}–${n[e]}`:`${n[k]}`); k=e; } return (n.length>1?"items ":"item ")+out.join(", "); };
     const ROMAN=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"];
     const stemRuns=q=>{ if(!q.underline) return R(q.stem,F); const i=q.stem.indexOf(q.underline); if(i<0) return R(q.stem,F); return R(q.stem.slice(0,i),F)+R(q.underline,{...F,u:true})+R(q.stem.slice(i+q.underline.length),F); };
     parts.forEach((pt,pi)=>{
-      const T=QType.TYPES[pt.type], range=pt.qs.length>1?`items ${pt.qs[0].n}–${pt.qs[pt.qs.length-1].n}`:`item ${pt.qs[0].n}`;
+      const T=QType.TYPES[pt.type], range=rangeText(pt.qs);
       body += P(R(`Test ${ROMAN[pi]||pi+1}. ${T.label.toUpperCase()}`,{b:true,sz:24})+R(`  (${range})`,{sz:20}),{before:pi?240:0,after:60});
       body += P(R("Directions: ",{b:true,i:true,sz:24})+R(T.directions,{i:true,sz:24}),{after:160});
       for(const q of pt.qs){
@@ -2457,6 +2489,135 @@ document.addEventListener("change", async e=>{ if(e.target.id==="genLevel") gen.
       gen.sel=gen.file.sections.map(()=>true); gen.text=fileSelText(); gen.result=null;
       renderWork(); toast(`Read ${r.words.toLocaleString()} words from ${file.name}`);
     }catch(err){ gen.reading=false; console.error(err); renderWork(); toast(err.message||"Couldn’t read that file."); }
+  }
+});
+
+/* ---------------- Build exam: one lesson file per TOS topic, questions placed on the planned item numbers ---------------- */
+const COL_LEVELS=[["Remembering","Understanding"],["Applying","Analyzing"],["Evaluating","Creating"]];
+const EXAM_TYPE_DEFAULT=["mc","tf","mtf","blank","ident","enum","problem","case","short","essay"];
+const EXAM_TYPES=["mc","tf","mtf","blank","ident","enum","match","seq","analogy","problem","case","short","essay"];
+const exam={reading:{}, report:null, busy:false};
+function examTypes(){ const st=bank.settings||(bank.settings={use:true,cats:null,mine:[]}); return st.examTypes&&st.examTypes.length?st.examTypes:EXAM_TYPE_DEFAULT; }
+function topicPlan(d){
+  const {map,c}=plannedMap(d); const byN=new Map((d.questions||[]).map(q=>[q.n,q]));
+  return d.topics.map((t,i)=>({i, title:t.title||("Topic "+(i+1)), cols:[0,1,2].map(j=>{ const items=(c.ids[i]&&c.ids[i][j])||[]; const filled=items.filter(n=>byN.has(n)); return {items, filled:filled.length, empty:items.filter(n=>!byN.has(n)), auto:filled.filter(n=>byN.get(n).auto).length}; })}));
+}
+function examViewHTML(d){
+  const lessons=d.lessons||{}; const plan=topicPlan(d); const types=examTypes();
+  const tot=plan.reduce((a,t)=>{ t.cols.forEach(c=>{ a.p+=c.items.length; a.f+=c.filled; }); return a; },{p:0,f:0});
+  return `<section class="sec" aria-labelledby="h-exam">
+    <div class="sec-head"><h2 id="h-exam">Build the exam from your TOS</h2>
+      <p>Upload each topic’s lesson file. Our AI writes exactly the number of questions the TOS plans for that topic in each column and puts them on the planned item numbers. Each column is split about half and half between its two levels. Questions you added or edited yourself are never replaced.</p></div>
+    <div class="qpanel"><b>Question types to use</b>
+      <div class="secpick" style="margin-top:6px">${EXAM_TYPES.map(t=>`<label class="secitem"><input type="checkbox" data-etype="${t}" ${types.includes(t)?"checked":""}> <span>${QType.TYPES[t].label}</span></label>`).join("")}</div>
+      <p class="hint">Evaluating and Creating questions are mostly essays. Leave Essay and Short answer on or those items may stay empty. Matching type counts as one item.</p></div>
+    <div class="chips" style="margin-top:12px"><span class="chip ${tot.f===tot.p?"ok":""}"><b>${tot.f}</b>&nbsp;of ${tot.p} items have questions</span>
+      <button class="btn sm primary" type="button" data-ea="genAll" ${exam.busy?"disabled":""}>Generate for all topics with a lesson</button>
+      ${tot.f?`<button class="btn sm ghost" type="button" data-view="questions">Review in Questions tab</button>`:""}</div>
+    <div class="tblwrap"><table class="examtbl">
+      <thead><tr><th scope="col">Topic</th><th scope="col">Lesson file</th>${COL_SHORT.map((s,j)=>`<th scope="col" title="${COL_NAMES[j]}">${s}</th>`).join("")}<th scope="col"><span class="sr">Actions</span></th></tr></thead>
+      <tbody>${plan.map(t=>{ const L=lessons[t.i]; const planned=t.cols.reduce((a,c)=>a+c.items.length,0);
+        return `<tr data-ti="${t.i}">
+          <th scope="row">${esc(t.title)}</th>
+          <td>${exam.reading[t.i]?`<span class="hint">Reading…</span>`:L?`<b>${esc(L.name)}</b><br><span class="hint">${L.words.toLocaleString()} words</span>`:`<span class="hint">No file yet</span>`}</td>
+          ${t.cols.map((c,j)=>`<td class="num ${c.items.length&&c.filled===c.items.length?"full":c.filled?"part":""}" title="${c.items.length?"Items "+c.items.join(", "):"No items planned"}">${c.items.length?`${c.filled}/${c.items.length}`:"—"}</td>`).join("")}
+          <td class="acts"><button class="btn sm" type="button" data-ea="upload">${L?"Change file":"Upload lesson"}</button>
+            ${L&&planned?`<button class="btn sm primary" type="button" data-ea="gen" ${exam.busy?"disabled":""}>${t.cols.some(c=>c.auto)?"Regenerate":"Generate"}</button>`:""}
+            ${L?`<button class="btn sm ghost danger" type="button" data-ea="rmFile">Remove file</button>`:""}</td></tr>`; }).join("")}</tbody></table></div>
+    <input type="file" id="examFile" accept=".pdf,.docx,.pptx,.txt,.md" hidden>
+    <div id="examReport">${examReportHTML(d)}</div>
+    <p class="hint" style="margin-top:10px">The Word export (Questions tab) groups the questions by type into Test I, Test II… with their directions, and keeps each question’s TOS item number. If you want the numbers to run in order inside each test, set Item placement to “In topic order” or “Easy → difficult” in the TOS tab.</p>
+  </section>`;
+}
+function examReportHTML(d){
+  const r=exam.report; if(!r||r.subject!==d.id) return "";
+  return `<div class="qpanel"><b>${r.added} question${r.added===1?"":"s"} added${r.replaced?` (${r.replaced} earlier drafts replaced)`:""}.</b>
+    ${r.gaps.length?`<p class="hint warn">These items still need a question, because the lesson didn’t have enough material for them in the chosen question types:</p><ul class="gaps">${r.gaps.map(g=>`<li><b>${esc(g.title)}</b> · ${COL_NAMES[g.j]}: item${g.items.length>1?"s":""} ${g.items.join(", ")}</li>`).join("")}</ul><p class="hint">Upload a longer lesson, turn on more question types, or add these items yourself in the Generate or Questions tab.</p>`:`<p class="hint">Every planned item for these topics now has a question.</p>`}</div>`;
+}
+function pickQuestions(cands, n, used, taken){
+  const out=[]; const cnt=(m,k)=>m.get(k)||0;
+  const tplN=new Map(), basisN=new Map(), typeN=new Map(), termN=new Map();
+  for(const q of taken){ tplN.set(q.tpl,cnt(tplN,q.tpl)+1); basisN.set(q.basis,cnt(basisN,q.basis)+1); typeN.set(q.type,cnt(typeN,q.type)+1); }
+  const pool=cands.filter(q=>!used.has(q.stem.toLowerCase()));
+  while(out.length<n && pool.length){
+    let best=-1, bs=-1e9;
+    pool.forEach((q,k)=>{ const term=JSON.stringify(q.slots&&(q.slots.term||q.slots.what||q.slots.a||q.slots.cause||"")); const fam=q.tpl.replace(/\.[^.]*$/,"");
+      const s=(q.check.ok?10:0)+(q.score||0)-3*cnt(tplN,q.tpl)-1.5*cnt(tplN,fam)-2*cnt(basisN,q.basis)-1.2*cnt(typeN,q.type)-1.5*cnt(termN,term);
+      if(s>bs){ bs=s; best=k; } });
+    const q=pool.splice(best,1)[0]; if(!q.check.ok && out.length>=0 && bs<-2 && false) break;
+    const term=JSON.stringify(q.slots&&(q.slots.term||q.slots.what||q.slots.a||q.slots.cause||"")), fam=q.tpl.replace(/\.[^.]*$/,"");
+    used.add(q.stem.toLowerCase()); out.push(q); tplN.set(q.tpl,cnt(tplN,q.tpl)+1); tplN.set(fam,cnt(tplN,fam)+1); basisN.set(q.basis,cnt(basisN,q.basis)+1); typeN.set(q.type,cnt(typeN,q.type)+1); termN.set(term,cnt(termN,term)+1);
+    // drop near-duplicates: same template and same source sentence (only the setting differs)
+    for(let k=pool.length-1;k>=0;k--) if(pool[k].tpl===q.tpl && pool[k].basis===q.basis && JSON.stringify(pool[k].slots.term||"")===JSON.stringify(q.slots.term||"")) pool.splice(k,1);
+  }
+  return out;
+}
+function examGenerateTopic(d, i, report){
+  const L=(d.lessons||{})[i]; if(!L) return;
+  const types=examTypes(); const plan=topicPlan(d)[i];
+  // replace this topic's earlier auto drafts (never the teacher's own)
+  const mine=new Set(plan.cols.flatMap(c=>c.items));
+  const before=(d.questions||[]).length; d.questions=(d.questions||[]).filter(q=>!(q.auto && mine.has(q.n))); report.replaced+=before-d.questions.length;
+  const byN=new Map(d.questions.map(q=>[q.n,q]));
+  const used=new Set(d.questions.map(q=>q.stem.toLowerCase()));
+  const gens={};
+  const cands=(level)=>{ if(gens[level]) return gens[level];
+    let all=[]; for(const seed of [11,23,37]){ const r=QGen.generate(L.text,{...setOpts(),level,type:"any",seed:seed+i*101+(d.seed||0)%97,stats:bank.tplStats||{},myTemplates:bank.myTemplates||[]}); all=all.concat(r.questions); }
+    all=all.filter(q=>types.includes(q.type)).map(q=>{ const p=ourPredict(levelText({stem:q.stem,underline:q.underline,qtype:q.type})); return {...q, check:{ok:!p||p.level===q.level, level:p?p.level:q.level}}; });
+    return gens[level]=all; };
+  for(let j=0;j<3;j++){
+    const col=plan.cols[j]; if(!col.items.length) continue;
+    const empty=col.items.filter(n=>!byN.has(n)); if(!empty.length) continue;
+    const [lo,hi]=COL_LEVELS[j]; const n=col.items.length;
+    const kept=col.items.filter(n=>byN.has(n)).map(n=>effLevel(byN.get(n))).filter(Boolean);
+    let needHi=Math.max(0,Math.ceil(n/2)-kept.filter(e=>e.level===hi).length), needLo=Math.max(0,empty.length-needHi);
+    if(needHi>empty.length) needHi=empty.length;
+    const taken=d.questions.filter(q=>mine.has(q.n)&&q.gen).map(q=>({tpl:q.gen.tpl,basis:q.gen.basis,type:q.gen.type}));
+    let pickLo=pickQuestions(cands(lo),needLo,used,taken), pickHi=pickQuestions(cands(hi),needHi,used,taken.concat(pickLo));
+    // if one level runs short, the other level of the same column can fill in (it still matches the TOS)
+    if(pickLo.length<needLo) pickHi=pickHi.concat(pickQuestions(cands(hi),needLo-pickLo.length,used,taken.concat(pickLo,pickHi)));
+    if(pickHi.length<needHi) pickLo=pickLo.concat(pickQuestions(cands(lo),needHi-pickHi.length,used,taken.concat(pickLo,pickHi)));
+    const chosen=[...pickLo,...pickHi].sort((a,b)=>BLOOM.indexOf(a.level)-BLOOM.indexOf(b.level)||QType.ORDER.indexOf(a.type)-QType.ORDER.indexOf(b.type));
+    chosen.forEach((q,k)=>{ const num=empty[k];
+      d.questions.push({id:qid(),n:num,stem:q.stem,choices:q.choices||[],answer:q.choices&&q.answer?q.answer:(q.answer||""),ai:null,manual:null,also:null,history:[],qtype:q.type||null,auto:true,
+        ...(q.columns?{columns:q.columns}:{}),...(q.underline&&q.stem.includes(q.underline)?{underline:q.underline}:{}),gen:{level:q.level,type:q.type,tpl:q.tpl,basis:q.basis,topic:i}});
+      byN.set(num,true); report.added++;
+      const s=(bank.tplStats=bank.tplStats||{})[q.tpl]||(bank.tplStats[q.tpl]={shown:0,kept:0}); s.shown++; });
+    const left=empty.slice(chosen.length); if(left.length) report.gaps.push({title:plan.title, j, items:left});
+  }
+}
+async function runExam(d, which){
+  if(!ourModel){ toast("Our AI is still training. Try again in a moment."); return; }
+  const report={subject:d.id, added:0, replaced:0, gaps:[]};
+  exam.busy=true; renderWork();
+  await new Promise(r=>setTimeout(r,30));
+  try{ for(const i of which) examGenerateTopic(d,i,report); d.questions.sort((a,b)=>a.n-b.n); saveBank(); persist(d); }
+  catch(err){ console.error(err); toast("Something went wrong while generating."); }
+  exam.busy=false; exam.report=report; renderWork();
+  toast(`${report.added} question${report.added===1?"":"s"} added${report.gaps.length?` · ${report.gaps.reduce((a,g)=>a+g.items.length,0)} items still need a question`:""}`);
+}
+let examUploadTopic=null;
+document.addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b||!b.dataset.ea) return;
+  const d=cur(); if(!d) return; const a=b.dataset.ea; const tr=b.closest("[data-ti]"); const i=tr?+tr.dataset.ti:null;
+  if(a==="upload"){ examUploadTopic=i; document.getElementById("examFile")?.click(); return; }
+  if(a==="rmFile"){ if(d.lessons){ delete d.lessons[i]; persist(d); } renderWork(); return; }
+  if(a==="gen"){ runExam(d,[i]); return; }
+  if(a==="genAll"){ const which=Object.keys(d.lessons||{}).map(Number).filter(k=>k<d.topics.length); if(!which.length){ toast("Upload a lesson file for at least one topic first."); return; } runExam(d,which.sort((x,y)=>x-y)); return; }
+});
+document.addEventListener("change", async e=>{
+  const el=e.target; const d=cur(); if(!d) return;
+  if(el.dataset && el.dataset.etype){ bank.settings=bank.settings||{use:true,cats:null,mine:[]}; let t=examTypes().slice(); if(el.checked){ if(!t.includes(el.dataset.etype)) t.push(el.dataset.etype); } else t=t.filter(x=>x!==el.dataset.etype);
+    if(!t.length){ el.checked=true; toast("Keep at least one question type."); return; } bank.settings.examTypes=t; saveBank(); return; }
+  if(el.id==="examFile"){
+    const f=el.files[0]; el.value=""; const i=examUploadTopic; if(!f||i===null) return;
+    if(f.size>40*1024*1024){ toast("That file is too large (over 40 MB)."); return; }
+    exam.reading[i]=true; renderWork();
+    try{ const r=await FileText.read(f); delete exam.reading[i];
+      if(!r.words){ renderWork(); toast(r.warnings[0]||"No text was found in that file."); return; }
+      d.lessons=d.lessons||{}; d.lessons[i]={name:f.name, words:r.words, text:r.text.slice(0,120000), at:Date.now()};
+      persist(d); renderWork(); toast(`${f.name}: ${r.words.toLocaleString()} words read for ${d.topics[i].title||"Topic "+(i+1)}${r.warnings.length?" · "+r.warnings[0]:""}`);
+    }catch(err){ delete exam.reading[i]; renderWork(); toast(err.message||"Couldn’t read that file."); }
   }
 });
 

@@ -182,6 +182,20 @@ It picks the groups that fit the lesson's subject (for example, math lessons get
 teacher chooses the groups. Teachers can add their own settings; these are used first, saved with the teacher's
 data, and included in the dataset export. Typing a setting in the box still uses that one setting for every question.
 
+## Build the exam from the TOS (app, "Build exam from TOS" tab)
+
+The teacher uploads one lesson file per TOS topic. For each topic and each column (R/U, Ap/An, E/C) the app
+generates exactly the number of items the TOS plans, about half at each of the column's two levels (the higher
+level gets the extra one), using only the question types the teacher ticks. Drafts are picked so the level checker
+confirms them first, then spread across terms, templates, source sentences and types, and placed on the planned
+item numbers. Items the teacher added or edited are kept; earlier drafts are replaced on "Regenerate". When a
+lesson is too short, the leftover items are listed as still needing a question.
+Test with the sample chapters in `fixtures/` (ch3-boolean.txt, ch4-counting.pdf, ch5-probability.txt): 59 of 59
+empty items filled on a 60-item minor TOS, all 59 matching their planned column, no duplicate questions.
+
+QGen v2.3 also reads factorial formulas (P = n! / (n - r)!, C = n! / (r! * (n - r)!)), keeps "part ≤ whole" in
+number problems, uses factorial-style wrong answers, and no longer treats a heading word as a proper noun.
+
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
 - Compare this model with a small transformer (e.g., DistilBERT) fine-tuned on the same data.

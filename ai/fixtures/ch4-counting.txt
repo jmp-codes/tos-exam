@@ -1,0 +1,15 @@
+Chapter 4. Counting
+
+Counting is the branch of discrete mathematics that determines the number of ways an event can happen. It is used in computer science to measure the number of possible passwords, paths and arrangements.
+
+4.1 Basic Counting Principles
+The multiplication principle states that if one task can be done in m ways and a second task in n ways, both tasks can be done in m times n ways. The addition principle states that if a task can be done in m ways or in n ways with no overlap, it can be done in m plus n ways. For example, choosing a shirt and a pair of pants is a multiplication principle problem.
+
+4.2 Permutations
+A permutation is an arrangement of objects in a specific order. The formula for permutations is P = n! / (n - r)!, where n is the number of objects and r is the number of objects chosen. For example, electing a president, a vice president and a secretary is a permutation problem. Order matters in a permutation.
+
+4.3 Combinations
+A combination is a selection of objects where order does not matter. The formula for combinations is C = n! / (r! * (n - r)!), where n is the number of objects and r is the number of objects chosen. For example, choosing a committee of three students is a combination problem. Unlike a permutation, a combination ignores the order of the objects.
+
+4.4 The Pigeonhole Principle
+The pigeonhole principle states that if more than n objects are placed into n boxes, at least one box contains more than one object. It is used to prove that two files in a large system must share the same hash value.
