@@ -1,4 +1,4 @@
-# Bloom AI — Bloom's taxonomy level classifier for TOS Builder
+# Bloom AI v3 — Bloom's taxonomy level classifier for TOS Builder
 
 A small classifier that reads an exam question and predicts its Bloom's (revised) level:
 Remembering, Understanding, Applying, Analyzing, Evaluating, Creating. It maps these to the
@@ -7,37 +7,49 @@ three TOS columns (Remembering/Understanding, Applying/Analyzing, Synthesizing/E
 It trains and runs entirely in the browser (no server, no API key, works offline).
 
 ## Files
-- `bloom-model.js`: the model (features + multinomial logistic regression, train and predict).
+- `bloom-model.js`: the model: sentence patterns, construction reader, features, training and prediction.
+- `bloom-model.v2.js`: the previous version, kept for comparison.
+- `generate.py`: builds `data/generated.tsv` from sentence-pattern templates × subject concepts.
+- `compare.js`: compares keyword check, v2 and v3 on the blind and trick sets.
 - `data/*.txt`: starter training questions, one file per level, one question per line (`*_2.txt` = version 2 additions).
-- `hard.tsv`, `blind.tsv`, `blind2.tsv`: exam-style test sets (level<TAB>question).
+- `hard.tsv`, `blind.tsv`, `blind2.tsv`, `blind3.tsv`, `tricky.tsv`, `tricky2.tsv`: test sets (level<TAB>question).
 - `blind2.js`: scores blind set 2. Run: `node blind2.js`
 - `bloom-starter-dataset.json`: everything above combined, as shipped inside TOS Builder.
 - `eval.js`: 5-fold cross-validation vs. the keyword baseline. Run: `node eval.js 40 0.5 0.001`
 - `blind.js`: trains on data/ and scores the blind set. Run: `node blind.js`
 
 ## How it works
-1. **Features:** words, word pairs, the first 1–3 words (how the question opens), and flags for
-   numbers, code, fill-in blanks (____) and "justify/why"-type prompts. Normalized to unit length.
-2. **Model:** multinomial logistic regression trained with SGD (40 epochs, L2 = 0.001). About 0.3 s to train.
-3. **Learning from teachers:** questions a teacher labels in TOS Builder (Set level / ✓ Correct)
-   are added with 3× weight, and "Retrain" rebuilds the model in the browser.
-4. **Rewrite pairs:** every AI rewrite a teacher accepts is saved as (original, level) → (new, level).
-   These are the training data for a future rewriting model.
+1. **Sentence patterns (`PATTERNS`, 40+ in English and Filipino):** recognize how a question is built,
+   e.g. "Which of the following is …" (Remembering), "Which best explains …" (Understanding),
+   "If [numbers] … how many …" (Applying), "What is the output of …" (Analyzing),
+   "Is it … ? Justify." (Evaluating), "Design an original …" (Creating).
+2. **Construction reader (`construct`):** looks past the first verb to what the whole sentence demands.
+   The highest real demand wins ("Compare … and recommend one" → Evaluating), routine products stay
+   routine ("Create a truth table" → Applying), and nested demands count ("Describe how you would
+   design …" → Creating). When it fires it has the final say (98% precise on the training questions).
+3. **Features:** words, word pairs, question openings, the matched patterns and the reader's verdict,
+   plus flags for numbers, code, fill-in blanks and "justify/why" prompts.
+4. **Model:** multinomial logistic regression trained with SGD (40 epochs, L2 = 0.001), in a background
+   Web Worker so the page stays responsive; the trained model is cached in the browser.
+5. **Learning from teachers:** questions a teacher labels (Set level / ✓ Correct) are added with 3× weight;
+   "Retrain" rebuilds the model. Accepted AI rewrites are saved as before → after pairs.
 
 ## Results
-Version 2 (broadened): 1,571 starter questions covering IT, discrete math, statistics, the
-sciences, English, social science and Philippine history, in varied formats (fill-in-the-blank,
-true/false, multiple choice, code output, scenarios, essays), including about 90 in Filipino.
-Scores are for questions the model did not train on, counting a match on the three TOS columns.
+Training data: 1,451 hand-written questions (IT, discrete math, statistics, sciences, English,
+social science, Philippine history; many formats; about 90 in Filipino) + 2,520 questions generated
+from sentence patterns (`generate.py`, weighted 0.5). Scores count a match on the three TOS columns,
+on questions the model did not train on.
 
-| Test | Version 1 (776 questions) | Version 2 (1,511 questions) | Keyword check |
+| Test | Keyword check | v2 (words only) | **v3 (patterns + reader)** |
 |---|---|---|---|
-| 5-fold cross-validation | 92.8% | 94.4% | 74.9% |
-| Blind set 1, 30 exam-style questions | 93% | (used in training) | 40% |
-| Blind set 2, 60 mixed questions incl. Filipino | 88% | **95%** | 42% |
-| Filipino questions in blind set 2 (18) | 72% | 100% | n/a |
+| Trick questions with a misleading first verb (`tricky2.tsv`, 36, unseen) | 28% | 50% | **97%** |
+| Blind set 2 (60 mixed, incl. Filipino) | 42% | 95% | **98%** |
+| Blind set 3 (60 mixed, incl. Filipino) | 50% | 97% | **100%** |
+| 5-fold cross-validation (1,451 hand-written) | 75% | 94% | **96%** |
 
-The shipped model trains on all 1,571 questions, including the test sets.
+`tricky.tsv` was used while designing the reader rules, so its 100% is not a fair test; `tricky2.tsv`
+was written before the rules and is the honest measure. The shipped model also trains on all test sets.
+Run `node compare.js 0.5 x x tricky2.tsv` and `node eval.js 40 0.5 0.001` to reproduce.
 
 Limitations: the starter questions were written by an AI (Claude), not collected from real exams,
 so real-world accuracy will be lower until teacher-labeled questions are added. A question's true

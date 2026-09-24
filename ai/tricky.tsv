@@ -1,0 +1,36 @@
+Applying	Create a truth table for p → q.
+Applying	Evaluate 3x + 2 when x = 4.
+Applying	Define a Python function that returns the square of a number.
+Applying	Design the SQL query that lists all students with grades above 90.
+Applying	Describe the steps to compute 5C2 and give the answer.
+Applying	Identify the value of x if 2x + 6 = 20.
+Applying	Explain how to convert 45 to binary by showing the conversion.
+Applying	Make a frequency table from the scores 2, 3, 3, 5, 5, 5, 8.
+Applying	Show how many edges a complete graph with 5 vertices has.
+Analyzing	Explain the output of the following code: x = [1,2]; x.append(x[0]); print(x).
+Analyzing	List the errors in the given SQL statement.
+Analyzing	Summarize the flaws in the argument presented.
+Analyzing	Describe the relationship between the number of users and the response time shown in the graph.
+Analyzing	Identify which step of the proof is invalid.
+Analyzing	Explain why the given program prints 0 instead of 10.
+Analyzing	Define which of the variables in the experiment is the dependent variable and explain how you identified it.
+Analyzing	Give the reason why the two XML documents produce different outputs after the same XSLT.
+Evaluating	Identify the most appropriate data structure for the undo feature and justify your choice.
+Evaluating	Explain which of the two designs you would approve and why.
+Evaluating	Describe the best option for the school's backup system and defend it.
+Evaluating	Compare the two proposals and recommend one.
+Evaluating	List the pros and cons of online classes and state your final verdict.
+Evaluating	Analyze the policy and decide whether it should be continued.
+Understanding	What is the best explanation for why the moon has phases?
+Understanding	Which of the following best describes the purpose of a firewall?
+Understanding	Identify the main idea of the passage in your own words.
+Understanding	Show in your own words what a tautology means.
+Understanding	Why is normalization used in database design?
+Remembering	Which of the following is the correct symbol for the empty set?
+Remembering	What is the name of the protocol used to send email?
+Remembering	Explain what the acronym SQL stands for.
+Remembering	Give the definition of a subset.
+Creating	Describe how you would design a parking system for the campus.
+Creating	Explain your own plan for a mobile app that tracks school buses.
+Creating	Using the pigeonhole principle, write an original problem and its solution.
+Creating	Identify a community problem and propose an original tech-based solution.
