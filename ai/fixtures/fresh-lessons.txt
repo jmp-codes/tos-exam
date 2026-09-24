@@ -1,0 +1,31 @@
+Lesson 6. Computer Networks
+
+A computer network is a group of computers that are connected to share data and resources. A local area network is a network that covers a small area such as a school or an office. Unlike a local area network, a wide area network covers a large geographic area. The Internet is the largest wide area network.
+
+The common network topologies are bus, star and ring. A router is a device that forwards data between networks. A switch is used to connect devices within the same local area network. A firewall is used to block unauthorized access to a network. When the number of users increases, the network traffic increases. Poor cable management leads to network downtime. Fiber optic cable is faster than copper cable.
+
+The steps of troubleshooting a network are identifying the problem, checking the physical connections, testing the connection and documenting the solution. For example, a school computer laboratory is a local area network.
+===
+Lesson 2. Photosynthesis
+
+Photosynthesis is the process by which green plants make their own food using sunlight, water and carbon dioxide. Chlorophyll is the green pigment that absorbs light energy. The stomata are used to let carbon dioxide enter the leaf. The products of photosynthesis are glucose and oxygen.
+
+When the light intensity increases, the rate of photosynthesis increases. Deforestation leads to higher carbon dioxide levels in the atmosphere. Plants are more efficient in bright light than in shade. For example, a mango tree is a producer.
+
+The steps of a simple photosynthesis experiment are placing a plant in the dark, exposing one leaf to light, testing the leaves for starch and recording the results. A producer is an organism that makes its own food. A consumer is an organism that eats other organisms.
+===
+Lesson 4. Supply and Demand
+
+Demand is the quantity of a good that consumers are willing and able to buy at a given price. Supply is the quantity of a good that producers are willing to sell at a given price. When the price of a good increases, the quantity demanded decreases. When the price of a good increases, the quantity supplied increases.
+
+A shortage occurs when demand is greater than supply. A surplus occurs when supply is greater than demand. Typhoons lead to a shortage of vegetables in the market. Price ceilings are used to protect consumers from very high prices. Subsidies are used to help farmers lower their production costs.
+
+The types of goods are normal goods, inferior goods and luxury goods. For example, rice is a normal good. Total revenue is computed as R = P * Q, where P is the price per unit and Q is the quantity sold.
+===
+Lesson 5. Sorting Algorithms
+
+A sorting algorithm is a method for arranging data in a specific order. Bubble sort is a sorting algorithm that repeatedly swaps adjacent elements that are in the wrong order. Selection sort is a sorting algorithm that repeatedly selects the smallest element and moves it to the front. Merge sort is faster than bubble sort for large lists.
+
+Sorting is used to make searching faster. Binary search is used to find an item quickly in a sorted list. Unsorted data leads to slower searches. When the size of the list increases, the running time of bubble sort increases.
+
+The steps of bubble sort are comparing two adjacent elements, swapping them if they are in the wrong order, moving to the next pair and repeating until no swaps are needed. For example, arranging exam scores from highest to lowest is a sorting task.

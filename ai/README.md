@@ -196,6 +196,51 @@ empty items filled on a 60-item minor TOS, all 59 matching their planned column,
 QGen v2.3 also reads factorial formulas (P = n! / (n - r)!, C = n! / (r! * (n - r)!)), keeps "part ≤ whole" in
 number problems, uses factorial-style wrong answers, and no longer treats a heading word as a proper noun.
 
+## Multiple choice (and other types) at every Bloom's level (QGen v2.4, BloomAI v3.5)
+
+The generator now writes objective items above Remembering, each with a full answer key:
+
+| Level | Multiple choice | True or false | Situational |
+|---|---|---|---|
+| Understanding | concept illustrated by an example; main purpose; best description | "X and Y mean the same thing" | |
+| Applying | tool for a task; next step of a procedure; process in use; computed answers | computed result; prediction in a situation | tool for a need |
+| Analyzing | odd one out; difference between two ideas; most likely cause; relationship; effect of doubling a variable | difference; cause; effect of a change | most likely cause |
+| Evaluating | best choice and why; most effective way to reduce a problem; judging a classmate's definition, example, answer, step order or claim | "best choice, because…"; over-broad claims | which suggestion is better, and why |
+| Creating | hypothesis to test; investigation design; plan combining two tools; plan to reduce a problem; formula rearranged; new checklist order | | plan for a situation |
+
+Wrong choices are built to be plausible (swapped definitions, true-but-irrelevant reasons, reversed
+relationships, common computation slips) and are checked so no other choice is also right when two tools
+have overlapping purposes. Articles follow the lesson's own wording ("demand", "the stomata").
+
+The level checker learned the matching constructions (for example "Which … would you design", "Which … does not
+belong", "best evaluates this claim", and true-or-false statements whose level comes from what they ask).
+
+| Test | Result |
+|---|---|
+| mc-levels-test.tsv (72 MC stems; baseline before this round) | 62.5% → 100% (seen while writing the rules, so not a fair test) |
+| mc-levels-blind.tsv (60 MC/TF stems written after the rules, sealed, never tuned on) | **96.7%** (58/60) |
+| Generated MC, 4 fresh full lessons (fixtures/fresh-lessons.txt) | 145 items, 100% level-confirmed, MC at all 6 levels in 4/4 lessons, 0 answer-key problems |
+| Generated MC, 15 short paragraphs + 4 chapters | 325 items, 99.1% confirmed, 0 answer-key problems |
+| Earlier tests (blind4/5, tricky3/4, sealed, dual2/3) | unchanged or better (sealed 100%) |
+| 5-fold cross-validation | 94.5% six-level, 96.4% three-column |
+| Build exam, multiple choice only, 60-item TOS, 3 chapters | 58 of 60 items filled, all 58 multiple choice |
+
+Question types made at each level on the 4 fresh lessons (count, and lessons that got one):
+
+```
+level            blank    case    enum   essay   ident   match      mc     mtf problem     seq   short      tf
+Remembering      14(4)       -    5(4)       -   14(4)    4(4)   32(4)   13(4)       -    3(3)   15(4)   28(4)
+Understanding        -       -       -       -       -       -   28(4)       -       -       -   61(4)    8(4)
+Applying             -    7(4)       -       -       -       -   16(4)       -    2(1)       -   33(4)    6(4)
+Analyzing            -    1(1)       -   43(4)       -       -   18(4)       -       -       -       -    8(4)
+Evaluating           -    4(2)       -   42(4)       -       -   34(4)       -       -       -       -    9(4)
+Creating             -    3(3)       -   50(4)       -       -   17(4)       -       -       -       -       -
+(count, and in parentheses the number of the 4 lessons that got at least one)
+```
+Run: `node mc-eval.js fixtures/fresh-lessons.txt [show|miss]`, `node matrix.js fixtures/fresh-lessons.txt`.
+Short paragraphs of one or two sentences cannot support every level; a full lesson usually can.
+
+
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
 - Compare this model with a small transformer (e.g., DistilBERT) fine-tuned on the same data.

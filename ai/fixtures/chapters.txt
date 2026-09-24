@@ -1,0 +1,68 @@
+Chapter 3. Boolean Algebra
+
+Boolean algebra is a branch of algebra in which the values of the variables are true and false, usually written as 1 and 0. It was introduced by George Boole in 1847. Boolean algebra is used to design and simplify digital logic circuits.
+
+3.1 Logic Operations
+The three basic logic operations are AND, OR and NOT. The AND operation gives 1 only when all inputs are 1. The OR operation gives 1 when at least one input is 1. The NOT operation reverses the value of its input. A truth table is a table that lists the output of a Boolean expression for every combination of inputs.
+
+3.2 Logic Gates
+A logic gate is an electronic circuit that performs a Boolean operation. For example, an AND gate is used in a security system that opens a door only when a valid card is scanned and the correct PIN is entered. A NAND gate is a universal gate because any other gate can be built from it. Unlike an OR gate, a NOR gate gives 1 only when all inputs are 0.
+
+3.3 Boolean Laws
+De Morgan's theorem states that the complement of a product is the sum of the complements. The identity law states that A AND 1 is A. The null law states that A AND 0 is 0. Boolean laws are used to reduce the number of gates in a circuit. Fewer gates leads to lower cost and lower power consumption.
+
+3.4 Simplification
+The steps of simplifying a Boolean expression are writing the expression, applying the Boolean laws, combining like terms and checking the result with a truth table. A Karnaugh map is a diagram that is used to simplify Boolean expressions visually. Poor simplification leads to circuits that are larger and slower.
+===
+Chapter 4. Counting
+
+Counting is the branch of discrete mathematics that determines the number of ways an event can happen. It is used in computer science to measure the number of possible passwords, paths and arrangements.
+
+4.1 Basic Counting Principles
+The multiplication principle states that if one task can be done in m ways and a second task in n ways, both tasks can be done in m times n ways. The addition principle states that if a task can be done in m ways or in n ways with no overlap, it can be done in m plus n ways. For example, choosing a shirt and a pair of pants is a multiplication principle problem.
+
+4.2 Permutations
+A permutation is an arrangement of objects in a specific order. The formula for permutations is P = n! / (n - r)!, where n is the number of objects and r is the number of objects chosen. For example, electing a president, a vice president and a secretary is a permutation problem. Order matters in a permutation.
+
+4.3 Combinations
+A combination is a selection of objects where order does not matter. The formula for combinations is C = n! / (r! * (n - r)!), where n is the number of objects and r is the number of objects chosen. For example, choosing a committee of three students is a combination problem. Unlike a permutation, a combination ignores the order of the objects.
+
+4.4 The Pigeonhole Principle
+The pigeonhole principle states that if more than n objects are placed into n boxes, at least one box contains more than one object. It is used to prove that two files in a large system must share the same hash value.
+===
+Chapter 5. Discrete Probability
+
+Probability is the measure of how likely an event is to happen. The probability of an event is computed as P = f / t, where f is the number of favorable outcomes and t is the total number of outcomes. A sample space is the set of all possible outcomes of an experiment. An event is a subset of the sample space.
+
+5.1 Types of Events
+The types of events are independent events, dependent events and mutually exclusive events. Two events are independent if the outcome of one does not affect the other. For example, tossing a coin and rolling a die are independent events. Mutually exclusive events are events that cannot happen at the same time.
+
+5.2 Expected Value
+Expected value is the average result of an experiment repeated many times. The expected value is used to decide whether a game or an investment is worth it. When the probability of winning increases, the expected value increases.
+
+5.3 Bayes' Theorem
+Bayes' theorem is a formula that is used to update a probability when new evidence is given. For example, a spam filter uses Bayes' theorem to decide whether an email is spam. Ignoring prior probabilities leads to wrong conclusions.
+===
+Lesson 3: Data Structures
+
+A data structure is a way of organizing data so that it can be used efficiently. Unlike an array, a linked list does not store its elements in contiguous memory.
+
+3.1 Stacks
+
+A stack is a linear data structure that follows the Last In, First Out principle. For example, a pile of plates is a stack. Stacks are used to implement the undo feature in text editors.
+
+Push adds an element to the top of the stack.
+
+Pop removes the element at the top of the stack.
+
+3.2 Queues
+
+A queue is a linear data structure that follows the First In, First Out principle. For example, a line of customers at a bank is a queue. Queues are used to schedule jobs sent to a printer.
+
+3.3 Algorithms and Complexity
+
+An algorithm is a finite set of well-defined steps for solving a problem. The steps of problem solving are understanding the problem, planning a solution, coding the program and testing the result. Poor planning leads to programs that are hard to maintain.
+
+Binary search is faster than linear search because it halves the search space at each step. The average of a list is computed as A = S / n, where S is the sum of the values and n is the number of values.
+
+Ang algoritmo ay isang hanay ng mga hakbang para lutasin ang isang problema.

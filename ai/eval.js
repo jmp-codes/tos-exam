@@ -1,6 +1,6 @@
 const fs=require('fs'); const AI=require('./bloom-model.js');
 const L=AI.LEVELS; const COL={Remembering:0,Understanding:0,Applying:1,Analyzing:1,Evaluating:2,Creating:2};
-const ex=[]; for(const l of L){ [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`,`data/${l.toLowerCase()}_3.txt`].filter(p=>fs.existsSync(p)).map(p=>fs.readFileSync(p,'utf8')).join('\n').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>ex.push({text:t,level:l})); }
+const ex=[]; for(const l of L){ [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`,`data/${l.toLowerCase()}_3.txt`,`data/${l.toLowerCase()}_4.txt`].filter(p=>fs.existsSync(p)).map(p=>fs.readFileSync(p,'utf8')).join('\n').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>ex.push({text:t,level:l})); }
 // keyword baseline from the app
 const src=fs.readFileSync('../questions.js','utf8'); const kw=src.slice(src.indexOf('const BLOOM'), src.indexOf('let qView'));
 const verbLevel=new Function(kw+'; return verbLevel;')();

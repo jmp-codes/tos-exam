@@ -1,7 +1,7 @@
 // Usage: node qgen-eval.js <qgen module> [show]
 const fs=require('fs'); const Q=require(process.argv[2]||'./qgen.js'); const AI=require('./bloom-model.js'); const L=AI.LEVELS;
 const tsv=f=>fs.readFileSync(f,'utf8').trim().split('\n').map(l=>l.split('\t'));
-const ex=[]; for(const l of L) for(const f of [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`,`data/${l.toLowerCase()}_3.txt`]) fs.readFileSync(f,'utf8').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>ex.push({text:t,level:l}));
+const ex=[]; for(const l of L) for(const f of [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`,`data/${l.toLowerCase()}_3.txt`,`data/${l.toLowerCase()}_4.txt`]) if(fs.existsSync(f)) fs.readFileSync(f,'utf8').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>ex.push({text:t,level:l}));
 for(const f of ['hard.tsv','blind.tsv','blind2.tsv','blind3.tsv','tricky.tsv','tricky2.tsv']) tsv(f).forEach(([lv,t])=>ex.push({text:t,level:lv}));
 tsv('data/generated.tsv').forEach(([lv,t])=>ex.push({text:t,level:lv,weight:0.5}));
 const m=AI.train(ex,{epochs:40,lr:0.5,l2:0.001});

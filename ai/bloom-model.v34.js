@@ -66,34 +66,12 @@ const BloomAI = (() => {
   const READER = [
     K("Remembering","Asks you to state a formula or definition",
       /^(give|state|what is|what are|write down|recall|ibigay ang) the (formula|definition|pormula)|^ibigay ang (pormula|kahulugan)\b/i, /\b(and|then) (use|compute|calculate|apply|solve)\b/i),
-    // ---- true-or-false items: the statement after "True or false:" carries the level ----
-    K("Applying","True or false that needs a computation or a prediction in a situation",
-      /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*(if\b[^.]*\d[^.]*\bthen\b|in [^,]+, if\b[^,]+,\s*(we can expect|expect|then))/i),
-    K("Analyzing","True or false about a difference, a cause or the effect of changing a variable",
-      /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*(using [^,]+, (doubling|halving|tripling|increasing|decreasing)\b|the main difference between\b|according to the lesson, the most likely cause\b)/i),
-    K("Evaluating","True or false about the best choice or a claim",
-      /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*[^?]*\b(is the best choice, because|always the better choice|is fully justified|is the most effective way)\b/i),
-    K("Understanding","True or false about whether two ideas mean the same thing",
-      /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*[^?]*\bmean the same thing\b/i),
-    // ---- multiple-choice constructions ("Which … would you design?", "Which … does not belong?") ----
-    K("Creating","Multiple choice that asks you to design, propose or formulate something new",
-      /^(which|what)\b[^?]*\b(would|could|should|will) (you|we|the (team|class|group|students?))\s+(design|propose|create|formulate|derive|develop|compose|invent|construct|devise|plan|build|produce|write|hypothesi[sz]e)\b|^which (new |original |possible )?(\w+ ){0,2}(plan|design|proposal|outline|hypothesis|title|combination|set of steps|procedure|model|prototype|rule|generali[sz]ation)\b[^?]*\b(would|could|best (combines|captures|summari[sz]es)|for (designing|creating|developing|building|a new))\b|^which (of the following )?(would be the best|is the best) (plan|design|outline|proposal|way to (design|create|reorgani[sz]e|develop|build))\b|^(alin|anong)\b[^?]*\b(ididisenyo|bubuuin|imumungkahi|lilikhain)\b/i,
-      /\b(which of the following (is|are) (a|an|the) (type|kind|part|example|step))\b/i),
-    K("Evaluating","Multiple choice that asks for the best judgment, argument or critique",
-      /(^|[.?:]\s+)(which|what)\b[^?]*\b(most (valid|effective way|effective solution|effective action|justified|convincing|reasonable|defensible|strongly supports?)|best (evaluates|judgment|judgement|justified|supported by the (evidence|data|results)|meets the (requirement|criteria))|critiques?|criteri(on|a)|strongest (argument|reason|evidence)|weakest (argument|point)|\b(best|better|stronger|weaker|more (appropriate|effective|suitable|efficient)|most (appropriate|suitable|efficient))\b[^?]*,? and why\b|justif\w+)|^(is it|would it be) (wise|reasonable|better|justified)\b|^a (student|teacher|person|classmate|friend|researcher|manager|user) (claims|argues|says|believes) that\b[^?]*\?\s*$/i,
-      /^evaluate\b[^?]*\d/i),
-    K("Analyzing","Multiple choice that asks you to differentiate, find assumptions, causes or patterns",
-      /^(which|what)\b[^?]*\b(does not belong|doesn't belong|is the odd one|distinguish(es)?|differentiates?|underl(ies|ying)|assumptions?|conclusion (can|could) be (drawn|made)|can be (inferred|concluded)|contributed (most|the most)|pattern (can be|is) (observed|seen)|pattern in|best explains the (relationship|difference|connection)|describes the relationship|relationship between|how are\b[^?]*\b(related|connected))\b|^how (are|is)\b[^?]*\b(related|connected) (to|with)\b|\bwhat (happens|will happen) to (the )?\w+[^?]*\bif\b[^?]*\b(doubled|halved|tripled|increased|decreased)\b/i),
-    K("Applying","Multiple choice that puts a procedure or tool to work in a situation",
-      /^[^?]*[.:]\s+(which|what)\b[^?]*\b(is (the )?most appropriate|is best suited|would work best) for (this|the|that|their|its)\b|\bwhat should (the \w+|he|she|they|you|we|it) do next\b|\b(which|what)\b[^?]*\bshould (be used|be applied|it (use|apply)|they (use|apply)|he (use|apply)|she (use|apply))\b|\bwhich\b[^?]*\bcorrectly (represents|models|expresses)\b[^?]*\b(when|if|that|only)\b/i, /\b(compare|conclude|decide|justify|recommend|and why)\b/i),
-    K("Understanding","Multiple choice that asks for an example, illustration or meaning",
-      /\bbest illustrated by\b|^which concept (is|does)\b[^?]*\b(illustrat\w*|shows?|represents?)\b|^which (situation|example|scenario|case|sentence|statement|of the following situations)\b[^?]*\b(illustrates?|shows?|uses|represents?|demonstrates?)\b|^what does it mean (when|if|that)\b|\bbest paraphrase\b|^which of the following (statements )?about\b[^?]*\b(is|are) (correct|true|accurate)\b/i),
     K("Applying","Makes a routine product (truth table, query, formula, table of values…)",
       /^(create|construct|build|design|develop|make|prepare|draw|write|give|set up|define|compose|produce|generate|gumawa ng|bumuo ng)\b[^?]*\b(truth table|talahanayan ng katotohanan|sql (statement|query)|the query|a query|the formula|frequency (table|distribution)|table of values|binary (representation|equivalent)|venn diagram (for|of)|graph of|equation of|(adjacency |incidence )?matrix|(sql |the |an? )?(statement|query) that|(function|method|query|statement|formula) that (returns|computes|prints|lists|shows|counts|checks|finds|converts|deletes|updates|inserts))\b|^(construct|draw|make|build|prepare|create)\s+(one|it|them)\b/i, /\b(original|your own|own design|own plan|sarili (mong|nating|ninyong|kong)|orihinal)\b|^(create|build|develop|design|make) (a|an) (program|system|app|application|circuit|device|game|machine)\b/i),
     K("Creating","Asks how you would design or build something",
       /\bhow (you|we|would you) (would )?(design|build|create|develop|plan|make|set up|organi[sz]e|improve|solve)\b|\bpaano mo (ididisenyo|bubuuin|gagawin)\b/i),
     K("Creating","Asks for something original or your own",
-      /\b(original(?!\s+(statement|text|document|source|question|data|price|value|amount|principal|number|size|position|state|owner|author|cost|form|file|list|order|meaning|proposition|sentence|equation|argument))|your own (design|plan|solution|version|system|app|program|idea|story|poem|problem|algorithm|website|device|game)|a new (version|ending|design|game|recipe|solution|way)|sarili (mong|nating|ninyong) (disenyo|plano|bersyon)|orihinal)\b/i),
+      /\b(original(?!\s+(statement|text|document|source|question|data|price|value|form|file|list|order|meaning|proposition|sentence|equation|argument))|your own (design|plan|solution|version|system|app|program|idea|story|poem|problem|algorithm|website|device|game)|a new (version|ending|design|game|recipe|solution|way)|sarili (mong|nating|ninyong) (disenyo|plano|bersyon)|orihinal)\b/i),
     K("Creating","Starts a new product (design / develop / propose / compose … a system, app, plan, story…)",
       /^(design|develop|build|create|propose|plan|invent|compose|devise|formulate|draft|outline|sketch|produce|generate|put together|bumuo|lumikha|magdisenyo|magplano|magmungkahi)\b[^?]*\b(system|app|application|website|device|program|plan|proposal|game|solution|campaign|project|story|poem|haiku|essay|song|lesson|questionnaire|survey|policy|rules|network|database|prototype|architecture|feature|poster|logo|script|layout|model|dashboard|sistema|programa|plano|disenyo|tula|kuwento|sanaysay|dula)\b/i),
     K("Evaluating","Asks you to rate, rank or judge",
@@ -205,8 +183,7 @@ const BloomAI = (() => {
     if(kc && model.levels[best]!==kc.level){ best=model.levels.indexOf(kc.level); overridden=true; }
     // several demands in one question: the highest one is the main level
     const ds=demands(text);
-    const whole=kc && /^(True or false|Multiple choice)/.test(kc.name);   // a whole-item construction already weighs every part
-    if(ds.length>1 && !whole){ const top=ds.reduce((a,b)=>ORDER[b.level]>ORDER[a.level]?b:a); if(ORDER[top.level]>ORDER[model.levels[best]]){ best=model.levels.indexOf(top.level); overridden=true; } }
+    if(ds.length>1){ const top=ds.reduce((a,b)=>ORDER[b.level]>ORDER[a.level]?b:a); if(ORDER[top.level]>ORDER[model.levels[best]]){ best=model.levels.indexOf(top.level); overridden=true; } }
     const mainLv=model.levels[best];
     let also=null;
     const others=ds.filter(d=>d.level!==mainLv).sort((a,b)=>ORDER[b.level]-ORDER[a.level]);
