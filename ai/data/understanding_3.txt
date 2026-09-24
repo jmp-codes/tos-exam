@@ -20,3 +20,15 @@ Explain why a pile of books is an example of a stack.
 Explain when a surplus occurs.
 Alin sa mga sumusunod ang halimbawa ng likas na yaman?
 Magbigay ng iba pang halimbawa ng pang-uri bukod sa "maganda", at ipaliwanag kung bakit ito akma.
+Keyboard : input device :: Monitor : ______
+Stack : LIFO :: Queue : ______
+Metaphor : "Time is a thief" :: Simile : ______
+Hammer is to carpenter as compiler is to ______.
+Complete the analogy: Router : network :: Heart : ______
+"The wind whispered" : personification :: "as cold as ice" : ______
+Mercury : planet :: Moon : ______
+Printer : output :: Scanner : ______
+Word is to sentence as sentence is to ______.
+Complete the analogy. Cell : tissue :: Brick : ______
+Nagtatanim : magsasaka :: Nagtuturo : ______
+Array : index :: Dictionary : ______

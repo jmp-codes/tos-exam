@@ -1,0 +1,38 @@
+mc	Which protocol is used to send email?\na. HTTP\nb. SMTP\nc. FTP\nd. DNS
+mc	Which is not a primitive data type in Java? (a) int (b) boolean (c) String (d) char
+tf	True or False: A binary tree node can have at most two children.
+tf	TRUE or FALSE. The CPU stores data permanently.
+mtf	Recursion requires a base case to <u>continue</u> the calls.
+mtf	Write TRUE if the statement is correct; otherwise change the underlined word. A *compiler* translates code line by line.
+blank	The ________ is the brain of the computer.
+blank	In SQL, the ______ clause filters rows after grouping.
+ident	What do you call a set of rules that governs data communication?
+ident	Identify the term: a program that replicates itself and spreads to other computers.
+ident	Ano ang tawag sa proseso ng paghahati ng problema sa maliliit na bahagi?
+enum	List the four pillars of object-oriented programming.
+enum	Give three examples of input devices.
+enum	Enumerate the layers of the TCP/IP model.
+match	Match the terms in Column A with their meanings in Column B.
+match	Pagtapatin ang Hanay A at Hanay B.
+seq	Arrange the phases of the SDLC in the correct order.
+seq	Put the following sorting steps in order: compare, swap, repeat.
+seq	Arrange from smallest to largest: KB, GB, MB, TB.
+analogy	Keyboard : input :: monitor : ______
+analogy	Stack is to LIFO as queue is to what?
+problem	Compute the number of subsets of a set with 6 elements.
+problem	How many edges does a complete graph with 5 vertices have?
+problem	A file of 2,400 MB is downloaded at 20 MB per second. How long will the download take?
+problem	Find the GCD of 84 and 36.
+code	What is the output of: for i in range(3): print(i*2)
+code	int x = 5; x += 3; What is the value of x?
+code	What will be printed by console.log(typeof null)?
+case	Situation: A school wants to track student attendance using RFID. Which database design would be best?
+case	Maria needs to share large files with her team securely. What tool should she use and why?
+case	Read the scenario below. A company's server crashed during peak hours. What should the IT team do first?
+short	What is the purpose of a primary key?
+short	Why is encryption important in online banking?
+short	How does a hash table handle collisions?
+short	Define algorithm.
+essay	Discuss the ethical issues of artificial intelligence in education. (10 points)
+essay	In an essay of at least 200 words, evaluate the impact of social media on students.
+essay	Explain in detail how the internet has changed the way businesses operate, citing specific examples and possible drawbacks for small enterprises.

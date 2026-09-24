@@ -1,4 +1,4 @@
-/* QGen v2.1 — offline question generator for TOS Builder.
+/* QGen v2 — offline question generator for TOS Builder.
    Reads a sentence or paragraph for definitions, names, dates, lists, steps, examples, classifications,
    formulas, causes, relationships, comparisons, purposes and limitations, then fills Bloom's-level
    question patterns. Every pattern has an id so the app can rank patterns by what teachers keep and
@@ -226,12 +226,6 @@ const QGen = (() => {
       push("R.def.tf","Remembering","tf",{stem:`True or false: ${T0} ${d.verb} ${dl}.`,answer:"True"},S,d.src);
       const other=F.defs.find(x=>x!==d&&x.head===d.head)||F.defs.find(x=>x!==d);
       if(other) push("R.def.tf-false","Remembering","tf",{stem:`True or false: ${T0} ${d.verb} ${lc(other.def)}.`,answer:"False"},S,d.src);
-      push("R.def.ident","Remembering","ident",{stem:`Identify the term being described: ${cap(d.def.replace(/[.]$/,""))}.`,answer:cap(d.term)},S,d.src);
-      if(other && !same(other.term,d.term)){
-        const wrongT=cap(withArt(other));
-        if(r()<0.5) push("R.def.mtf","Remembering","mtf",{stem:`${T0} ${d.verb} ${dl}.`,underline:T0,answer:"True"},S,d.src);
-        else push("R.def.mtf","Remembering","mtf",{stem:`${wrongT} ${d.verb} ${dl}.`,underline:wrongT,answer:`False — ${cap(d.term)}`},S,d.src);
-      }
       if(F.defs.length>=3) push("U.def.best","Understanding","mc",mc(`Which of the following best describes ${t}?`, dl, F.defs.filter(x=>x!==d).map(x=>lc(x.def)), r, 4, false),S,d.src);
       push("U.def.own","Understanding","short",`Explain in your own words what ${t} ${be}.`,S,d.src);
       if(d.entity){
@@ -276,12 +270,12 @@ const QGen = (() => {
       push("R.date.mc","Remembering","mc",mc(q, dt.year, years, r, 4, false),S,dt.src);
     }
     const dated=F.dates.filter(d=>d.subject);
-    if(dated.length>=2) push("R.date.order","Remembering","seq",{stem:`Arrange these events in the order they happened: ${shuffle(dated.map(d=>d.subject),r).join("; ")}.`,answer:dated.slice().sort((a,b)=>a.year-b.year).map(d=>d.subject).join(" → ")},{},"");
+    if(dated.length>=2) push("R.date.order","Remembering","short",{stem:`Arrange these events in the order they happened: ${shuffle(dated.map(d=>d.subject),r).join("; ")}.`,answer:dated.slice().sort((a,b)=>a.year-b.year).map(d=>d.subject).join(" → ")},{},"");
     /* ---- lists and steps ---- */
     for(const l of F.lists){
       const what=l.subject?`the ${l.kind} of ${l.subject}`:`the ${l.kind}`, S={what,items:l.items.join(", ")};
       const outside=[...D,...F.lists.filter(x=>x!==l).flatMap(x=>x.items),...F.classes.map(c=>c.item),...terms].filter(t=>!l.items.some(x=>same(x,t)) && !same(t,l.subject||"~") && !same(t,l.kind));
-      push("R.list.enum","Remembering","enum",{stem:`Enumerate ${what}.`,answer:l.items.map(cap).join(", ")},S,l.src);
+      push("R.list.enum","Remembering","short",{stem:`Enumerate ${what}.`,answer:l.items.map(cap).join(", ")},S,l.src);
       push("R.list.mc","Remembering","mc",mc(`Which of the following is one of ${what}?`, l.items[0], outside, r),S,l.src);
       if(l.items.length>=3 && outside.length){ const odd=shuffle(outside,r)[0]; const ch=shuffle([...shuffle(l.items,r).slice(0,3),odd],r); push("R.list.not","Remembering","mc",{stem:`Which of the following is NOT one of ${what}?`,choices:ch.map(cap),answer:"abcd"[ch.indexOf(odd)],answerText:cap(odd)},S,l.src); }
       push("U.list.describe","Understanding","short",`Describe each of ${what} in your own words.`,S,l.src);
@@ -291,9 +285,9 @@ const QGen = (() => {
       push("C.list.model","Creating","essay",`Create an original diagram or model that shows how ${what} work together.`,S,l.src);
     }
     for(const st of F.steps){
-      const pr0=st.process?st.process.replace(/^the\s+/i,""):"", proc=pr0?(/ing$/i.test(pr0)?pr0:`the ${pr0}`):"the process described";
+      const proc=st.process?`the ${st.process.replace(/^the\s+/i,"")}`:"the process described";
       push("R.step.first","Remembering","mc",mc(`What is the first step of ${proc}?`, st.steps[0], st.steps.slice(1), r, 4, false),{process:proc},st.src);
-      push("R.step.order","Remembering","seq",{stem:`Arrange the steps of ${proc} in the correct order: ${shuffle(st.steps,r).map(x=>lc(x)).join("; ")}.`,answer:st.steps.map(x=>lc(x)).join(" → ")},{process:proc},st.src);
+      push("R.step.order","Remembering","short",{stem:`Arrange the steps of ${proc} in the correct order: ${shuffle(st.steps,r).map(x=>lc(x)).join("; ")}.`,answer:st.steps.map(x=>lc(x)).join(" → ")},{process:proc},st.src);
       push("A.step.use","Applying","short",`Use the steps of ${proc} to investigate or solve a problem in ${ctx}. Show what you would do at each step.`,{process:proc},st.src);
       push("N.step.why","Analyzing","essay",`Analyze why the steps of ${proc} must be done in that order.`,{process:proc},st.src);
       push("C.step.new","Creating","essay",`Design a new checklist based on ${proc} that students in ${ctx} can follow.`,{process:proc},st.src);
@@ -321,27 +315,13 @@ const QGen = (() => {
       if(syms.length>=3){ const v=shuffle(syms,r)[0]; push("R.form.symbol","Remembering","mc",mc(`In the formula ${f.expr}, what does ${v} stand for?`, f.vars[v].mean, syms.filter(x=>x!==v).map(x=>f.vars[x].mean), r, 4, false),S,f.src); }
       for(let k=0;k<2;k++){
         const p=numberProblem(f,r); if(!p) break;
-        push("A.form.compute","Applying","problem",{stem:p.stem,answer:p.answer,numeric:true},S,f.src);
+        push("A.form.compute","Applying","short",{stem:p.stem,answer:p.answer,numeric:true},S,f.src);
         const m2=mc(p.stem, p.answerNum, p.wrong, r, 4, false); if(m2){ m2.numeric=true; push("A.form.mc","Applying","mc",m2,S,f.src); }
       }
       const k0=Object.keys(f.vars).find(v=>v!==f.lhs);
       push("N.form.effect","Analyzing","essay",`Using ${f.expr}, analyze what happens to ${f.vars[f.lhs].mean?"the "+f.vars[f.lhs].mean.replace(/^the\s+/i,""):f.lhs} when ${f.vars[k0]?.mean?"the "+f.vars[k0].mean.replace(/^the\s+/i,""):k0} is doubled.`,S,f.src);
       push("C.form.problem","Creating","essay",`Write an original word problem that uses ${f.expr}, then solve it.`,S,f.src);
     }
-    /* ---- matching type (one set per lesson) ---- */
-    const mdefs=F.defs.filter((d,i,a)=>a.findIndex(x=>same(x.term,d.term))===i && d.def.split(" ").length<=30).map(d=>({term:d.term,def:d.def}));
-    F.purposes.forEach(p=>{ const t=termCase(p.term).replace(/^(an?|the)\s+/i,""); if(!mdefs.some(d=>same(d.term,t)||same(noArt(d.term).replace(/s$/,""),t.replace(/s$/,"")))) mdefs.push({term:t,def:"Used to "+p.purpose.replace(/^to\s+/i,"")}); });
-    if(mdefs.length>=3){
-      const set=shuffle(mdefs,r).slice(0,6), extra=[...F.classes.map(c=>c.item),...allItems,...terms].find(t=>!mdefs.some(d=>same(d.term,t)));
-      const colB=shuffle([...set.map(d=>cap(d.term)),...(extra?[cap(extra)]:[])],r);
-      const colA=set.map(d=>cap(d.def.replace(/[.]$/,"")));
-      push("R.match.defs","Remembering","match",{stem:"Match each description in Column A with the correct term in Column B.",columns:{a:colA,b:colB},answer:set.map((d,i)=>`${i+1}-${"abcdefgh"[colB.indexOf(cap(d.term))]}`).join(", ")},{},"");
-    }
-    /* ---- analogies ---- */
-    { const pr=[]; exGroups.forEach(e=>pr.push([e.list[0],termCase(e.term),"ex"])); F.classes.forEach(c=>pr.push([c.item,c.category,"cls"]));
-      const ok=pr.filter(p=>p[0].split(" ").length<=6 && p[1].split(" ").length<=4);
-      let n=0; for(let i=0;i<ok.length && n<3;i++) for(let j=0;j<ok.length && n<3;j++){ const [x1,y1,k1]=ok[i],[x2,y2,k2]=ok[j]; if(j<=i||k1!==k2||same(y1,y2)||same(x1,x2)) continue; n++;
-        push("U.analogy","Understanding","analogy",{stem:`${cap(x1)} : ${y1} :: ${cap(x2)} : ______`,answer:y2},{a:x1,b:y1},""); break; } }
     /* ---- purposes: situation questions ---- */
     for(const p of F.purposes){
       const pt=(/^(an?|the)\s/i.test(p.term)||/^[A-Z]{2,}/.test(p.term)||/s$/.test(p.term))?termCase(p.term):(/^[aeiou]/i.test(p.term)?"an ":"a ")+termCase(p.term);
@@ -349,7 +329,7 @@ const QGen = (() => {
       const actor=hasCtx?`In ${ctx}, someone`:IT_T?"An IT staff member":"A student";
       const tools=[...D,...F.purposes.map(x=>x.term),...F.classes.map(c=>c.item),...terms].filter(x=>!same(x,p.term));
       push("U.purp.what","Understanding","short",{stem:`What is the purpose of ${pt}?`,answer:cap(p.purpose)},S,p.src);
-      push("A.purp.situation","Applying","case",mc(`${actor} needs to ${p.helps?"help "+purpose:purpose}. Which of the following should be used?`, termCase(p.term), tools, r),S,p.src);
+      push("A.purp.situation","Applying","mc",mc(`${actor} needs to ${p.helps?"help "+purpose:purpose}. Which of the following should be used?`, termCase(p.term), tools, r),S,p.src);
       push("A.purp.use","Applying","short",IT_T?`Use ${pt} to ${p.helps?"help "+purpose:purpose} in ${ctx}. Show how you would do it.`:`Use ${pt} to ${p.helps?"help "+purpose:purpose}. Show your work.`,S,p.src);
       push("E.purp.how","Evaluating","essay",`Evaluate how well ${pt} ${p.helps?"helps "+purpose:"serves its purpose ("+purpose+")"}. Support your judgment.`,S,p.src);
     }
@@ -421,13 +401,12 @@ const QGen = (() => {
       push("R.fil.ano","Remembering","short",`Ano ang ${d.term}?`,S,d.src);
       push("R.fil.mc","Remembering","mc",mc(`Ano ang tawag sa ${lc(d.def)}?`, d.term, [...D,...terms], r),S,d.src);
       push("R.fil.tf","Remembering","tf",{stem:`Tama o mali: Ang ${d.term} ay ${lc(d.def)}.`,answer:"Tama"},S,d.src);
-      push("R.fil.tukuyin","Remembering","ident",{stem:`Tukuyin ang tinutukoy: ${cap(d.def.replace(/[.]$/,""))}.`,answer:d.term},S,d.src);
       push("U.fil.own","Understanding","short",`Ipaliwanag sa sariling salita ang kahulugan ng ${d.term}.`,S,d.src);
       if(IT_T){ push("A.fil.gamit","Applying","short",`Gamitin ang ${d.term} sa isang sitwasyon sa ${ctx} at ipakita ang mga hakbang.`,S,d.src); push("N.fil.wala","Analyzing","essay",`Suriin ang mga problemang maaaring mangyari sa ${ctx} kung hindi gagamitin ang ${d.term}.`,S,d.src); push("E.fil.makatwiran","Evaluating","essay",`Makatwiran ba ang paggamit ng ${d.term} sa ${ctx}? Pangatwiranan ang iyong sagot.`,S,d.src); push("C.fil.disenyo","Creating","essay",`Magdisenyo ng ${artifact} para sa ${ctx} na gumagamit ng ${d.term}.`,S,d.src); }
       else { push("A.fil.patunay","Applying","short",`Gamitin ang kahulugan ng ${d.term} upang patunayan na ito ay makikita sa isang tunay na sitwasyon na iyong naobserbahan.`,S,d.src); push("N.fil.wala","Analyzing","essay",`Suriin kung ano ang magbabago kung wala ang ${d.term}.`,S,d.src); push("E.fil.halaga","Evaluating","essay",`Gaano kahalaga ang ${d.term}? Pangatwiranan ang iyong sagot gamit ang mga natutunan sa aralin.`,S,d.src); push("C.fil.gawain","Creating","essay",`Magdisenyo ng isang gawain o demonstrasyon na nagpapakita ng ${d.term}.`,S,d.src); }
       push("C.fil.orihinal","Creating","essay",`Bumuo ng orihinal na halimbawa na nagpapakita ng ${d.term}.`,S,d.src);
     }
-    for(const l of F.lists){ push("R.fil.isa","Remembering","enum",{stem:`Isa-isahin ang mga ${l.kind} ng ${l.subject}.`,answer:l.items.join(", ")},{},l.src); push("N.fil.ugnay","Analyzing","essay",`Suriin kung paano nag-uugnayan ang mga ${l.kind} ng ${l.subject}.`,{},l.src); push("E.fil.pinaka","Evaluating","essay",`Alin sa mga ${l.kind} ng ${l.subject} ang pinakamahalaga? Pangatwiranan ang iyong sagot.`,{},l.src); }
+    for(const l of F.lists){ push("R.fil.isa","Remembering","short",{stem:`Isa-isahin ang mga ${l.kind} ng ${l.subject}.`,answer:l.items.join(", ")},{},l.src); push("N.fil.ugnay","Analyzing","essay",`Suriin kung paano nag-uugnayan ang mga ${l.kind} ng ${l.subject}.`,{},l.src); push("E.fil.pinaka","Evaluating","essay",`Alin sa mga ${l.kind} ng ${l.subject} ang pinakamahalaga? Pangatwiranan ang iyong sagot.`,{},l.src); }
     for(const e of F.examples){ const pool=[...F.examples.filter(x=>x!==e).map(x=>x.example),...F.lists.flatMap(l=>l.items),...D.filter(x=>!same(x,e.term))]; push("U.fil.halimbawa","Understanding","mc",mc(`Alin sa mga sumusunod ang halimbawa ng ${e.term}?`, e.example, pool, r),{},e.src); push("A.fil.iba","Applying","short",`Magbigay ng iba pang halimbawa ng ${e.term} bukod sa ${e.example}, at ipaliwanag kung bakit ito akma.`,{},e.src); }
     for(const c of F.causes){ push("U.fil.bakit","Understanding","short",{stem:`Bakit ${lc(c.effect)}?`,answer:c.cause},{},c.src); push("N.fil.sanhi","Analyzing","essay",`Suriin kung paano humahantong ang ${lc(c.cause)} sa ${lc(c.effect)}.`,{},c.src); push("C.fil.plano","Creating","essay",`Bumuo ng orihinal na plano upang mabawasan ang ${lc(c.cause)} sa ${ctx}.`,{},c.src); }
     for(const p of F.purposes){ push("A.fil.sitwasyon","Applying","mc",mc(`Kailangan ng isang tao na ${p.purpose}. Alin sa mga sumusunod ang dapat gamitin?`, p.term, [...D,...terms].filter(x=>!same(x,p.term)), r),{},p.src); }

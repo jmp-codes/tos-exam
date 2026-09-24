@@ -1,0 +1,59 @@
+mc	Which of the following is a primary color? a) green b) red c) orange d) purple
+mc	What is the capital of Japan?\na) Kyoto\nb) Osaka\nc) Tokyo\nd) Nagoya
+mc	Alin sa mga sumusunod ang pang-uri? a) tumakbo b) maganda c) bahay d) siya
+mc	The CPU is also known as the: A. brain of the computer B. memory C. monitor D. keyboard
+tf	True or false: The sun rises in the west.
+tf	Tama o mali: Ang Maynila ay kabisera ng Pilipinas.
+tf	Write TRUE if the statement is correct and FALSE if it is not. A byte has 8 bits.
+tf	T/F: HTML is a programming language.
+mtf	Write TRUE if the statement is correct. If false, change the underlined word to make it correct: <u>Mitochondria</u> is the control center of the cell.
+mtf	Modified true or false: The *Pacific* Ocean is the smallest ocean. If false, replace the underlined word.
+mtf	Isulat ang TAMA kung wasto ang pahayag; kung mali, palitan ang salitang may salungguhit: Ang <u>araw</u> ay umiikot sa mundo.
+blank	____ is the process by which plants make food.
+blank	The largest planet in the solar system is _______.
+blank	A ______ uniquely identifies each row in a table.
+blank	Ang ______ ang pambansang bayani ng Pilipinas.
+ident	Identify the term being described: the process of organizing data to reduce redundancy.
+ident	Identification: It is the brain of the computer.
+ident	What term refers to a statement that is always true?
+ident	Tukuyin ang tinutukoy: Ito ang pinakamaliit na yunit ng buhay.
+ident	What do you call the device that forwards packets between networks?
+enum	Enumerate the three branches of government.
+enum	List the seven layers of the OSI model.
+enum	Give three examples of input devices.
+enum	Isa-isahin ang mga bahagi ng pananalita.
+enum	Name the four basic arithmetic operations.
+match	Match Column A with Column B. Column A: 1. Stack 2. Queue 3. Tree Column B: a. FIFO b. LIFO c. Hierarchical
+match	Match the inventors with their inventions. 1. Bell 2. Edison 3. Wright brothers | a. airplane b. light bulb c. telephone
+match	Pagtapatin ang Hanay A at Hanay B.
+match	Matching type: Match each protocol to its port number.
+seq	Arrange the steps of the scientific method in the correct order.
+seq	Put the following events in chronological order: EDSA Revolution, Martial Law, Commonwealth.
+seq	Ayusin ayon sa pagkakasunod-sunod ang mga yugto ng mitosis.
+seq	Arrange the following numbers from least to greatest: 0.5, 1/3, 0.75.
+analogy	Hot : cold :: day : ____
+analogy	Keyboard is to input as monitor is to ____.
+analogy	Stack : LIFO :: Queue : ?
+problem	A car travels 150 km in 3 hours. What is its average speed?
+problem	Solve for x: 3x + 5 = 20.
+problem	Find the area of a circle with a radius of 7 cm.
+problem	How many ways can 4 books be arranged on a shelf?
+problem	Kalkulahin ang interes ng 5,000 piso sa 3% bawat taon sa loob ng 2 taon.
+problem	Compute the mean of 12, 15, 18 and 21.
+code	What is the output of the following code: print(2 ** 3)?
+code	What will be printed by: for i in range(3): print(i)?
+code	What does the following SQL query return? SELECT COUNT(*) FROM students WHERE grade > 90;
+code	Trace the code and give the final value of x: x = 1; x += 4; x *= 2.
+case	Situation: A school registrar wants to prevent duplicate student IDs. Which database feature should be used?
+case	Read the case below and answer the question. A small bakery loses its sales records every time the computer crashes. What should the owner do first?
+case	An IT staff member needs to block unauthorized access to the school network. Which of the following should be used?
+case	Case study: The barangay health center keeps patient records on paper. Recommend a system and justify your choice.
+short	Define normalization.
+short	What is the purpose of a firewall?
+short	Why is the sky blue?
+short	Give an example of a renewable resource.
+essay	Discuss the effects of climate change on Philippine agriculture. (10 points)
+essay	In not less than 100 words, explain the importance of education.
+essay	Should cellphones be allowed in class? Defend your position in a well-organized essay.
+essay	Ipaliwanag sa isang sanaysay ang kahalagahan ng wikang Filipino.
+essay	Evaluate the effectiveness of online learning during the pandemic. Support your answer with evidence.

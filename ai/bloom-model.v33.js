@@ -11,8 +11,7 @@ const BloomAI = (() => {
     // ---------- Remembering ----------
     P("R1","Remembering","“Which of the following is/are …” (recall a fact)", /^which (of the following|of these|one)\s+(is|are|was|were)\b(?!\s+(the\s+)?(best|most|least|correct explanation|better|more|incorrect|inconsistent|invalid|valid|true about))/i),
     P("R2","Remembering","“… is called / known as / referred to as …”", /\b(is|are|was) (called|known as|termed|referred to as|also called)\b/i),
-    P("R3","Remembering","Fill-in-the-blank (____)", /^(?![\s\S]*::)(?![\s\S]*\bis to\b[\s\S]*\bas\b)[\s\S]*_{2,}/),
-    P("U_AN","Understanding","Analogy (A : B :: C : ?) — sees the relationship between pairs", /::|\bis to\b[^?]*\bas\b[^?]*\bis to\b/i),
+    P("R3","Remembering","Fill-in-the-blank (____)", /_{2,}/),
     P("R4","Remembering","Starts with define / list / name / enumerate / state / label", /^(define|list|name|enumerate|state|label|recall|memorize|identify the (term|name|symbol|part|type))\b/i),
     P("R5","Remembering","Who / When / Where question", /^(who|when|where|in what year|what year)\b/i),
     P("R6","Remembering","Asks what an acronym stands for", /\b(stand|stands) for\b|full (meaning|form)|\bacronym\b|ibig sabihin ng [A-Z]{2,}/i),

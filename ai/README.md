@@ -18,6 +18,8 @@ It trains and runs entirely in the browser (no server, no API key, works offline
 - `bloom-starter-dataset.json`: everything above combined, as shipped inside TOS Builder.
 - `eval.js`: 5-fold cross-validation vs. the keyword baseline. Run: `node eval.js 40 0.5 0.001`
 - `blind.js`: trains on data/ and scores the blind set. Run: `node blind.js`
+- `qtype.js`: question-type detector (14 formats). Run the tests: `node types-eval.js` and `node types-eval.js types-blind.tsv`
+- `types-test.tsv`, `types-blind.tsv`: labeled question-type test sets (type<TAB>question; `\n` marks a new line)
 
 ## How it works
 1. **Sentence patterns (`PATTERNS`, 40+ in English and Filipino):** recognize how a question is built,
@@ -119,6 +121,38 @@ Run `node compare.js 0.5 x x tricky2.tsv` and `node eval.js 40 0.5 0.001` to rep
 Limitations: the starter questions were written by an AI (Claude), not collected from real exams,
 so real-world accuracy will be lower until teacher-labeled questions are added. A question's true
 level also depends on what was taught; a problem copied from a class example may be only Remembering.
+
+## Question types (`qtype.js`, v1) — create and determine
+
+**Determine.** `QType.detect(question)` names the format of any question and gives the reason:
+multiple choice, true or false, modified true or false, fill in the blank, identification, enumeration,
+matching type, sequencing, analogy, problem solving, code tracing / output, situational / case,
+short answer and essay. It reads the stem's construction (for example "Column A", an underlined word,
+`A : B :: C : ?`, a blank `____`, "Enumerate…", numbers plus "compute / how many", code symbols,
+"Situation:" or "X needs to … Which…") and the choices or columns when the question has them.
+Each type carries the standard directions used in the Word export (Test I, Test II, …).
+
+**Create.** The generator (`qgen.js` v2.1) now writes, besides multiple choice, true or false, fill in the blank,
+short answer and essay:
+- identification ("Identify the term being described: …"), with the English and Filipino forms
+- modified true or false (the term is underlined; false versions carry the correct term in the key)
+- matching type (Column A descriptions, Column B terms plus an extra distractor when one is available)
+- enumeration, sequencing (steps and dated events), analogy (`example : category :: example : ____`)
+- problem solving (number problems with computed answers) and situational / case items
+
+Bloom's model v3.4 adds an analogy construction (Understanding), and a blank inside an analogy is no longer
+read as fill-in-the-blank recall.
+
+| Test | Result |
+|---|---|
+| types-test.tsv (59 questions, written with the rules) | 100% |
+| types-blind.tsv (38 questions, written after the rules were fixed, not tuned on) | 100% |
+| Generated questions on 15 paragraphs: detector agrees with the generator's type | 100% (480 questions) |
+| Generated questions: Bloom's level confirmed by the classifier | 98% |
+| Bloom's classifier after the change: blind5 / tricky4 / sealed | 100% / 100% / 100% |
+
+Both type test sets were written by the developer, so real-world accuracy on teachers' own questions
+will be lower. Label real questions to measure it honestly.
 
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
