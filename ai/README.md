@@ -8,10 +8,8 @@ It trains and runs entirely in the browser (no server, no API key, works offline
 
 ## Files
 - `bloom-model.js`: the model: sentence patterns, construction reader, features, training and prediction.
-- `bloom-model.v2.js`: the previous version, kept for comparison.
 - `generate.py`: builds `data/generated.tsv` from sentence-pattern templates × subject concepts.
 - `suite.js`: trains once and scores any test file (single-level or two-level).
-- `compare.js`: compares keyword check, v2 and v3 on the blind and trick sets.
 - `data/*.txt`: starter training questions, one file per level, one question per line (`*_2.txt` = version 2 additions).
 - `hard.tsv`, `blind.tsv`, `blind2.tsv`, `blind3.tsv`, `tricky.tsv`, `tricky2.tsv`: test sets (level<TAB>question).
 - `blind2.js`: scores blind set 2. Run: `node blind2.js`
@@ -117,7 +115,7 @@ Run `node dual.js x` to see each result.
 
 `tricky.tsv` was used while designing the reader rules, so its 100% is not a fair test; `tricky2.tsv`
 was written before the rules and is the honest measure. The shipped model also trains on all test sets.
-Run `node compare.js 0.5 x x tricky2.tsv` and `node eval.js 40 0.5 0.001` to reproduce.
+Run `node eval.js 40 0.5 0.001` to reproduce the cross-validation. (Older model versions used for the before/after tables are not included, to keep the upload under GitHub's 100-file limit.)
 
 Limitations: the starter questions were written by an AI (Claude), not collected from real exams,
 so real-world accuracy will be lower until teacher-labeled questions are added. A question's true
@@ -269,6 +267,48 @@ leave out an item's parent or child from the same list (e.g. not "Remote Procedu
 
 When a lesson still runs out, the app says so plainly and offers three choices: fill the empty items with other
 question types, add another file to that topic (slides + handout + notes are combined), or leave them to write.
+
+## Better scenario questions (QGen v2.6)
+
+A blind review (a separate reviewer who did not know which version wrote which question) found that scenario
+questions often put ideas in places that did not fit (IoT sensors in a payroll system, the null law in a milk tea
+shop), used the wrong person (a student protecting consumers), repeated the answer's wording in the stem, or
+claimed a level the question did not really demand. Changes:
+
+- **Kinds of ideas.** Each idea is treated as a *tool* (something people use: indexes, firewalls, MQTT, subsidies),
+  a *principle* (laws, theorems, counting rules), a *concept* (demand, photosynthesis) or a *historical entity*.
+  Only tools get "use it in this system" scenarios; principles get problems to solve (choosing class officers,
+  an alarm circuit); concepts get explanation and example items.
+- **Settings that fit.** Systems are matched to the idea by keywords (database ideas → the enrollment database of a
+  state university; IoT → the soil-moisture sensors of a rice farm; circuits → the control circuit of a vending
+  machine; enterprise architecture → organizations). A setting never contains the idea itself.
+- **The right person.** Roles are scored against the lesson (network administrator, database administrator,
+  enterprise architect, integration developer, electronics technician, municipal agriculturist, school
+  nutritionist…).
+- **Needs stated as problems.** "Speed up searches in large tables" becomes "…reports that searches in large tables
+  take too long", "block unauthorized access" becomes "…keeps finding cases of unauthorized access".
+- **Reasons that are properties, not the stem repeated.** "Best choice, and why" options give each tool's defining
+  property ("because they follow the Last In, First Out principle").
+- **Real alternatives.** "Which is more appropriate, A or B?" is asked only for options the lesson presents as
+  alternatives; two ideas the lesson compares are never used as each other's plain wrong answer; a new
+  Evaluating item judges two options against a requirement the lesson compares them on.
+- **Honest levels.** Items that only match a need to a definition were moved to the level they really test
+  (e.g. matching two tools to two needs is Analyzing, not Creating); a true-or-false "best choice" item that was
+  only recall was removed. Wrong choices are plausible actions instead of straw men.
+
+| Blind review, 30 scenario questions each, fresh lessons (fixtures/fresh2-lessons.txt) | Before | After |
+|---|---|---|
+| Grammar correct | 23/30 | 29/30 |
+| Scenario realistic | 17/30 | 28/30 |
+| Answer key correct and unambiguous | 16/30 | 26/30 |
+| Grammar, scenario and key all fine | 8/30 (27%) | 25/30 (83%) |
+| Level judged as intended by the strict reviewer | 16/30 | 13/30 |
+
+The reviewer was strict about levels: questions that can be answered by matching a need to the lesson's wording
+count as recall. That is a real limit of an offline template generator, which cannot freely paraphrase; teachers
+should reword a few higher-level items (the app learns from those edits). Our own level checker, which uses the
+usual Bloom's constructions, confirms 99.7% of the multiple-choice items on 28 lessons. Construction checks:
+`node scen-lint.js` (0 problems on 453 scenario items, 206 before), `node scen-dump.js` to read them all.
 
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
