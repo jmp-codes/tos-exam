@@ -1,0 +1,10 @@
+Using F = m * a, analyze what happens to the force when the mass is doubled.
+Using A = pi * r^2, analyze what happens to the area when the radius is doubled.
+Using P = f / n, analyze what happens to the probability when the total outcomes are doubled.
+Using I = V / R, analyze what happens to the current when the resistance is halved.
+Using s = d / t, analyze how the speed changes if the time is tripled.
+Using the formula for simple interest, analyze how the interest changes when the rate is doubled.
+Analyze why the area of a circle increases faster than its radius.
+Trace how deforestation can eventually lead to flooding, explaining each link.
+Trace how a rise in fuel prices can eventually lead to higher food prices, explaining each link.
+Analyze why the quantity demanded falls when the price rises.

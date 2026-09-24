@@ -1,4 +1,4 @@
-# Bloom AI v3.1 — Bloom's taxonomy level classifier for TOS Builder
+# Bloom AI v3.3 — Bloom's taxonomy level classifier for TOS Builder
 
 A small classifier that reads an exam question and predicts its Bloom's (revised) level:
 Remembering, Understanding, Applying, Analyzing, Evaluating, Creating. It maps these to the
@@ -10,6 +10,7 @@ It trains and runs entirely in the browser (no server, no API key, works offline
 - `bloom-model.js`: the model: sentence patterns, construction reader, features, training and prediction.
 - `bloom-model.v2.js`: the previous version, kept for comparison.
 - `generate.py`: builds `data/generated.tsv` from sentence-pattern templates × subject concepts.
+- `suite.js`: trains once and scores any test file (single-level or two-level).
 - `compare.js`: compares keyword check, v2 and v3 on the blind and trick sets.
 - `data/*.txt`: starter training questions, one file per level, one question per line (`*_2.txt` = version 2 additions).
 - `hard.tsv`, `blind.tsv`, `blind2.tsv`, `blind3.tsv`, `tricky.tsv`, `tricky2.tsv`: test sets (level<TAB>question).
@@ -38,21 +39,61 @@ It trains and runs entirely in the browser (no server, no API key, works offline
 5. **Learning from teachers:** questions a teacher labels (Set level / ✓ Correct) are added with 3× weight;
    "Retrain" rebuilds the model. Accepted AI rewrites are saved as before → after pairs.
 
-## Question generator (`qgen.js`)
+## Question generator (`qgen.js`, v2)
 Generates draft questions from a sentence or paragraph at a chosen Bloom's level, offline.
-1. **Reads the text** for definitions ("X is …", "X refers to …", "Y is called X"), names ("A is known as B"),
-   lists ("The types of X are a, b and c"), causes ("… because …", "X leads to Y"), comparisons ("Unlike X, Y …",
-   "… whereas …"), purposes ("X is used to …") and key terms. Basic Filipino support ("Ang X ay …", "dahil",
-   "Hindi tulad ng …", "Ang mga uri ng X ay …").
-2. **Fills level patterns**, with different wording for tools/methods (e.g. normalization), concepts
-   (e.g. photosynthesis) and historical names/entities (e.g. the Katipunan). Multiple-choice distractors come
-   from other terms in the same text.
-3. **Checks every draft** with Bloom AI; the page shows whether the level is confirmed.
-Test (`node qgen-test.js x`) on 6 paragraphs (IT, discrete math, science, web services, Philippine history,
-Filipino science): 206 drafts, 99% confirmed at the requested level by Bloom AI. Applying questions are the
-hardest to generate from text alone (89% confirmed, and fewer of them), since text rarely contains problems
-to solve. Questions teachers keep are saved (`generated` in the dataset export) as training data for a
-future paragraph → question model.
+1. **Reads the text** for definitions, names ("A is known as B"), dates ("signed in 1898"), lists, step sequences
+   (listed steps or First/Then/Finally), examples ("For example, …", "such as …", quoted examples), classifications
+   ("X is a type of Y"), formulas with their variables ("V = I * R, where V is the voltage in volts …"), causes and
+   effects ("X leads to Y", "because", "Without X, …", "X occurs when …"), relationships ("When X increases, Y
+   decreases"), comparisons ("unlike", "whereas", "X is faster than Y"), purposes ("X is used to …") and limitations
+   ("However, it …"). Basic Filipino support.
+2. **Writes questions from 70+ patterns**, each with an id (e.g. `A.form.compute`, `A.purp.situation`). New in v2:
+   number problems computed from formulas (with common-slip wrong answers), "someone needs to … which should be used?"
+   situations, "Which is an example of …", "Which is NOT one of …", "What is the most likely result of …",
+   cause chains ("Trace how X eventually leads to Z"), ordering steps/events, and formula-effect analysis.
+   Multiple-choice wrong answers come from the same kind of item in the text, with a small subject word bank
+   as backup.
+3. **Checks every draft** with Bloom AI. Level labels follow the revised taxonomy (giving examples and predicting
+   results = Understanding; ordering from memory = Remembering).
+4. **Learns from teachers:** each pattern keeps shown/kept counts, and kept patterns rank higher. When a teacher
+   edits a draft, the edit is turned into a reusable pattern ({term}, {a}, {b}, {cause}, {effect}, {example}, {ctx})
+   and marked "Your pattern" on new texts. Patterns and stats are included in the dataset export.
+
+| 15 new test paragraphs (`qgen-test2.txt`) | v1 | v2 |
+|---|---|---|
+| Drafts per paragraph | 35.0 | 29.5 (fewer misreadings, e.g. formulas no longer treated as definitions) |
+| Confirmed at the requested level by Bloom AI | 96% | 98% |
+| Multiple-choice questions | 43 | 63 |
+| Number problems with computed answers | 0 | 20 |
+| Applying questions | 49 | 55 |
+
+To support the new question shapes, 81 construction examples were added to the classifier data (`data/*_3.txt`);
+the classifier's own scores were unchanged or slightly better (cross-validation 96.7%, blind sets 98% / 100%,
+trick set 97%). Run `node qgen-eval.js ./qgen.js all` to see every draft.
+
+## Accuracy round (v3.3): target ≥ 92% on every test
+New tests were written **before** any changes, including a sealed 60-question test that was fingerprinted
+(`sealed.sha256`) and opened only once at the end. Failures were fixed with general reader rules (routine products
+like matrices/SQL statements, arithmetic "result of 17 mod 5", "what is wrong", named fallacies, false premises,
+assumptions, single points of failure, "which side you support", rate/rank at the start of a demand, running code
+with given inputs, "list all the subsets", "misapplied", "and then …").
+
+| Test (questions the model never trained on) | Before | After |
+|---|---|---|
+| blind4, 99 mixed (used for tuning) | 99.0% | 100% |
+| tricky3, 40 misleading-verb (used for tuning) | 82.5% | 100% |
+| dual2, 40 two-level: both levels found (used for tuning) | 85.0% | 100% |
+| **blind5, 60 mixed, written after tuning, scored once** | | **100%** |
+| **tricky4, 30 misleading-verb, written after tuning, scored once** | | **96.7%** |
+| **dual3, 30 two-level, written after tuning: both levels found** | | **96.7%** |
+| **Sealed final test, 60 mixed, opened once** | | **100%** |
+| 5-fold cross-validation, 3 columns | 96.7% | 96.6% |
+
+Untuned questions overall (blind5 + tricky4 + sealed): 149 of 150 = 99.3% (95% confidence interval roughly
+96–100%). On all three two-level sets, the main level matches the highest-level rule 100% of the time; the lower
+"main level" figures printed by `suite.js` come from test labels that break that rule. 99.9% cannot be claimed:
+it would need thousands of test questions, and teachers themselves often disagree on a question's level.
+Run `node suite.js <file> --show` to reproduce any row.
 
 ## Results
 Training data: 1,451 hand-written questions (IT, discrete math, statistics, sciences, English,

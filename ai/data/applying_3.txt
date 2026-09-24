@@ -1,0 +1,24 @@
+A cashier needs to find the average sales per day. Which of the following should be used?
+A librarian needs to find a book quickly by its call number. Which of the following should be used?
+A nurse needs to record patient visits so they can be searched later. Which of the following should be used?
+A farmer needs to measure how much rain fell in a week. Which instrument should be used?
+A programmer needs to reverse the order of items in a list. Which data structure should be used?
+A teacher needs to show the trend of grades over five quarters. Which type of graph should be used?
+A network administrator needs to assign IP addresses automatically. Which protocol should be used?
+A student needs to find the number of ways to arrange 5 books. Which counting technique should be used?
+A store owner needs to compute the tax on a purchase. Which formula should be used?
+A builder needs to find the length of a diagonal brace. Which theorem should be used?
+An engineer needs to reduce the current in a circuit. Which component should be added?
+A registrar needs to prevent two students from having the same ID number. Which of the following should be used?
+If the base (b) is 12 and the height (h) is 5, use A = b * h / 2 to compute the area (A).
+If the mass (m) is 8 kg and the acceleration (a) is 3 m/s², use F = m * a to compute the force (F).
+If the distance (d) is 150 km and the time (t) is 3 hours, use s = d / t to compute the speed (s).
+If the principal (P) is 20,000, the rate (r) is 0.05 and the time (t) is 2 years, use I = P * r * t to compute the interest (I).
+If the voltage (V) is 24 volts and the resistance (R) is 6 ohms, use I = V / R to compute the current (I).
+If the radius (r) is 7 cm, use A = pi * r^2 to compute the area (A).
+If the favorable outcomes (f) are 3 and the total outcomes (n) are 12, use P = f / n to compute the probability (P).
+If the length (l) is 9 m and the width (w) is 4 m, use A = l * w to compute the area (A).
+If the work (W) is 500 joules and the time (t) is 10 seconds, use P = W / t to compute the power (P).
+If the sum of the scores is 425 and n is 5, use mean = sum / n to compute the mean.
+Ilapat ang pormula A = l * w kung ang haba ay 8 m at ang lapad ay 3 m.
+Kung ang distansya ay 60 km at ang oras ay 2 oras, gamitin ang s = d / t upang makuha ang bilis.

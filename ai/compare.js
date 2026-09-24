@@ -1,7 +1,7 @@
 const fs=require('fs'); const V2=require('./bloom-model.v2.js'), V3=require('./bloom-model.js');
 const L=V3.LEVELS, COL={Remembering:0,Understanding:0,Applying:1,Analyzing:1,Evaluating:2,Creating:2};
 const tsv=f=>fs.readFileSync(f,'utf8').trim().split('\n').map(l=>{const [lv,t]=l.split('\t');return {level:lv,text:t};});
-const hand=[]; for(const l of L) for(const f of [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`]) fs.readFileSync(f,'utf8').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>hand.push({text:t,level:l}));
+const hand=[]; for(const l of L) for(const f of [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`,`data/${l.toLowerCase()}_3.txt`]) fs.readFileSync(f,'utf8').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>hand.push({text:t,level:l}));
 const hb=[...tsv('hard.tsv'),...tsv('blind.tsv')];
 const gen=tsv('data/generated.tsv').map(e=>({...e,weight:+(process.argv[2]||0.5)}));
 const b2=tsv('blind2.tsv'), b3=tsv('blind3.tsv');

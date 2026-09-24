@@ -1,0 +1,29 @@
+Simple interest is the interest earned only on the original amount of money. The formula for simple interest is I = P * r * t, where P is the principal, r is the annual interest rate and t is the time in years. For example, a deposit in a savings account earns simple interest. Compound interest, unlike simple interest, is computed on both the principal and the accumulated interest.
+===
+A firewall is a security system that monitors and controls incoming and outgoing network traffic. It is used to block unauthorized access to a private network. There are two main types of firewalls: hardware firewalls and software firewalls. For example, Windows Defender Firewall is a software firewall. Without a firewall, a network is more vulnerable to attacks.
+===
+Ohm's law states that the current through a conductor is directly proportional to the voltage across it. The formula is V = I * R, where V is the voltage in volts, I is the current in amperes and R is the resistance in ohms. A resistor is an electrical component that limits the flow of current. Increasing the resistance reduces the current in a circuit.
+===
+A stack is a linear data structure that follows the Last In, First Out principle. The two main operations of a stack are push and pop. A queue, whereas, follows the First In, First Out principle. Stacks are used to implement the undo feature in text editors. For example, a pile of plates is a real-life example of a stack.
+===
+The mean is the sum of all values divided by the number of values. The median is the middle value when the data are arranged in order. The mode is the value that occurs most often. The mean is affected by extreme values, whereas the median is not. The formula for the mean is mean = sum / n.
+===
+The scientific method is a systematic way of investigating natural phenomena. The steps of the scientific method are observation, question, hypothesis, experiment and conclusion. First, the scientist observes a phenomenon. Then, a hypothesis is formed. Finally, a conclusion is drawn based on the results of the experiment.
+===
+Climate change refers to long-term shifts in temperatures and weather patterns. Burning fossil fuels releases greenhouse gases into the atmosphere. Greenhouse gases trap heat, which leads to global warming. Rising sea levels threaten coastal communities in the Philippines. Planting trees helps reduce the amount of carbon dioxide in the air.
+===
+A metaphor is a figure of speech that compares two unlike things without using like or as. A simile compares two things using like or as. For example, "Time is a thief" is a metaphor, while "as brave as a lion" is a simile. Personification gives human qualities to non-human things.
+===
+The Treaty of Paris was signed in 1898. It ended the Spanish-American War. Under the treaty, Spain ceded the Philippines to the United States for 20 million dollars. Many Filipinos opposed American rule because they had already declared independence. The Philippine-American War began in 1899.
+===
+Supply refers to the quantity of a good that producers are willing to sell at a given price. Demand is the quantity of a good that consumers are willing to buy. When the price of a good increases, the quantity demanded decreases. A shortage occurs when demand is greater than supply. The equilibrium price is the price at which supply equals demand.
+===
+The probability of an event is the number of favorable outcomes divided by the total number of outcomes. The formula is P = f / n, where f is the number of favorable outcomes and n is the total number of possible outcomes. Two events are independent if the occurrence of one does not affect the other. For example, tossing a coin and rolling a die are independent events.
+===
+Cloud computing is the delivery of computing services such as storage, servers and software over the internet. The three service models of cloud computing are Infrastructure as a Service, Platform as a Service and Software as a Service. Cloud computing reduces the cost of maintaining physical servers. However, it depends on a stable internet connection.
+===
+Ang ekosistema ay isang komunidad ng mga buhay na organismo at ang kanilang kapaligiran. Ang mga bahagi ng ekosistema ay mga halaman, hayop at mikroorganismo. Nasisira ang ekosistema dahil sa polusyon at pagputol ng mga puno. Halimbawa, ang bakawan ay isang uri ng ekosistema sa baybayin.
+===
+An algorithm is a finite set of well-defined steps for solving a problem. A flowchart is a diagram that represents an algorithm using symbols. The characteristics of a good algorithm are finiteness, definiteness, input, output and effectiveness. Pseudocode is used to describe an algorithm in plain language before coding it.
+===
+Speed is the distance traveled per unit of time. The formula for speed is s = d / t, where d is the distance in meters and t is the time in seconds. Acceleration is the rate of change of velocity. A car that travels faster covers more distance in the same amount of time.

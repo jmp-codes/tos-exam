@@ -1,0 +1,81 @@
+Applying	A cashier needs to find the average sales per day. Which of the following should be used?
+Applying	A librarian needs to find a book quickly by its call number. Which of the following should be used?
+Applying	A nurse needs to record patient visits so they can be searched later. Which of the following should be used?
+Applying	A farmer needs to measure how much rain fell in a week. Which instrument should be used?
+Applying	A programmer needs to reverse the order of items in a list. Which data structure should be used?
+Applying	A teacher needs to show the trend of grades over five quarters. Which type of graph should be used?
+Applying	A network administrator needs to assign IP addresses automatically. Which protocol should be used?
+Applying	A student needs to find the number of ways to arrange 5 books. Which counting technique should be used?
+Applying	A store owner needs to compute the tax on a purchase. Which formula should be used?
+Applying	A builder needs to find the length of a diagonal brace. Which theorem should be used?
+Applying	An engineer needs to reduce the current in a circuit. Which component should be added?
+Applying	A registrar needs to prevent two students from having the same ID number. Which of the following should be used?
+Applying	If the base (b) is 12 and the height (h) is 5, use A = b * h / 2 to compute the area (A).
+Applying	If the mass (m) is 8 kg and the acceleration (a) is 3 m/s², use F = m * a to compute the force (F).
+Applying	If the distance (d) is 150 km and the time (t) is 3 hours, use s = d / t to compute the speed (s).
+Applying	If the principal (P) is 20,000, the rate (r) is 0.05 and the time (t) is 2 years, use I = P * r * t to compute the interest (I).
+Applying	If the voltage (V) is 24 volts and the resistance (R) is 6 ohms, use I = V / R to compute the current (I).
+Applying	If the radius (r) is 7 cm, use A = pi * r^2 to compute the area (A).
+Applying	If the favorable outcomes (f) are 3 and the total outcomes (n) are 12, use P = f / n to compute the probability (P).
+Applying	If the length (l) is 9 m and the width (w) is 4 m, use A = l * w to compute the area (A).
+Applying	If the work (W) is 500 joules and the time (t) is 10 seconds, use P = W / t to compute the power (P).
+Applying	If the sum of the scores is 425 and n is 5, use mean = sum / n to compute the mean.
+Applying	Ilapat ang pormula A = l * w kung ang haba ay 8 m at ang lapad ay 3 m.
+Applying	Kung ang distansya ay 60 km at ang oras ay 2 oras, gamitin ang s = d / t upang makuha ang bilis.
+Analyzing	Using F = m * a, analyze what happens to the force when the mass is doubled.
+Analyzing	Using A = pi * r^2, analyze what happens to the area when the radius is doubled.
+Analyzing	Using P = f / n, analyze what happens to the probability when the total outcomes are doubled.
+Analyzing	Using I = V / R, analyze what happens to the current when the resistance is halved.
+Analyzing	Using s = d / t, analyze how the speed changes if the time is tripled.
+Analyzing	Using the formula for simple interest, analyze how the interest changes when the rate is doubled.
+Analyzing	Analyze why the area of a circle increases faster than its radius.
+Analyzing	Trace how deforestation can eventually lead to flooding, explaining each link.
+Analyzing	Trace how a rise in fuel prices can eventually lead to higher food prices, explaining each link.
+Analyzing	Analyze why the quantity demanded falls when the price rises.
+Understanding	Which of the following is an example of a renewable resource?
+Understanding	Which of the following is an example of an input device?
+Understanding	Which of the following is an example of a metaphor?
+Understanding	Which of the following is an example of a chemical change?
+Understanding	Which of the following is an example of a primary key?
+Understanding	Which of the following is an example of a mammal?
+Understanding	Which of the following is an example of personification?
+Understanding	Which of the following is an example of an independent event?
+Understanding	Give another example of a renewable resource besides solar energy, and explain why it fits.
+Understanding	Give another example of an input device besides a keyboard, and explain why it fits.
+Understanding	Give another example of a simile besides "as busy as a bee", and explain why it fits.
+Understanding	Give another example of a chemical change besides burning paper, and explain why it fits.
+Understanding	What is the most likely result of cutting down forests?
+Understanding	What is the most likely result when the price of a good increases?
+Understanding	What is the most likely result of adding more resistance to a circuit?
+Understanding	What is the most likely result when greenhouse gases build up in the atmosphere?
+Understanding	According to the lesson, when demand increases, what happens to the price?
+Understanding	According to the lesson, when the resistance increases, what happens to the current?
+Understanding	Explain why a pile of books is an example of a stack.
+Understanding	Explain when a surplus occurs.
+Understanding	Alin sa mga sumusunod ang halimbawa ng likas na yaman?
+Understanding	Magbigay ng iba pang halimbawa ng pang-uri bukod sa "maganda", at ipaliwanag kung bakit ito akma.
+Remembering	Arrange the steps of the water cycle in the correct order: condensation; evaporation; precipitation; collection.
+Remembering	Arrange the stages of mitosis in the correct order: anaphase; prophase; telophase; metaphase.
+Remembering	Arrange these events in the order they happened: EDSA Revolution; Martial Law; Commonwealth period.
+Remembering	Arrange the phases of the software development life cycle in the correct order.
+Remembering	What is the first step of the scientific method?
+Remembering	What is the first step of the software development life cycle?
+Remembering	In the formula F = m * a, what does m stand for?
+Remembering	In the formula I = P * r * t, what does r stand for?
+Remembering	What is the formula for the area of a rectangle?
+Remembering	Which of the following is NOT one of the layers of the OSI model?
+Remembering	Which of the following is NOT one of the three branches of government?
+Remembering	When was the Commonwealth of the Philippines established?
+Remembering	When did World War II end?
+Remembering	Photosynthesis is a type of which of the following?
+Remembering	A router is a type of which of the following?
+Remembering	Who is known as the Father of Philippine Nationalism?
+Evaluating	Considering that solar panels are expensive to install, are they still a good choice for a rural school? Justify your answer.
+Evaluating	Considering that cloud storage needs a stable internet connection, is it still a good choice for a remote barangay? Justify your answer.
+Evaluating	Is a mesh network always better than a star network? Defend your answer.
+Evaluating	Which of the steps of the scientific method is the most important? Justify your choice.
+Creating	Write an original word problem that uses F = m * a, then solve it.
+Creating	Write an original word problem that uses the formula for simple interest, then solve it.
+Creating	Design a new checklist based on the scientific method that Grade 10 students can follow.
+Creating	Propose an original plan to reduce flooding in your barangay.
+Creating	Create an original diagram or model that shows how the parts of a computer work together.
