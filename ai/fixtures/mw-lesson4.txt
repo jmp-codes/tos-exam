@@ -1,0 +1,25 @@
+Middleware
+Defines a software layer that connects applications, databases and services.
+Hides the differences between platforms.
+Enables communication between distributed systems.
+
+Types of Middleware
+Message-Oriented Middleware – Sends messages between applications using queues.
+Remote Procedure Call – Lets a program call a function on another computer.
+Object Request Broker – Allows objects on different systems to communicate.
+Enterprise Service Bus – Routes and transforms messages between services.
+
+Messaging Models
+Point-to-point – each message is delivered to exactly one receiver.
+Publish/subscribe – each message is delivered to every subscriber of a topic.
+
+Benefits of Service-Oriented Architecture
+Improves reusability of services.
+Reduces integration costs.
+Supports loose coupling between systems.
+
+Common Protocols
+HTTP – transfers web pages and API requests.
+SOAP – exchanges XML messages between web services.
+AMQP – carries messages between applications and message brokers.
+MQTT – sends lightweight messages between IoT devices.

@@ -60,8 +60,12 @@ const FileText = (() => {
       let title="", text="";
       for(const sp of doc.getElementsByTagNameNS(P,"sp")){
         const ph=sp.getElementsByTagNameNS(P,"ph")[0]; const isTitle=ph && /title/i.test(ph.getAttribute("type")||"");
-        const paras=Array.from(sp.getElementsByTagNameNS(A,"p")).map(p=>Array.from(p.getElementsByTagNameNS(A,"t")).map(t=>t.textContent).join("").trim()).filter(Boolean);
-        if(isTitle) title=paras.join(" "); else paras.forEach(t=>{ text+=t+(/[.?!:;]$/.test(t)?"":".")+"\n"; });
+        const paras=Array.from(sp.getElementsByTagNameNS(A,"p")).map(p=>({t:Array.from(p.getElementsByTagNameNS(A,"t")).map(t=>t.textContent).join("").trim(), lvl:+(p.getElementsByTagNameNS(A,"pPr")[0]?.getAttribute("lvl")||0)})).filter(x=>x.t);
+        if(isTitle) title=paras.map(x=>x.t).join(" ");
+        else for(let k=0;k<paras.length;k++){ const x=paras[k], nx=paras[k+1];
+          // a short bullet followed by an indented one: "Term" + "Defines …" → "Term – Defines …"
+          if(nx && nx.lvl>x.lvl && x.t.split(" ").length<=7 && !/[.:;]$/.test(x.t)){ text+=x.t+" – "+nx.t.replace(/[.;]$/,"")+".\n"; k++; continue; }
+          text+=x.t+(/[.?!:;]$/.test(x.t)?"":".")+"\n"; }
       }
       secs.push({title,text});
     }

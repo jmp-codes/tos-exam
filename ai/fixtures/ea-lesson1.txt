@@ -1,0 +1,65 @@
+Lesson 1: Advanced Enterprise Architecture Foundations
+System Integration and Architecture 2.
+Learning Objectives.
+Explain the purpose of enterprise architecture.
+Describe the four EA domains.
+Compare common EA frameworks.
+
+What is Enterprise Architecture?
+Enterprise Architecture (EA) is a discipline for aligning an organization's business strategy with its information technology.
+EA provides a blueprint of the current state and the target state of the organization.
+It guides decision-making for IT investments.
+
+The Four EA Domains
+Business Architecture – defines the business strategy, governance, organization and key business processes.
+Data Architecture – describes the structure of an organization's logical and physical data assets.
+Application Architecture – provides a blueprint for the individual applications to be deployed and their interactions.
+Technology Architecture – describes the hardware, software and network infrastructure needed to support the applications.
+
+Enterprise Architecture Frameworks
+TOGAF: an open framework developed by The Open Group that uses the Architecture Development Method.
+Zachman Framework: a two-dimensional classification schema that organizes architecture artifacts by perspective and question.
+FEAF: the Federal Enterprise Architecture Framework used by United States government agencies.
+Gartner Methodology: a practical approach that focuses on business outcomes.
+
+Phases of the TOGAF ADM
+Preliminary Phase.
+Architecture Vision.
+Business Architecture.
+Information Systems Architecture.
+Technology Architecture.
+Opportunities and Solutions.
+Migration Planning.
+Implementation Governance.
+Architecture Change Management.
+
+Benefits of Enterprise Architecture
+Reduces duplication of systems and data.
+Improves alignment between business and IT.
+Lowers IT costs.
+Speeds up decision-making.
+Supports regulatory compliance.
+
+Challenges in EA Adoption
+Lack of executive support leads to failed EA programs.
+Poor communication between business and IT causes misaligned solutions.
+EA teams may produce documents that nobody uses.
+
+Current State and Target State
+The current state (as-is) describes how the organization works today.
+The target state (to-be) describes how the organization should work in the future.
+A gap analysis is used to identify the differences between the current state and the target state.
+A roadmap is a plan that sequences the projects needed to reach the target state.
+
+Key Terms
+Stakeholder – a person or group with an interest in the architecture.
+Artifact – a work product such as a diagram, model or document.
+Viewpoint – a specification of the conventions for constructing a view.
+Governance – the practice of ensuring that architecture decisions are followed.
+Capability – an ability that an organization possesses to achieve a specific purpose.
+
+Summary
+EA aligns business and IT.
+The four domains are business, data, application and technology.
+TOGAF, Zachman, FEAF and Gartner are common frameworks.
+Gap analysis connects the current state to the target state.

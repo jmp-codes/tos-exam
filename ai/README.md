@@ -241,6 +241,35 @@ Run: `node mc-eval.js fixtures/fresh-lessons.txt [show|miss]`, `node matrix.js f
 Short paragraphs of one or two sentences cannot support every level; a full lesson usually can.
 
 
+## Reading slide decks and outlines (QGen v2.5)
+
+Slides are mostly headings with short bullets, which the sentence reader could not use. A structure reader
+now runs first and understands:
+- glossary bullets: "Term – description", "Term: description", "Term (ABC) – description", including
+  descriptions that start with a verb ("Business Architecture – defines …" becomes "the domain that defines …"
+  plus a purpose) or a clause ("Point-to-point – each message is …" becomes "the model in which …");
+- a slide title that is the term, with bullets that say what it does ("Middleware" + "Hides …", "Enables …");
+- a short bullet with an indented bullet under it (PowerPoint levels are read);
+- "Phases/Steps/Stages of …" (ordered steps), "Types/Components/Layers of …" (lists),
+  "Benefits/Advantages of …" (purposes), "Challenges/Limitations of …" (limitations);
+- objectives, outline and summary slides are skipped so they don't become questions.
+
+New multiple-choice patterns for deck-style lessons: which item of a group is most affected by a change
+(Analyzing), which pair you would combine in a design (Creating), and more next-step and plan items. Wrong choices
+leave out an item's parent or child from the same list (e.g. not "Remote Procedure Call" when the answer is
+"Middleware"), and main-purpose choices mix real purposes instead of giving away the answer by wording.
+
+| Test | Before | After |
+|---|---|---|
+| EA slide deck (fixtures/ea-lesson1.pptx), multiple choice made per level R/U/Ap/An/E/C | 4/6/1/3/4/3 | 22/24/15/16/26/20 |
+| Middleware slide deck (fixtures/mw-lesson4.pptx), same | — | 16/20/13/14/32/16 |
+| Both decks: level confirmed · answer-key problems | — | 99.6% · 0 |
+| Build exam, MC only, 21-item topic from the EA deck | — | 21/21 filled |
+| Earlier tests (fresh lessons, 19 lessons, sealed, mc-levels-blind) | | unchanged (100%, 99.1%, 100%, 96.7%) |
+
+When a lesson still runs out, the app says so plainly and offers three choices: fill the empty items with other
+question types, add another file to that topic (slides + handout + notes are combined), or leave them to write.
+
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
 - Compare this model with a small transformer (e.g., DistilBERT) fine-tuned on the same data.
