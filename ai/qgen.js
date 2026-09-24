@@ -1,4 +1,4 @@
-/* QGen v2.7 — offline question generator for TOS Builder.
+/* QGen v2.8 — offline question generator for TOS Builder.
    Reads a sentence or paragraph for definitions, names, dates, lists, steps, examples, classifications,
    formulas, causes, relationships, comparisons, purposes and limitations, then fills Bloom's-level
    question patterns. Every pattern has an id so the app can rank patterns by what teachers keep and
@@ -50,9 +50,9 @@ const QGen = (() => {
   function lemma(w){ const l=w.toLowerCase(); if(LEMMA_X[l]) return LEMMA_X[l]; if(/ies$/.test(l)) return l.slice(0,-3)+"y"; if(/(ch|sh|x|z|ss)es$/.test(l)) return l.slice(0,-2); if(/[^s]s$/.test(l)) return l.slice(0,-1); return l; }
   const DESC_VERB=/^(defines?|describes?|provides?|represents?|shows?|stores?|manages?|controls?|connects?|converts?|allows?|enables?|ensures?|supports?|handles?|organizes?|focuses|uses?|applies|specifies|identifies|measures?|protects?|translates?|coordinates?|integrates?|monitors?|collects?|processes|delivers?|sends?|receives?|creates?|tracks?|reduces?|improves?|lowers?|speeds?|increases?|helps?|guides?|links?|maps?|documents?|captures?|models?|defines|runs?|executes?|routes?|forwards?|filters?|holds?|keeps?|contains?|lists?|records?|checks?|validates?|verifies?|transforms?|exchanges?|carries|moves?|calls?|invokes?|exposes?|publishes?|subscribes?|queues?|brokers?|mediates?|lets|gives|offers|serves|acts|works|makes|builds|hides|performs|combines|separates|divides|breaks|stands|transfers|exchanges|carries|sends|shares|stores|loads|saves|splits|joins|compares|calculates|computes|displays|prints|reads|writes|returns|accepts|rejects|grants|denies|encrypts|decrypts|compresses|authenticates|authori[sz]es|schedules|allocates|assigns|balances|caches|replicates|synchroni[sz]es|backs up|restores|detects|prevents|blocks|allows)\b/i;
   const looksVerb=d=>DESC_VERB.test(d) || /^[a-z]+(?<!ss)s\s+(an?|the|all|each|every|data|messages?|requests?|information|files?|users?|objects?|programs?|web|xml|json|lightweight|small|large|multiple|one|two)\b/i.test(d);
-  const SKIP_HEAD=/^(learning objectives?|objectives?|outline|agenda|overview|summary|references?|reflection|activity|assessment|quiz|exercise|discussion|questions?|thank you|introduction)\b/i;
+  const SKIP_HEAD=/^(learning objectives?|objectives?|outline|agenda|overview|summary|references?|reflection|activity|assessment|quiz|exercise|discussion|questions?|thank you|introduction|case|case study|scenario|examples?|prepared by|group activity|learning outcomes?)\b/i;
   function singular(w){ w=w.toLowerCase(); if(/ies$/.test(w)) return w.slice(0,-3)+"y"; if(/(ss|us|is)$/.test(w)) return w; if(/(ches|shes|xes|sses)$/.test(w)) return w.slice(0,-2); return w.replace(/s$/,""); }
-  function headNoun(h){ const ty=h.match(/^(?:the\s+)?(?:\w+\s+)?(?:types|kinds|categories|forms|classes)\s+of\s+(?:the\s+)?(.+)$/i); if(ty) return singular(ty[1].split(/\s+/).pop()); const w=h.replace(/[^A-Za-z\s-]/g," ").trim().split(/\s+/); const last=w[w.length-1]||""; if(!/s$/i.test(last)||/^(terms|concepts|definitions|basics|notes|foundations|fundamentals|essentials)$/i.test(last)) return null; return singular(last); }
+  function headNoun(h){ h=h.replace(/\s*\([^)]*\)\s*$/,""); const ty=h.match(/^(?:the\s+)?(?:\w+\s+)?(?:types|kinds|categories|forms|classes)\s+of\s+(?:the\s+)?(.+)$/i); if(ty) return singular(ty[1].split(/\s+/).pop()); const w=h.replace(/[^A-Za-z\s-]/g," ").trim().split(/\s+/); const last=w[w.length-1]||""; if(!/s$/i.test(last)||/^(terms|concepts|definitions|basics|notes|foundations|fundamentals|essentials)$/i.test(last)) return null; return singular(last); }
   function kindOf(h){ return h.replace(/^(the|a|an)\s+/i,"").split(/\s+/).map(w=>/^[A-Z0-9]{2,}$/.test(w)?w:w.toLowerCase()).join(" "); }
   const pv=(v,rest)=>(lemma(v)+" "+rest).replace(/^(\w+) and (\w+?s)\b/,(m0,a,b)=>a+" and "+lemma(b));
   const overlaps0=(a,b)=>{ const k=x=>new Set((String(x).toLowerCase().match(/[a-z]{4,}/g)||[]).map(w=>w.slice(0,5))); const A=k(a); for(const w of k(b)) if(A.has(w)) return true; return false; };
@@ -70,23 +70,32 @@ const QGen = (() => {
       if((!/s$/i.test(head.split(" ").pop()||"") || TITLE(head)) && !/^(?:the\s+|common\s+|key\s+|main\s+|major\s+)?(benefits|advantages|importance|uses|purposes|roles?|goals|functions|types|kinds|categories|components|elements|layers|parts|principles|characteristics|features|levels|models|tiers|pillars|phases|steps|stages|challenges|problems|issues|disadvantages|limitations|risks|drawbacks|examples)\b/i.test(head)){ const vb=items.map((x,i)=>[x,i]).filter(([x])=>DESC_VERB.test(x) && !/^[^–—:]{2,60}\s[–—:-]\s/.test(x)); if(vb.length>=1 && vb.length>=items.length/2 && head.split(" ").length<=6 && !/^(what|why|how|when|who)\b/i.test(head)){ const T=termCase(noArt(head)); vb.forEach(([x,i])=>{ const v=x.split(" ")[0]; if(!/^(defines?|is|means|refers)$/i.test(v)) F.purposes.push({term:T,purpose:pv(v,x.slice(v.length).trim()),src:x}); used.add(i); });
           const f0=vb[0][0], dm=f0.match(/^(?:defines?|is|means|refers to)\s+(?:as\s+)?((?:an?|the)\s+.+)$/i); if(!F.defs.some(d=>same(d.term,T))) F.defs.push({art:"",term:T,verb:"is",def:dm?dm[1]:`the one that ${f0.charAt(0).toLowerCase()+f0.slice(1)}`,src:f0}); addTerm(T,3); } }
       // glossary items: "Term – description", "Term: description", "Term (ABC) – description"
+      const pitM=head.match(/^(?:the\s+|common\s+|key\s+|major\s+|typical\s+)?(challenges|problems|issues|disadvantages|limitations|risks|drawbacks|pitfalls|mistakes|errors|barriers|obstacles)\b(?:\s+(?:of|in|with|for|when)\s+(?:the\s+|an?\s+)?(.+))?$/i);
+      if(pitM){ const subj=pitM[2]?termCase(noArt(pitM[2])):""; items.forEach((x,i)=>{ const m3=x.match(/^([A-Z][^:]{2,50}):\s+(.{6,})$/); if(m3){ F.defs.push({art:"",term:termCase(m3[1].trim()),verb:"is",def:m3[2].replace(/^(.)/,c=>c.toLowerCase()),src:x,group:head}); used.add(i); return; } const m2=x.match(/^(.{4,80}?)\s+[–—-]\s+(.{4,})$/); if(m2){ F.causes.push({cause:trimP(m2[1]),verb:"leads to",effect:trimP(m2[2]).replace(/^(.)/,c=>c.toLowerCase()),src:x,pitfall:true}); used.add(i); } }); if(subj) items.forEach((x,i)=>{ if(used.has(i)||/\b(leads? to|causes?|results? in|may|can|might|will|is|are|do|does|has|have)\b/i.test(x)) return; F.limits.push({term:subj,limit:"faces "+(/^[A-Z][A-Z]/.test(x)?x:x.replace(/^(.)/,c=>c.toLowerCase())),src:x}); used.add(i); }); keep.push(items.filter((x,i)=>!used.has(i)).map(x=>/[.!?]$/.test(x)?x:x+".").join("\n")); continue; }
       const glos=[];
       items.forEach((x,i)=>{ const m=x.match(/^([A-Z0-9][^–—:]{1,60}?)\s*(?:\(([A-Za-z0-9&]{2,10})\))?\s*(?:[–—:]|\s-\s)\s*(.{6,})$/); if(!m) return; if(m[1].split(" ").length>7) return;
-        const raw1=noArt(m[1].trim()), tc=raw1.split(" ").length>1&&raw1.split(" ").every(w=>/^[A-Z0-9]/.test(w)||/^(of|and|the|in|for|to|a|an)$/.test(w)); const term=tc?raw1:termCase(raw1), abbr=m[2]||"", desc=m[3].trim(); let def=null, verb="is";
+        if(/^(result|results|note|notes|example|examples|answer|question|output|input|reason|goal|objective|problem|solution|conclusion|summary|source|prepared by|date|remember|tip|key idea|important)$/i.test(m[1].trim())) return;
+        let mt=m[1].trim(); const exp=mt.match(/^(.+?)\s*\(([^)]{11,})\)$/); if(exp){ mt=exp[1]; F.aliases=(F.aliases||[]).concat([[exp[1],exp[2]]]); }
+        const raw1=noArt(mt), tc=raw1.split(" ").length>1&&raw1.split(" ").every(w=>/^[A-Z0-9]/.test(w)||/^(of|and|the|in|for|to|a|an)$/.test(w)); const term=tc?raw1:termCase(raw1), abbr=m[2]||"", desc=m[3].trim(); let def=null, verb="is";
         if(/^(an?|the)\s/i.test(desc)) def=desc.replace(/^(.)/,c=>c.toLowerCase());
         else if(looksVerb(desc)){ const v=desc.split(" ")[0]; const rest=desc.slice(v.length).trim(); def=`the ${hn||"one"} that ${v.toLowerCase()} ${rest}`; F.purposes.push({term,purpose:pv(v,rest),src:x,glossary:true}); }
         else if(/^used (to|for)\s/i.test(desc)){ F.purposes.push({term,purpose:desc.replace(/^used\s+to\s+/i,"").replace(/^used\s+for\s+/i,"for "),src:x,glossary:true}); def=`the ${hn||"one"} ${desc}`; }
         else if(/^\S+(\s+\S+){0,5}\s+(is|are|was|were|can|will|has|have|must)\b/i.test(desc)) def=`the ${hn||"approach"} in which ${desc.replace(/^(.)/,c=>c.toLowerCase())}`;
+        else if(/^(used|centered|centred|based|designed|built|developed|known|made|owned|maintained|adopted|created)\b/i.test(desc)) def=`the ${hn||"one"} ${desc.replace(/^(.)/,c=>c.toLowerCase())}`;
+        else if(/^(most|more|highly|widely|very|often|mainly|mostly)\b/i.test(desc)) def=`the ${hn||"one"} that is ${desc.replace(/^(.)/,c=>c.toLowerCase()).replace(/;\s*/," and ")}`;
         else if(/^[a-z]/.test(desc)) def=desc;
         if(def){ glos.push(term); used.add(i); if(!F.defs.some(d=>d.term.toLowerCase()===term.toLowerCase())) F.defs.push({art:"",term,verb,def:trimP(def),src:x,abbr,group:head}); addTerm(term,3); } });
       if(glos.length>=2) F.lists.push({kind:kindOf(head),subject:"",items:glos,src:head,glossary:true});
       // ordered sequences: "Phases of …", "Steps in …"
       const plain=items.filter((x,i)=>!used.has(i) && !isSentence(x) && x.split(" ").length<=10);
-      const seqM=head.match(/^(?:the\s+)?(?:\w+\s+)?(phases|steps|stages|process|procedure|cycle|life ?cycle|workflow)\s+(?:of|in|for)\s+(?:the\s+)?(.+)$/i) || head.match(/^(.+?)\s+(phases|steps|stages|process|procedure|workflow)$/i);
-      if(seqM && plain.length>=3){ const proc=/^(phases|steps|stages|process|procedure|cycle|life ?cycle|workflow)$/i.test(seqM[1])?seqM[2]:seqM[1]; F.steps.push({process:proc.replace(/^the\s+/i,""),steps:plain.map(x=>x.replace(/^(\d+[.)]|[A-Z][.)])\s*/,"")),src:head}); items.forEach((x,i)=>{ if(plain.includes(x)) used.add(i); }); }
+      const seqM=head.match(/^(?:the\s+)?(?:\w+\s+)?(phases|steps|stages|process|procedure|cycle|life ?cycle|workflow)\s+(?:of|in|for)\s+(?:the\s+)?(.+)$/i) || head.match(/^(.+?)\s+(phases|steps|stages|process|procedure|workflow|cycle|life ?cycle|methodology)$/i);
+      const avgW=plain.reduce((a,x)=>a+x.split(" ").length,0)/Math.max(1,plain.length);
+      for(let k=plain.length-1;k>=0;k--) if(plain[k].split(" ").length>=Math.max(7,avgW*2)) plain.splice(k,1);
+      if(seqM && plain.length>=3){ const proc=/^(phases|steps|stages|process|procedure|cycle|life ?cycle|workflow|methodology)$/i.test(seqM[1])?seqM[2]:seqM[1]; F.steps.push({process:proc.replace(/^the\s+/i,""),steps:plain.map(x=>x.replace(/^(\d+[.)]|[A-Z][.)])\s*/,"")),src:head}); items.forEach((x,i)=>{ if(plain.includes(x)) used.add(i); }); }
       // benefits / purposes of a subject
       const benM=head.match(/^(?:the\s+)?(?:key\s+|main\s+)?(benefits|advantages|importance|uses|purposes|roles?|goals|functions)\s+of\s+(?:the\s+|an?\s+)?(.+)$/i) || head.match(/^why\s+(.+?)\s+matters?$/i);
-      if(benM){ const subj=termCase(noArt(benM[2]||benM[1])); items.forEach((x,i)=>{ if(used.has(i)) return; const v=x.split(" ")[0]; if(DESC_VERB.test(x)||/^[A-Z][a-z]+s\b/.test(v)){ F.purposes.push({term:subj,purpose:pv(v,x.slice(v.length).trim()),src:x,benefit:true}); used.add(i); } }); addTerm(subj,2); }
+      if(benM){ const subj=termCase(noArt(benM[2]||benM[1])); items.forEach((x,i)=>{ if(used.has(i)) return; const v=x.split(" ")[0]; if(DESC_VERB.test(x)||/^[A-Z][a-z]+s\b/.test(v)){ F.purposes.push({term:subj,purpose:pv(v,x.slice(v.length).trim()),src:x,benefit:true}); used.add(i); }
+        else if(x.split(" ").length<=12 && !/\b(is|are|was|were)\b/i.test(x)){ F.purposes.push({term:subj,purpose:"bring about "+x.replace(/^(.)/,c=>c.toLowerCase()),src:x,benefit:true}); used.add(i); } }); addTerm(subj,2); }
       // challenges / limitations of a subject
       const chM=head.match(/^(?:the\s+|common\s+|key\s+|major\s+)?(challenges|problems|issues|disadvantages|limitations|risks|drawbacks)\s+(?:of|in|with|for)\s+(?:the\s+|an?\s+)?(.+)$/i);
       if(chM){ const subj=termCase(noArt(chM[2])); items.forEach((x,i)=>{ if(used.has(i)||/\b(leads? to|causes?|results? in)\b/i.test(x)) return; if(/\b(may|can|might|will|is|are|do|does|has|have)\b/i.test(x)) return; F.limits.push({term:subj,limit:"faces "+(/^[A-Z][A-Z]/.test(x)?x:x.replace(/^(.)/,c=>c.toLowerCase())),src:x}); used.add(i); }); }
@@ -109,12 +118,14 @@ const QGen = (() => {
     for(const raw of S){
       let s=raw.replace(/[.!?]$/,"").trim(); let m;
       if(fil){ readFil(s,raw,F,addTerm); continue; }
+      // ---- two comparisons joined by "but" ----
+      if(/\bthan\b[^,]*,\s*but\b[^.]*\bthan\b/i.test(s)){ for(const part of s.split(/,\s*but\s+/i)){ const mc=part.match(/^(?:an?\s+|the\s+)?(.{2,40}?)\s+(?:is|are)\s+((?:more|less)\s+\w+|\w+er)\s+than\s+(?:an?\s+|the\s+)?(.{2,60})$/i); if(mc) F.comps.push({a:noArt(mc[1]),comp:mc[2],b:noArt(mc[3]),src:raw}); } continue; }
       // ---- more ways lessons state facts ----
       { let mm, handled=false; const T0=x=>termCase(noArt(trimP(x)));
         if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s*,\s*(?:also\s+)?(?:known|called|referred to)\s+as\s+(?:an?\s+|the\s+)?([\w\s\-\/]{2,40}?)\s*,\s*(.+)$/i))){ const T=T0(mm[1]); addTerm(T,3); addTerm(mm[2],2); s=`${mm[1]} ${mm[3]}`; F.aliases=(F.aliases||[]).concat([[T,trimP(mm[2])]]); }
         if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s*,\s*(?:which|that)\s+(\w+s)\s+(.+?),\s*(.+)$/i)) && looksVerb(mm[2]+" "+mm[3])){ F.purposes.push({term:T0(mm[1]),purpose:pv(mm[2],mm[3]),src:raw}); addTerm(mm[1],2); s=`${mm[1]} ${mm[4]}`; }
         if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s+(?:consists? of|is made up of|are made up of|is composed of|are composed of|has|have)\s+(?:the following\s*:?\s*)?(.+?(?:,|\band\b).+)$/i)) && !PRON.test(mm[1]) && splitItems(mm[2]).length>=2 && !/\b(is|are|was|were)\b/.test(mm[2])){ F.lists.push({kind:"parts",subject:T0(mm[1]),items:splitItems(mm[2]),src:raw}); addTerm(mm[1],2); handled=true; }
-        else if((mm=s.match(/^(?:the\s+)?(?:main\s+|common\s+|key\s+)?([A-Za-z][\w\s\-\/]{2,40}?s)\s+(?:include|includes|are)\s+(?:the following\s*:?\s*)?([^.]+?(?:,|\band\b)[^.]+)$/i)) && !PRON.test(mm[1]) && splitItems(mm[2]).length>=2 && splitItems(mm[2]).every(x=>x.split(" ").length<=5) && !/^(advantages|benefits|disadvantages|types|kinds|steps)$/i.test(mm[1].trim())){ F.lists.push({kind:mm[1].toLowerCase().replace(/^(the|main|common|key)\s+/,""),subject:"",items:splitItems(mm[2]),src:raw}); handled=true; }
+        else if((mm=s.match(/^(?:the\s+)?(?:main\s+|common\s+|key\s+)?([A-Za-z][\w\s\-\/]{2,40}?s)\s+(?:include|includes|are)\s+(?:the following\s*:?\s*)?([^.]+?(?:,|\band\b)[^.]+)$/i)) && !PRON.test(mm[1]) && splitItems(mm[2]).length>=2 && splitItems(mm[2]).every(x=>x.split(" ").length<=5 && !/^(used|made|able|known|called|found|given|done|seen)\b/i.test(x) && !/\b(is|are|was|were|can|will|to)\b/i.test(x)) && !/^(used|made|able|known|called|found|an?|the|very|more|less|not)\b/i.test(mm[2].trim()) && !/^(advantages|benefits|disadvantages|types|kinds|steps)$/i.test(mm[1].trim())){ F.lists.push({kind:mm[1].toLowerCase().replace(/^(the|main|common|key)\s+/,""),subject:"",items:splitItems(mm[2]),src:raw}); handled=true; }
         else if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s+(?:can be|is|are|may be)\s+(?:classified|divided|grouped|categori[sz]ed|sorted)\s+into\s+(?:\w+\s+(?:types|kinds|groups|categories)\s*:?\s*)?(.+)$/i)) && splitItems(mm[2]).length>=2){ F.lists.push({kind:"types",subject:T0(mm[1]),items:splitItems(mm[2]),src:raw}); addTerm(mm[1],2); handled=true; }
         else if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z0-9][\w\-\/]*(?:\s+[\w\-\/]+){0,3})\s+vs\.?\s+(?:an?\s+|the\s+)?([A-Za-z0-9][\w\-\/]*(?:\s+[\w\-\/]+){0,3})\s*:\s*(.+)$/i))){ s=mm[3]; }
         if(!handled && (mm=s.match(/^(?:an?\s+|the\s+)?([\w\-\/]+(?:\s+[\w\-\/]+){0,3})\s+(?:is|are)\s+((?:more|less)\s+\w+|\w+er),\s*(?:while|whereas|but)\s+(?:an?\s+|the\s+)?([\w\-\/]+(?:\s+[\w\-\/]+){0,3})\s+(?:is|are)\s+((?:more|less)\s+\w+|\w+er)$/i))){ F.comps.push({a:noArt(mm[1]),comp:mm[2],b:noArt(mm[3]),src:raw}); F.comps.push({a:noArt(mm[3]),comp:mm[4],b:noArt(mm[1]),src:raw}); addTerm(mm[1],2); addTerm(mm[3],2); handled=true; }
@@ -122,7 +133,7 @@ const QGen = (() => {
         if(!handled && (mm=s.match(/^if\s+(.+?),\s*(?:then\s+)?(.+)$/i)) && !/\d/.test(mm[1]) && mm[2].split(" ").length>=3){ F.causes.push({cause:trimP(mm[1]),effect:trimP(mm[2]),src:raw}); handled=true; }
         if(!handled && (mm=s.match(/^(?:one|another|a|the)?\s*(?:main\s+|major\s+|key\s+)?(disadvantage|limitation|drawback|weakness|problem)\s+of\s+(?:an?\s+|the\s+)?(.+?)\s+is\s+that\s+(?:it|they)\s+(.+)$/i))){ F.limits.push({term:T0(mm[2]),limit:trimP(mm[3]),src:raw}); handled=true; }
         if(!handled && (mm=s.match(/^(?:one|another|a|the)?\s*(?:main\s+|major\s+|key\s+)?(advantage|benefit|strength)\s+of\s+(?:an?\s+|the\s+)?(.+?)\s+is\s+that\s+(?:it|they)\s+(\w+)\s+(.+)$/i))){ F.purposes.push({term:T0(mm[2]),purpose:pv(mm[3],mm[4]),src:raw,benefit:true}); handled=true; }
-        if(!handled && (mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\-\/]*(?:\s+[\w\-\/()]+){0,3})\s+(\w+s)\s+(.{6,})$/)) && !PRON.test(mm[1]) && DESC_VERB.test(mm[2]+" x") && !/\b(is|are|was|were|has|have|include|includes)\b/i.test(mm[2]) && !/^(this|that|these|those|it|they|there|each|every|some|many|most|all)\b/i.test(mm[1]) && !F.purposes.some(p=>same(p.term,mm[1])&&overlaps0(p.purpose,mm[3]))){ F.purposes.push({term:T0(mm[1]),purpose:pv(mm[2],mm[3]),src:raw}); addTerm(mm[1],2); }
+        if(!handled && (mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\-\/]*(?:\s+[\w\-\/()]+){0,3})\s+(\w+s)\s+(.{6,})$/)) && !PRON.test(mm[1]) && DESC_VERB.test(mm[2]+" x") && !/\b(is|are|was|were|has|have|include|includes)\b/i.test(mm[2]) && !/^(this|that|these|those|it|they|there|each|every|some|many|most|all)\b/i.test(mm[1]) && !/^(is|are|was|were|be)\b/i.test(mm[3]) && !/^(university|school|student|students|people|person|company|organization|organizations|team|teams|user|users|teacher|government|agency|office|result|results)$/i.test(mm[1].trim()) && (F.terms.has(noArt(mm[1]).toLowerCase())||TITLE(mm[1])||/^[A-Z]{2,}/.test(mm[1])||F.defs.some(d=>same(d.term,mm[1]))) && !F.purposes.some(p=>same(p.term,mm[1])&&overlaps0(p.purpose,mm[3]))){ F.purposes.push({term:T0(mm[1]),purpose:pv(mm[2],mm[3]),src:raw}); addTerm(mm[1],2); }
         if(handled) continue;
       }
       // ---- formulas: "The formula for X is A = B * C, where P is …" / "V = I * R"
@@ -139,7 +150,7 @@ const QGen = (() => {
       else if((m=s.match(/^for (?:example|instance),?\s+(.+)$/i)) && lastTerm){ const e=trimP(m[1]).split(/\s+(?:is|are|earns|earn|uses|use|has|have|shows|show|can|will|produces|produce|gives|give|follows|follow)\s+/)[0]; F.examples.push({example:e,term:lastTerm,src:raw}); }
       if(/^(for (?:example|instance)|however|halimbawa|in addition|also)\b/i.test(s)) continue;
       if((m=s.match(/^(.+?)\s+(?:is|are)\s+(?:an?\s+)?examples?\s+of\s+(?:an?\s+)?(.+)$/i)) && !/^for /i.test(s)) F.examples.push({example:trimP(m[1]),term:noArt(m[2]),src:raw});
-      if((m=s.match(/\b([a-z][\w\s]{2,40}?),?\s+such as\s+(.+?)(?:,\s*(?:is|are|can|which)\b.*)?$/i)) && !/^(is|are|was|were|covers?|has|have|that|which)\b/i.test(noArt(m[1].split(/\s+(?:of|in|from|like)\s+/).pop())) && !/\b(area|place|thing|way|things|places)$/i.test(m[1].trim())){ splitItems(m[2]).map((x,i,a)=>i===a.length-1&&x.split(" ").length>2?x.split(/\s+(?:over|in|on|to|for|from|with|by|through)\s+/)[0]:x).forEach(x=>F.examples.push({example:x,term:noArt(m[1].split(/\s+(?:of|in|from|like)\s+/).pop()),src:raw})); }
+      if((m=s.match(/\b([a-z][\w\s]{2,40}?),?\s+such as\s+(.+?)(?:,\s*(?:is|are|can|which)\b.*)?$/i)) && !/^(is|are|was|were|covers?|has|have|that|which)\b/i.test(noArt(m[1].split(/\s+(?:of|in|from|like)\s+/).pop())) && !/\b(area|place|thing|way|things|places)$/i.test(m[1].trim())){ { const np=m[1].match(/(?:\b(?:an?|the|of|such)\s+)([\w-]+(?:\s+[\w-]+){0,2})$/i); if(/\b(that|which|who|measures?|performs?|uses?|holds?)\b/i.test(m[1])){ if(!np) continue; m[1]=np[1]; } } splitItems(m[2]).map((x,i,a)=>i===a.length-1&&x.split(" ").length>2?x.split(/\s+(?:over|in|on|to|for|from|with|by|through)\s+/)[0]:x).forEach(x=>F.examples.push({example:x,term:noArt(m[1].split(/\s+(?:of|in|from|like)\s+/).pop()),src:raw})); }
       // ---- dates and events
       if((m=s.match(/^(?:the\s+)?(.+?)\s+(was|were)\s+(signed|founded|established|built|discovered|invented|declared|created|written|published|held|born|killed|executed|launched|started|approved|ratified)\s+(?:on|in)\s+(?:[A-Z][a-z]+\s+\d{1,2},\s+)?(\d{3,4})\b/i))) F.dates.push({subject:trimP(m[1]),verb:`${m[2]} ${m[3]}`,year:m[4],src:raw});
       else if((m=s.match(/^(?:the\s+)?(.+?)\s+(began|started|ended|occurred|happened|took place)\s+(?:on|in)\s+(?:[A-Z][a-z]+\s+\d{1,2},\s+)?(\d{3,4})\b/i))) F.dates.push({subject:trimP(m[1]),verb:m[2],year:m[3],src:raw});
@@ -175,12 +186,13 @@ const QGen = (() => {
       else if((m=s.match(/^(?:(?:an?|the)\s+)?(.{2,40}?)\s+(?:helps?|allows?|enables?)\s+(?:to\s+)?(.+)$/i)) && words(m[1]).length<=4 && !PRON.test(m[1]) && !/^(planting|using|burning)\b/i.test(m[1])) F.purposes.push({term:noArt(m[1]),purpose:trimP(m[2]),src:raw,helps:true});
       // ---- causes and effects
       if((m=s.match(/^(.+?),?\s+because\s+(?:of\s+)?(.+)$/i))) F.causes.push({effect:trimP(m[1]),cause:trimP(m[2]),src:raw});
-      else if((m=s.match(/^(.+?),?\s+(?:which\s+)?(?:helps?\s+(?:to\s+)?)?(results in|result in|leads to|lead to|causes|cause|produces|produce|prevents|prevent|reduces|reduce|increases|increase|releases|release|threatens|threaten)\s+(.+)$/i)) && words(m[1]).length<=10 && !/^when\b/i.test(m[1]) && !/\b(used|able|going|have|has|need|needs|want|wants)\s+to$|\bto$/i.test(trimP(m[1]))){
+      else if((m=s.match(/^(.+?),?\s+(?:which\s+)?(?:helps?\s+(?:to\s+)?)?(results in|result in|leads to|lead to|causes|cause|prevents|prevent|reduces|reduce|increases|increase|threatens|threaten|releases|release|produces|produce)\s+(.+)$/i)) && words(m[1]).length<=10 && !(/^(releases?|produces?)$/i.test(m[2]) && !/^\w+ing\b/.test(trimP(m[1]))) && !/\b(teams?|people|users?|students?|staff|employees?|developers?|managers?|workers?|he|she|they|we|you)\b/i.test(m[1]) && !/^when\b/i.test(m[1]) && !/\b(used|able|going|have|has|need|needs|want|wants)\s+to$|\bto$/i.test(trimP(m[1]))){
         let cause=trimP(m[1]); const w2=cause.match(/^(.+?),\s*which$/i); if(w2) cause=w2[1];
         cause=cause.replace(/\s+(helps?|can|will|may|could|tends? to)$/i,"");
         let verb=m[2].toLowerCase(); if(!/s$/.test(verb) && !/(^|\s)(they|we|people)\s/i.test(cause) && !/s\b/.test(cause.split(" ").pop()||"")) verb=verb.replace(/^(result|lead|cause|produce|prevent|reduce|increase|release|threaten)$/,"$1s");
         if(/^(planting|using|burning|cutting|adding|increasing|reducing)\b/i.test(cause) && !/s$/.test(verb)) verb+="s";
-        F.causes.push({cause,verb,effect:trimP(m[3]),src:raw});
+        let eff0=trimP(m[3]); const inf=eff0.match(/^(.+?)\s+to\s+(\w+)$/); if(inf && /^(causes?|leads?)$/i.test(verb.split(" ")[0])){ const v=inf[2].toLowerCase(); const g=/ie$/.test(v)?v.slice(0,-2)+"ying":/[^e]e$/.test(v)?v.slice(0,-1)+"ing":/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(v)?v+v.slice(-1)+"ing":v+"ing"; eff0=`${inf[1]} ${g}`; verb=/s$/.test(verb)?"leads to":"lead to"; }
+        F.causes.push({cause,verb,effect:eff0,src:raw});
       }
       else if((m=s.match(/^(?:due to|because of|as a result of)\s+(.+?),\s*(.+)$/i))) F.causes.push({cause:trimP(m[1]),effect:trimP(m[2]),src:raw});
       else if((m=s.match(/^without\s+(?:an?\s+|the\s+)?(.+?),\s*(.+)$/i))) F.causes.push({cause:"the absence of "+noArt(m[1]),effect:trimP(m[2]),src:raw,absence:noArt(m[1])});
@@ -193,12 +205,15 @@ const QGen = (() => {
       if((m=s.match(/^((?:an?|the)\s+)?(.{2,60}?)\s+(is defined as|are defined as|refers to|refer to|pertains to|means|states that|is|are|was|were)\s+(?!(?:to|not|also|used|very|often|usually|important|necessary|essential|responsible|made|found|called|known|one of|able|when|because|due|affected|computed|more|less|signed|founded|an? (?:type|kind|form|example)|the (?:type|kind|form|example)|\w+er than|\w+\s+if\b)\b)(.{8,})$/i))
          && words(m[2]).length<=5 && !PRON.test(m[2]) && !/^(two|three|four|some|many|all|most)\b/i.test(noArt(m[2])) && !/\b(and|or|,|formula|if|when)\b/i.test(m[2]) && !/=/.test(m[4]) && !/^(main\s+|basic\s+|major\s+|different\s+)?(\w+\s+)?(types|kinds|parts|steps|components|examples|layers|phases|stages|characteristics|elements|principles|functions|categories|levels|branches|properties|features)\s+of\b/i.test(m[2])){
         const v=m[3].toLowerCase(), items=splitItems(m[4]);
-        if(items.length>=3 && items.every(x=>x.split(" ").length<=4) && /,/.test(m[4])){ F.lists.push({kind:noArt(m[2]),subject:"",items,src:raw}); items.forEach(x=>addTerm(x,2)); }
+        if(items.length>=3 && items.every(x=>x.split(" ").length<=4) && /,/.test(m[4]) && !/^(an?|the)\s/i.test(m[4])){ F.lists.push({kind:noArt(m[2]),subject:"",items,src:raw}); items.forEach(x=>addTerm(x,2)); }
         else if(!F.defs.some(d=>d.term.toLowerCase()===noArt(m[2]).toLowerCase())){ F.defs.push({art:(m[1]||"").trim().toLowerCase(),term:noArt(m[2]),verb:v,def:trimP(m[4]),src:raw}); addTerm(m[2],3); lastTerm=noArt(m[2]); }
       }
       (s.match(/(?<=[a-z,]\s)(?:[A-Z][a-z]+\s?){2,3}/g)||[]).forEach(w=>addTerm(w,1));
     }
     if(ordered.length>=2 && !F.steps.length) F.steps.push({process:"",steps:ordered,src:"",ordered:true});
+    { const AB={}; for(const m0 of String(text).matchAll(/\b([A-Z][a-z]+(?:\s+[A-Za-z][a-z]+){0,4})\s+\(([A-Z]{2,6})\)/g)) AB[m0[2]]=m0[1].replace(/^(.)/,c=>c.toUpperCase()).split(" ").map(w=>/^(of|and|the|for|in)$/i.test(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(" ");
+      const full=t=>{ const k=String(t).trim(); if(AB[k]) return AB[k]; const m1=k.match(/^(.+?)\s*\(([A-Z]{2,6})\)$/); return m1&&AB[m1[2]]?AB[m1[2]]:t; };
+      F.purposes.forEach(p=>p.term=full(p.term)); F.causes.forEach(c=>{ c.cause=c.cause.replace(/\b([A-Z]{2,6})\b/g,w=>w); }); F.defs.forEach(d=>d.term=full(d.term)); F.abbr=AB; }
     F.lists=F.lists.filter(l=>!l.items.some(x=>/^(true|false|yes|no|\d+)$/i.test(x.trim())||/\b(usually|written|often|called)\b/i.test(x)));
     F.defs.forEach(d=>{ d.term=termCase(d.term); d.head=(d.def.toLowerCase().replace(/^(an?|the)\s+/,"").split(/\s+/)[0]||""); d.entity=/^[A-Z]/.test(d.term)&&!/^[A-Z]{2,}/.test(d.term)&&!/\b(theorem|law|map|principle|rule|method|algorithm|gate|table|test|model|equation|formula|diagram|circuit|distribution|search|sort|code|protocol)s?$/i.test(d.term); d.tool=IT.test(text)||F.purposes.some(p=>same(p.term,d.term)); });
     F.termList=[...F.terms.values()].filter(x=>x.w>=1).sort((a,b)=>b.w-a.w).map(x=>termCase(x.t));
@@ -322,8 +337,9 @@ const QGen = (() => {
     const out=[];
     const push=(tpl,level,type,q,slots,src)=>{ if(!q) return; if(typeof q==="string") q={stem:q};
       if(q.stem.includes(CT)){ const c=nextCtx(); q={...q,stem:q.stem.split(CT).join(c),setting:c}; slots={...(slots||{}),ctx:c}; } else if(slots&&slots.ctx===CT){ slots={...slots}; delete slots.ctx; } q.stem=cap(q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\./g,".")); out.push({tpl,level,type,...q,slots:slots||{},basis:src||""}); };
+    const fragment=x=>/^(first|last)\s+(in|out)$/i.test(x)||/\s(in|out|of|to|for|and|or|the|a)$/i.test(x)||/^(in|out|of|and|or)\s/i.test(x);
     const inSentence=x=>CUR.split("\n").some(l=>/[.!?]\s*$/.test(l.trim()) && new RegExp("\\b"+reEsc(x)+"\\b","i").test(l));
-    const D=F.defs.map(d=>d.term), terms=F.termList.filter(t=>!/\b(commonly|used|main|types?|parts?|kinds?)\b/i.test(t) && (F.defs.some(d=>same(d.term,t))||F.purposes.some(p=>same(p.term,t))||inSentence(t)));
+    const D=F.defs.map(d=>d.term), terms=F.termList.filter(t=>!/\b(commonly|used|main|types?|parts?|kinds?)\b/i.test(t) && !fragment(t) && (F.defs.some(d=>same(d.term,t))||F.purposes.some(p=>same(p.term,t))||inSentence(t)));
     const withArt=d=>(d.art&&!/^[A-Z]{2,}/.test(d.term)?d.art+" ":"")+d.term;
     const allEffects=F.causes.map(c=>c.effect), allItems=F.lists.flatMap(l=>l.items);
     const pairs=[...F.contrasts.map(c=>[c.a,c.b])];
@@ -339,7 +355,7 @@ const QGen = (() => {
       if(bareUse && !(d0&&d0.art)) return b; if(m0) return m0[1].toLowerCase()+" "+b; return art0(t); };
     const art0=t=>/^(an?|the)\s/i.test(t)||/^[A-Z]{2,}/.test(t)||/s$/.test(t)&&!/ss$/.test(t)||/^[A-Z][a-z]+(?:'s|s')/.test(t)?t:(/^[aeiou]/i.test(t)?"an ":"a ")+t;
     const bare=t=>termCase(String(t).replace(/^(an?|the)\s+/i,""));
-    const short=(t,n=22)=>{ t=lc(String(t).replace(/[.]$/,"")); const w=t.split(" "); return w.length>n?w.slice(0,n).join(" ")+"…":t; };
+    const short=(t,n=22)=>{ n=Math.max(n,40); t=lc(String(t).replace(/[.]$/,"")); const w=t.split(" "); return w.length>n?w.slice(0,n).join(" ")+"…":t; };
     const actorIn = fixed?`In ${fixed}, a staff member`:IT_T?"An IT staff member":"A student";
     const normT=x=>String(x).toLowerCase().replace(/^(an?|the)\s+/,"").replace(/[^a-z0-9' ]/g,"").replace(/s\b/g,"").trim();
     const defOf = t=>{ const k=normT(t); return F.defs.find(d=>normT(d.term)===k) || F.defs.find(d=>{ const dk=normT(d.term); return k.length>=4 && dk.length>=4 && (new RegExp("\\b"+reEsc(dk)+"\\b").test(k)||new RegExp("\\b"+reEsc(k)+"\\b").test(dk)); }); };
@@ -348,6 +364,14 @@ const QGen = (() => {
     const kw=x=>new Set(String(x).toLowerCase().match(/[a-z]{4,}/g)?.filter(w=>!STOP.has(w)&&!/^(that|this|with|from|into|used|make|makes|more|less|help|helps)$/.test(w)).map(w=>w.slice(0,5))||[]);
     const overlaps=(a,b)=>{ const A=kw(a); for(const w of kw(b)) if(A.has(w)) return true; return false; };
     const kin=(a,b)=>F.lists.some(l=>{ const k=l.kind.toLowerCase(); const inA=l.items.some(x=>same(x,a)), inB=l.items.some(x=>same(x,b)); return (inA&&k.includes(String(b).toLowerCase()))||(inB&&k.includes(String(a).toLowerCase())); });
+    // "is a" links: a stack is a data structure, a LAN is a computer network, bubble sort is a sorting algorithm.
+    // A parent or child of the answer is never used as a wrong choice, because it would also be right.
+    const headNP=d=>String(d.def).toLowerCase().replace(/^(an?|the)\s+/,"").split(/\s+(that|which|who|whose|used|for|of|in|with|where|such|because|to)\b/)[0];
+    const isA=(a,b)=>{ const d=defOf(a); if(!d||isStmt(d)) return false; const hb=normT(b); if(!hb||hb.length<3) return false; const h=headNP(d);
+      if(new RegExp("\\b"+reEsc(hb)+"s?\\b").test(h)) return true; const lb=hb.split(" ").pop(); const hh=h.split(" ").pop(); return hb.split(" ").length>1 && lb===hh && lb.length>3 && !defOf(b)?.def?.toLowerCase().startsWith("the one"); };
+    const titleLine=(String(text).split("\n").map(x=>x.trim()).find(Boolean)||"").toLowerCase();
+    const umbrella=t=>{ const k=normT(t); if(!k||k.length<4) return false; const d=defOf(t); return (!/[.!?]$/.test(titleLine) && new RegExp("\\b"+reEsc(k)+"s?\\b").test(titleLine)) || !!(d && /^(the |a |an )?(branch|field|study|discipline|science|measure)\b/i.test(d.def)); };
+    const related=(a,b)=>!!a&&!!b&&(umbrella(a)||umbrella(b)||isA(a,b)||isA(b,a)||kin(a,b)||(()=>{ const na=normT(a), nb=normT(b); return na&&nb&&na!==nb&&(new RegExp("\\b"+reEsc(na)+"\\b").test(nb)||new RegExp("\\b"+reEsc(nb)+"\\b").test(na)); })());
     const blocks=CUR.split(/\n\s*\n/); const secOf=t=>{ const rx=new RegExp("\\b"+reEsc(bare(t))+"\\b","i"); return blocks.findIndex(b=>rx.test(b)); };
     const stepItems=new Set(F.steps.flatMap(st=>st.steps.map(x=>x.toLowerCase())));
     // a plural category answer ("Boolean laws") would make its own members right too: leave out members and same-section terms
@@ -402,7 +426,7 @@ const QGen = (() => {
       if(IT_T && k==="tool"){ const info=t+" "+((defOf(t)||{}).def||"")+" "+F.purposes.filter(p=>same(p.term,t)).map(p=>p.purpose).join(" "); const ro=roleFor(info);
         if(ro==="enterprise architect") return ORGS[(si++*7+Math.floor(r()*ORGS.length))%ORGS.length];
         if(ro==="electronics technician") return DEVICES[(si++*7+Math.floor(r()*DEVICES.length))%DEVICES.length];
-        return fitSystem(info+" "+text.slice(0,300),null,bare(t)); }
+        return fitSystem(info,null,bare(t)); }
       return placePool.length?placePool[(si++*5+Math.floor(r()*placePool.length))%placePool.length]:null; };
     const activityFor=t=>{ const a=/\b(gate|boolean|logic|truth table|circuit|karnaugh)\b/i.test(t+" "+text)?ACTIVITIES.logic:(DOM==="math"||PRINC.test(t))?ACTIVITIES.math:ACTIVITIES.other; return a[Math.floor(r()*a.length)]; };
     // a scene sentence for a need: "A network administrator working on the network of a senior high school needs to …"
@@ -437,7 +461,9 @@ const QGen = (() => {
     const theNP=x=>{ x=String(x).trim(); return /^(the|an?|this|that|its|their|his|her|our|your|[A-Z])\b/.test(x)||/s$/.test(x.split(" ")[0])&&!/ss$/.test(x.split(" ")[0])?x:"the "+x; };
     const stepNP=x=>{ const t=lc(x); if(/^\w+ing\b/i.test(t)) return t; if(/\b(phase|step|stage)$/i.test(t)) return /^the\s/i.test(t)?t:"the "+t; return `the “${t}” step`; };
     const doingProc=st=>{ const p0=st.process?st.process.replace(/^(the|an?)\s+/i,""):""; if(!p0) return "is following a procedure"; if(/^\w+ing\b/i.test(p0)) return "is "+p0.toLowerCase().replace(/\b(boolean|sql|togaf|html|css|ip|lan|wan)\b/gi,w=>w==="boolean"?"Boolean":w.toUpperCase()); return "is following the steps of "+(/^[A-Z]{2,}|^[A-Z][a-z]+\s[A-Z]/.test(p0)?"the "+p0:/ing$/i.test(p0)?p0:"the "+p0); };
-    let oi=0; const orgFor=need=>{ if(fixed) return fixed; if(IT_T){ const ro=roleFor(need||""); if(ro==="enterprise architect") return ORGS[(oi++*3+1)%ORGS.length]; if(ro==="electronics technician") return "the team building "+DEVICES[(oi++*3+1)%DEVICES.length]; const f=need?fitSystem(need):null; return "the team behind "+(f||SYSTEMS[(oi++*5+3)%SYSTEMS.length]); } return placePool.length?placePool[(oi++*3+1)%placePool.length]:"your school"; };
+    let oi=0; const orgFor=need=>{ if(fixed) return fixed; if(IT_T){ const ro=roleFor(need||""); if(ro==="enterprise architect") return ORGS[(oi++*3+1)%ORGS.length]; if(ro==="electronics technician") return "the team building "+DEVICES[(oi++*3+1)%DEVICES.length]; const f=need?fitSystem(need):null; return "the team behind "+(f||SYSTEMS[(oi++*5+3)%SYSTEMS.length]); } const all=SETTINGS.flatMap(c=>c.items); const nw=(String(need||"").toLowerCase().match(/[a-z]{4,}/g)||[]).map(w=>w.slice(0,5)); let best=null, bs=0; for(const pl of all){ const pw=(pl.toLowerCase().match(/[a-z]{4,}/g)||[]).map(w=>w.slice(0,5)); const sc=pw.filter(w=>nw.includes(w)).length; if(sc>bs){ bs=sc; best=pl; } } if(best) return best;
+      const KEY=[[/vegetable|rice|crop|farm|harvest|fish|food supply|market|price|goods/,"the municipal agriculture office"],[/health|disease|patient|nutrition|body|anemia|tooth/,"a rural health unit"],[/school|student|class|learn/,"a public high school"],[/water|flood|typhoon|disaster/,"a municipal disaster risk reduction office"],[/money|interest|loan|savings|bank/,"a rural bank"]];
+      for(const [rx,pl] of KEY) if(rx.test(String(need||"").toLowerCase())) return pl; return "the community"; };
     const effNP=eff=>isClause(eff)?`the situation where ${eff}`:(/^(an?|the)\s/i.test(eff)||/^\w+ing\b/.test(eff)?eff:"the problem of "+eff);
     const pluralNP=x=>{ const h=String(x).split(/\s+(of|for|in|at|that|with)\s+/)[0].trim().split(" ").pop(); return /s$/.test(h)&&!/(ss|us|is)$/.test(h); };
     const isClause=x=>/\b(is|are|was|were|has|have|can|will|may|trap|traps|makes?|becomes?|gets?|goes|go|lose|loses|occurs?|happens?)\b/i.test(x) && x.split(" ").length>=3;
@@ -448,10 +474,10 @@ const QGen = (() => {
       const t=withArt(d), T0=cap(t), dl=lc(d.def), be=/^(was|were|are)$/.test(d.verb)?d.verb:"is", S={term:t,def:dl,ctx};
       const kin=F.defs.filter(x=>x!==d&&x.head===d.head).map(x=>x.term);
       push("R.def.define","Remembering","short",{stem:`Define ${t}.`,answer:cap(d.def)},S,d.src);
-      push("R.def.mc","Remembering","mc",mc(`Which term refers to ${dl}?`, d.term, [...kin,...D,...F.classes.map(c=>c.item),...allItems,...terms], r),S,d.src);
+      push("R.def.mc","Remembering","mc",mc(`Which term refers to ${dl}?`, d.term, [...kin,...D,...F.classes.map(c=>c.item),...allItems,...terms].filter(x=>!related(x,d.term)&&!stepItems.has(String(x).toLowerCase())), r),S,d.src);
       push("R.def.blank","Remembering","blank",{stem:`____ ${d.verb} ${dl}.`,answer:cap(d.term)},S,d.src);
       push("R.def.tf","Remembering","tf",{stem:`True or false: ${T0} ${d.verb} ${dl}.`,answer:"True"},S,d.src);
-      const other=F.defs.find(x=>x!==d&&x.head===d.head)||F.defs.find(x=>x!==d);
+      const other=F.defs.find(x=>x!==d&&x.head===d.head&&!related(x.term,d.term)&&isStmt(x)===isStmt(d))||F.defs.find(x=>x!==d&&!related(x.term,d.term)&&isStmt(x)===isStmt(d));
       if(other) push("R.def.tf-false","Remembering","tf",{stem:`True or false: ${T0} ${d.verb} ${lc(other.def)}.`,answer:"False"},S,d.src);
       push("R.def.ident","Remembering","ident",{stem:`Identify the term being described: ${cap(d.def.replace(/[.]$/,""))}.`,answer:cap(d.term)},S,d.src);
       if(other && !same(other.term,d.term)){
@@ -511,7 +537,8 @@ const QGen = (() => {
     const dated=F.dates.filter(d=>d.subject);
     if(dated.length>=2) push("R.date.order","Remembering","seq",{stem:`Arrange these events in the order they happened: ${shuffle(dated.map(d=>d.subject),r).join("; ")}.`,answer:dated.slice().sort((a,b)=>a.year-b.year).map(d=>d.subject).join(" → ")},{},"");
     /* ---- lists and steps ---- */
-    for(const l of F.lists){
+    const realKind=l=>!/\bvs\.?\b|versus/i.test(l.kind) && !/^(key|important|basic|main|other|related|additional|more)\s+(concepts|terms|ideas|points|definitions|notes|words|topics)$/i.test(l.kind) && !/^(concepts|terms|ideas|definitions|notes|summary|overview)$/i.test(l.kind);
+    for(const l of F.lists){ if(!realKind(l)) continue;
       const what=l.subject?`the ${l.kind} of ${l.subject}`:`the ${l.kind}`, S={what,items:l.items.join(", ")};
       const outside=[...D,...F.lists.filter(x=>x!==l).flatMap(x=>x.items),...F.classes.map(c=>c.item),...terms].filter(t=>!l.items.some(x=>same(x,t)) && !same(t,l.subject||"~") && !same(t,l.kind));
       push("R.list.enum","Remembering","enum",{stem:`Enumerate ${what}.`,answer:l.items.map(cap).join(", ")},S,l.src);
@@ -541,7 +568,7 @@ const QGen = (() => {
       const term=termCase(e.term), S={term,example:e.example}, ex=e.example.replace(/^"|"$/g,"");
       const pool=[...F.examples.filter(x=>!same(x.term,e.term)).map(x=>x.example), ...F.classes.filter(c=>!same(c.category,e.term)).map(c=>c.item), ...D.filter(x=>!same(x,term))];
       const aTerm=/^(an?|the)\s/i.test(term)||/s$/.test(term)||!new RegExp("\\b(a|an)\\s+"+reEsc(term)+"\\b","i").test(CUR)?term:(/^[aeiou]/i.test(term)?"an ":"a ")+term;
-      push("R.ex.which","Remembering","mc",mc(`Which of the following is an example of ${aTerm}?`, e.example, pool, r),S,e.src);
+      push("R.ex.which","Remembering","mc",mc(`Which of the following is an example of ${aTerm}?`, e.example, pool.filter(x=>!related(x,term)&&!F.examples.some(y=>same(y.example,x)&&related(y.term,term))), r),S,e.src);
       if(e.list.length===1) push("U.ex.why","Understanding","short",/\s(and|at)\s/.test(ex)?`Explain why ${ex} are examples of ${aTerm}.`:`Explain why ${ex} is an example of ${aTerm}.`,S,e.src);
       const exs=e.list.map(x=>x.replace(/^"|"$/g,"")); const exList=exs.length>1?exs.slice(0,-1).join(", ")+" and "+exs[exs.length-1]:exs[0];
       push("U.ex.another","Understanding","short",`Give another example of ${aTerm} besides ${exList}, and explain why it fits.`,S,e.src);
@@ -582,7 +609,7 @@ const QGen = (() => {
     /* ---- purposes: situation questions ---- */
     for(const p of F.purposes){
       const pt=art(bare(p.term)), purpose=p.purpose.replace(/^to\s+/i,""), S={term:pt,purpose}; const sc=scene(p);
-      const tools=[...D,...F.purposes.map(x=>x.term),...F.classes.map(c=>c.item),...terms].filter(x=>!same(x,p.term)&&!clash(x,purpose)&&!kin(x,p.term)&&!compared(x,p.term));
+      const tools=[...D,...F.purposes.map(x=>x.term),...F.classes.map(c=>c.item),...terms].filter(x=>!same(x,p.term)&&!clash(x,purpose)&&!related(x,p.term)&&!compared(x,p.term)&&!stepItems.has(String(x).toLowerCase()));
       push("U.purp.what","Understanding","short",{stem:`What is the purpose of ${pt}?`,answer:cap(p.purpose)},S,p.src);
       if(!p.benefit && kindOf(p.term)==="tool") push("A.purp.situation","Applying","case",mc(`Situation: ${sc.text} Which of the following should be used?`, bare(p.term), tools, r),{...S,ctx:sc.where},p.src);
       if(kindOf(p.term)==="tool"||p.benefit) push("A.purp.use","Applying","short",`${sc.text} Explain step by step how ${pt} could be used to ${sc.problem?"solve this":"do this"}.`,{...S,ctx:sc.where},p.src);
@@ -637,30 +664,31 @@ const QGen = (() => {
     /* ================= multiple choice at every level ================= */
     // --- Understanding: which concept does an example illustrate?
     for(const e of exGroups){ const ex=e.list[0].replace(/^"|"$/g,""), T=bare(e.term);
-      push("U.mc.illustrates","Understanding","mc",MC(`Which concept is best illustrated by ${/^[A-Z"]/.test(e.list[0])?`“${ex}”`:ex}?`, T, [...D.map(bare),...F.examples.map(x=>bare(x.term)),...F.classes.map(c=>c.category),...terms.map(bare)].filter(x=>!same(x,T))),{term:T},e.src); }
+      push("U.mc.illustrates","Understanding","mc",MC(`Which concept is best illustrated by ${/^[A-Z"]/.test(e.list[0])?`“${ex}”`:ex}?`, T, [...D.map(bare),...F.examples.map(x=>bare(x.term)),...F.classes.map(c=>c.category),...terms.map(bare)].filter(x=>!same(x,T)&&!related(x,T)&&!stepItems.has(x.toLowerCase()))),{term:T},e.src); }
     { const ps=F.purposes.filter((p,i,A)=>A.findIndex(x=>same(x.term,p.term))===i);
       for(const p of ps){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""); const wrong=shuffle(F.purposes.filter(x=>!same(x.term,p.term)&&!overlaps(x.purpose,purpose)).map(x=>"To "+x.purpose.replace(/^to\s+/i,"")),r).concat(shuffle(F.defs.filter(d=>!same(d.term,p.term)).map(d=>"To serve as "+short(d.def,10)),r));
         push("U.mc.purpose","Understanding","mc",MC(`Which of the following best describes the main purpose of ${art(T)}?`, "To "+purpose, wrong, null, true),{term:T,purpose},p.src); } }
     // --- Applying: put a tool to work; next step of a procedure; a process in use
-    for(const p of F.purposes){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""), others=toolPool.filter(x=>!same(x,T)&&!clash(x,purpose)&&!kin(x,T)&&!memberOf(x,T)&&!stepItems.has(x.toLowerCase())&&!compared(x,T));
+    for(const p of F.purposes){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""), others=toolPool.filter(x=>!same(x,T)&&!clash(x,purpose)&&!related(x,T)&&!memberOf(x,T)&&!stepItems.has(x.toLowerCase())&&!compared(x,T));
       if(kindOf(p.term)!=="tool" && !p.benefit) continue;
       const sc=scene(p), dd=defOf(T), hn=dd&&(dd.def.match(/^the (\w+) (that|in which)/)||[])[1];
       push("A.mc.task","Applying","mc",MC(`${sc.text} ${hn&&/^(domain|layer|area|phase|perspective|stage|view|level|tier)$/i.test(hn)?`Which ${hn} should they work on?`:hn&&hn!=="one"&&hn!=="approach"?`Which ${hn} should they use?`:"Which of the following should they use?"}`, T, others),{term:T,purpose,ctx:sc.where},p.src); }
     for(const st of F.steps){ const proc=procName(st), who=cap(aRole(roleFor((st.process||"")+" "+st.steps.join(" ")+" "+text.slice(0,300))));
+      if(st.steps.some(x=>/^repeat/i.test(x))) continue;
       for(let k=0;k<st.steps.length-1 && k<(st.steps.length>=6?4:2);k++) push("A.mc.next","Applying","mc",MC(`${who} ${doingProc(st)} and has just finished ${stepNP(st.steps[k])}. What should come next?`, cap(lc(st.steps[k+1])), st.steps.filter((x,i)=>i!==k+1).map(x=>cap(lc(x)))),{process:proc},st.src); }
     for(const d of F.defs){ const m=d.def.match(/^(?:the\s+|a\s+)?(?:process|act|method|technique|practice|way|procedure)\s+(?:of|for)\s+(\w+ing\b.*)$/i); if(!m) continue;
-      push("A.mc.process","Applying","mc",MC(`${cap(aRole(roleFor(d.term+" "+d.def)))} needs a way of ${lc(m[1])}. Which of the following should be applied?`, bare(d.term), [...D.map(bare),...toolPool].filter(x=>!same(x,d.term))),{term:bare(d.term)},d.src); }
+      push("A.mc.process","Applying","mc",MC(`${cap(aRole(roleFor(d.term+" "+d.def)))} needs a way of ${lc(m[1])}. Which of the following should be applied?`, bare(d.term), [...D.map(bare),...toolPool].filter(x=>!same(x,d.term)&&!related(x,d.term)&&!stepItems.has(x.toLowerCase()))),{term:bare(d.term)},d.src); }
     { const org=fixed||(IT_T?"an organization":"a community");
       for(const p of F.purposes.filter(x=>x.glossary)){ const d=F.defs.find(x=>same(x.term,p.term)); if(!d||!d.group) continue; const m0=p.purpose.match(/^(define|describe|provide|manage|store|control|handle|organize|specify|represent|support|protect|monitor|track|deliver|process|connect|capture|model|document)\s+(.{6,})$/i); if(!m0) continue;
-        const obj=m0[2].replace(/\s+(needed|used|that|which)\b.*$/i,"").replace(/^(an?|the)\s+/i,"the "); if(obj.split(" ").length>12) continue;
+        const obj=m0[2].replace(/\s+(needed|used|that|which)\b.*$/i,"").replace(/^(an?|the)\s+/i,"the "); const objNP=/^(the|all|every|each|any|its|their)\b/i.test(obj)?obj:"its "+obj; if(obj.split(" ").length>12) continue;
         const peers=F.defs.filter(x=>x.group===d.group&&!same(x.term,d.term)).map(x=>bare(x.term)); if(peers.length<2) continue; const hn=(d.def.match(/^the (\w+) that/)||[])[1]||"part";
-        push("N.mc.affected","Analyzing","mc",MC(`If ${org} makes major changes to ${/^the\s/i.test(obj)?obj:"its "+obj}, which ${hn} is most directly affected?`, bare(d.term), peers),{term:bare(d.term)},p.src); } }
+        push("N.mc.affected","Analyzing","mc",MC(`If ${org} makes major changes to ${objNP}, which ${hn} is most directly affected?`, bare(d.term), peers),{term:bare(d.term)},p.src); } }
     // --- Analyzing: odd one out; differences; causes; relationships; formula effects
     for(const l of F.lists){ if(l.items.length<3) continue; const outs=[...D,...F.lists.filter(x=>x!==l).flatMap(x=>x.items),...F.classes.map(c=>c.item),...terms].filter(t=>!l.items.some(x=>same(x,t))&&!same(t,l.subject||"~")&&!same(t,l.kind)&&t.split(" ").length<=4);
       if(!outs.length) continue; const odd=shuffle(outs,r)[0]; const ch=shuffle([...shuffle(l.items,r).slice(0,3),odd],r);
       push("N.mc.odd","Analyzing","mc",{stem:"Which of the following does not belong with the others?",choices:ch.map(cap),answer:"abcd"[ch.indexOf(odd)],answerText:cap(odd)},{what:l.kind},l.src); }
     const seenD=new Set();
-    for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db||isStmt(da)!==isStmt(db)) continue; const be=beOf(da); const a=bare(da.term), b=bare(db.term); const k=[a,b].sort().join("|"); if(seenD.has(k)) continue; seenD.add(k);
+    for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db||isStmt(da)!==isStmt(db)||isA(da.term,db.term)||isA(db.term,da.term)) continue; const be=beOf(da); const a=bare(da.term), b=bare(db.term); const k=[a,b].sort().join("|"); if(seenD.has(k)) continue; seenD.add(k);
       const A=short(da.def), B=short(db.def);
       push("N.mc.diff","Analyzing","mc",MC(`Which of the following best explains the difference between ${art(a)} and ${art(b)}?`, `${cap(art(a))} ${be} ${A}, while ${art(b)} ${be} ${B}`, [`${cap(art(a))} ${be} ${B}, while ${art(b)} ${be} ${A}`, `${cap(art(a))} and ${art(b)} mean the same thing and can be used interchangeably`, `${cap(art(a))} is a special kind of ${b}, so they differ only in name`]),{a,b},da.src+" "+db.src);
       push("E.mc.claimsame","Evaluating","mc",MC(`A classmate claims that ${art(a)} and ${art(b)} are the same thing. Which statement best evaluates this claim?`, `The claim is incorrect, because ${art(a)} ${be} ${A}, while ${art(b)} ${be} ${B}`, [`The claim is correct, because both deal with the same topic`, `The claim is correct, because ${art(a)} ${be} ${B}`, `The claim cannot be judged, because there is not enough information about ${art(b)}`]),{a,b},da.src+" "+db.src); }
@@ -688,7 +716,7 @@ const QGen = (() => {
     for(const p of F.purposes){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""); const others=F.purposes.filter(x=>!same(x.term,p.term)); if(kindOf(p.term)!=="tool") continue;
       const why=reasonFor(T); const sc=scene(p,"must");
       let ans, alt;
-      if(why){ ans=`${cap(T)}, because ${why}`; alt=[...others.filter(o=>!overlaps(o.purpose,purpose)&&reasonFor(bare(o.term))&&!compared(o.term,T)).map(o=>`${cap(bare(o.term))}, because ${reasonFor(bare(o.term))}`), ...F.defs.filter(d=>!same(d.term,T)&&!d.entity&&!compared(d.term,T)&&!F.purposes.some(o=>same(o.term,d.term)&&overlaps(o.purpose,purpose))&&!kin(d.term,T)).slice(0,3).map(d=>`${cap(bare(d.term))}, because ${reasonFor(bare(d.term))||"it is related to the topic"}`), `${cap(T)}, because ${shuffle(["it is the most popular choice","it was the first option considered","it is the newest option available"],r)[0].replace(/^it is\b/,itThey(T))}`]; }
+      if(why){ ans=`${cap(T)}, because ${why}`; alt=[...others.filter(o=>!overlaps(o.purpose,purpose)&&reasonFor(bare(o.term))&&!compared(o.term,T)).map(o=>`${cap(bare(o.term))}, because ${reasonFor(bare(o.term))}`), ...F.defs.filter(d=>!same(d.term,T)&&!d.entity&&!compared(d.term,T)&&!related(d.term,T)&&!F.purposes.some(o=>same(o.term,d.term)&&overlaps(o.purpose,purpose))&&!kin(d.term,T)).slice(0,3).map(d=>`${cap(bare(d.term))}, because ${reasonFor(bare(d.term))||"it is related to the topic"}`), `${cap(T)}, because ${shuffle(["it is the most popular choice","it was the first option considered","it is the newest option available"],r)[0].replace(/^it is\b/,itThey(T))}`]; }
       else continue;
       push("E.mc.bestwhy","Evaluating","mc",MC(`${sc.text} Which is the best choice, and why?`, ans, alt.filter(x=>x!==ans)),{term:T,purpose,ctx:sc.where},p.src); }
     const fix=c=>{ c=lc(c); let m;
@@ -696,7 +724,7 @@ const QGen = (() => {
       if((m=c.match(/^(?:the\s+)?(?:lack|absence|shortage) of\s+(.+)$/i))) return /s$/.test(m[1])||/^(support|time|money|water|food|data|information|training|funding|power|communication)\b/i.test(m[1])?`Provide enough ${m[1]}`:`Make sure there is ${art(m[1])}`;
       if((m=c.match(/^(?:too much|excessive|too many)\s+(.+)$/i))) return `Reduce ${m[1]}`;
       if((m=c.match(/^(ignoring|skipping|neglecting|burning|cutting|using|overusing|dumping)\s+(.+)$/i))) return `Stop ${m[1].toLowerCase()} ${m[2]}`;
-      if(/^\w+ing\b/.test(c)||isClause(c)) return null; return `Prevent ${c}`; };
+      if(/^\w+ing\b/.test(c)||isClause(c)) return null; if(/\b(typhoons?|earthquakes?|storms?|floods?|rain|droughts?|weather|climate|volcan\w*|tsunamis?|el ni[nñ]o|la ni[nñ]a|seasons?|aging|age|genes?|genetics?)\b/i.test(c)) return null; return `Prevent ${c}`; };
     for(const c of F.causes){ if(!NEG.test(c.effect)) continue; const act=fix(c.cause); if(!act) continue; const eff=lc(c.effect);
       const others=F.causes.filter(x=>x!==c&&!same(x.cause,c.cause)).map(x=>fix(x.cause)).filter(Boolean);
       const effN=effNP(eff), verbN=isClause(eff)?"prevent":"reduce", org=orgFor(eff+" "+c.cause);
@@ -705,13 +733,13 @@ const QGen = (() => {
     for(const cp of F.comps){ const a=bare(cp.a), qm=cp.b.match(/^(.+?)\s+((?:for|in|when|with|on|during)\s+.+)$/i), b=bare(qm?qm[1]:cp.b), q=qm?" "+qm[2]:"";
       push("E.mc.claim","Evaluating","mc",MC(`A student claims that ${art(a)} is always a better choice than ${art(b)}. Which statement best evaluates this claim?`, `The claim goes too far: ${art(a)} is ${cp.comp} than ${art(b)}${q}, but the better choice depends on the situation`, [`The claim is fully correct, since ${art(a)} is ${cp.comp} than ${art(b)} in every way`, `The claim is wrong, because ${art(b)} is ${cp.comp} than ${art(a)}${q}`, `The claim cannot be judged, because there is no basis for comparing them`]),{a,b},cp.src); }
     // --- Evaluating: judging a classmate's definition, example, computation or order
-    for(const d of F.defs){ if(d.entity) continue; const T=bare(d.term), other=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity&&isStmt(x)===isStmt(d));
+    for(const d of F.defs){ if(d.entity) continue; const T=bare(d.term), other=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity&&isStmt(x)===isStmt(d)&&!related(x.term,d.term));
       const useWrong=other && r()<0.6 && isStmt(other)===isStmt(d), said=useWrong?short(other.def,16):short(d.def,16);
       const ans=useWrong?`The statement is incorrect, because ${art(T)} ${beOf(d)} ${short(d.def,16)}`:`The statement is correct, because it matches what ${art(T)} ${isStmt(d)?"states":"is"}`;
       const wr=useWrong?[`The statement is correct, because it matches what ${art(T)} ${isStmt(d)?"states":"is"}`,`The statement is incorrect, because ${art(T)} ${beOf(useWrong?other:d)} ${said} only in some cases`,`The statement cannot be judged without more examples`]
                        :[other?`The statement is incorrect, because ${art(T)} ${beOf(other)} ${short(other.def,16)}`:`The statement is incorrect, because it describes a different concept`,`The statement is only partly correct, because ${art(T)} has no fixed meaning`,`The statement cannot be judged without more examples`];
       push("E.mc.defjudge","Evaluating","mc",MC(`A classmate says that ${art(T)} ${useWrong?beOf(other):beOf(d)} ${said}. Which statement best evaluates this claim?`, ans, wr),{term:T},d.src); }
-    for(const e of exGroups){ const T=bare(e.term), ex=e.list[0].replace(/^"|"$/g,""), exq=/^[A-Z"]/.test(e.list[0])?`“${ex}”`:ex; const other=[...D.map(bare),...F.examples.map(x=>bare(x.term))].find(x=>!same(x,T)); if(!other) continue;
+    for(const e of exGroups){ const T=bare(e.term), ex=e.list[0].replace(/^"|"$/g,""), exq=/^[A-Z"]/.test(e.list[0])?`“${ex}”`:ex; const other=[...D.map(bare),...F.examples.map(x=>bare(x.term))].find(x=>!same(x,T)&&!related(x,T)); if(!other) continue;
       push("E.mc.exjudge","Evaluating","mc",MC(`A classmate says that ${exq} is an example of ${art(other)}. Which statement best evaluates this claim?`, `The claim is incorrect, because ${exq} is an example of ${art(T)}`, [`The claim is correct, because ${exq} fits the meaning of ${art(other)}`,`The claim is correct, because any example can belong to any concept`,`The claim cannot be judged without more information`]),{term:T,example:ex},e.src); }
     for(const f of F.formulas){ const p=numberProblem(f,r); if(!p||!p.wrong.length) continue; const w=p.wrong[0];
       push("E.mc.calccheck","Evaluating","mc",MC(`${p.stem.replace(/^If /,"Given that ").replace(/, use .*$/,"")}, a classmate says the ${f.vars[f.lhs].mean?f.vars[f.lhs].mean.replace(/^the\s+/i,""):f.lhs} is ${w}. Which statement best evaluates this answer?`, `The answer is incorrect; using ${f.expr} gives ${p.answer}`, [`The answer is correct, because it follows ${f.expr}`,`The answer is incorrect; the correct value is ${p.wrong[1]||p.wrong[0]+"0"}`,`The answer cannot be checked without more data`]),{expr:f.expr},f.src); }
@@ -722,7 +750,7 @@ const QGen = (() => {
     for(const f of F.formulas){ const toks=f.rhs.replace(/\s+/g,"").split("*"); if(toks.length<3||!toks.every(t=>/^[A-Za-z]\w*$/.test(t))) continue;
       const x=toks[0], rest=toks.slice(1), L=f.lhs;
       push("C.mc.derive","Creating","mc",MC(`Which formula would you derive from ${f.expr} to solve for ${f.vars[x].mean?`the ${f.vars[x].mean.replace(/^the\s+/i,"")} (${x})`:x}?`, `${x} = ${L} / (${rest.join(" * ")})`, [`${x} = ${L} * ${rest.join(" * ")}`,`${x} = (${rest.join(" * ")}) / ${L}`,`${x} = ${L} - ${rest.join(" - ")}`]),{expr:f.expr},f.src); }
-    for(const c of F.causes){ if(!c.verb) continue; const cau=lc(c.cause), eff=lc(c.effect); if(cau.split(" ").length>8||eff.split(" ").length>10) continue;
+    for(const c of F.causes){ if(!c.verb||c.pitfall||/^the effort|\bto \w+$/i.test(lc(c.effect))||/^(trying|treating|lack|absence)\b/i.test(c.cause)) continue; const cau=lc(c.cause), eff=lc(c.effect); if(cau.split(" ").length>8||eff.split(" ").length>10) continue;
       push("C.mc.experiment","Creating","mc",MC(`Which investigation would you design to test whether ${cau} really ${c.verb} ${eff}?`, `Change only ${cau.replace(/^(the|a|an)\s+/i,"the ")}, keep everything else the same, and measure ${eff.replace(/^(the|a|an)\s+/i,"the ")}`, [`Measure ${eff.replace(/^(the|a|an)\s+/i,"the ")} once without changing anything`,`Change several factors at the same time and compare the results`,`Ask people whether they believe ${cau} matters`]),{cause:cau,effect:eff},c.src); }
     /* ================= true or false and situational items above Remembering ================= */
     const TF=(stem,ans)=>({stem:`True or false: ${stem}`, answer:ans?"True":"False"});
@@ -753,7 +781,7 @@ const QGen = (() => {
        Every fact gives a true and a false statement at the level it tests; mixing statements from different facts
        makes many more multiple-choice items from the same file without repeating a stem. */
     { const ST={Remembering:[],Understanding:[],Applying:[],Analyzing:[],Evaluating:[]}; const add=(lv,t,f,src)=>{ if(t&&f&&t!==f) ST[lv].push({t:cap(t.replace(/\.$/,"")),f:cap(f.replace(/\.$/,"")),src:src||""}); };
-      for(const d of F.defs){ if(d.entity) continue; const o=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity&&isStmt(x)===isStmt(d)); if(o) add("Remembering",`${cap(art(bare(d.term)))} ${d.verb} ${lc(d.def)}`,`${cap(art(bare(d.term)))} ${d.verb} ${lc(o.def)}`,d.src); }
+      for(const d of F.defs){ if(d.entity) continue; const o=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity&&isStmt(x)===isStmt(d)&&!related(x.term,d.term)); if(o) add("Remembering",`${cap(art(bare(d.term)))} ${d.verb} ${lc(d.def)}`,`${cap(art(bare(d.term)))} ${d.verb} ${lc(o.def)}`,d.src); }
       for(const p of F.purposes){ const T=bare(p.term), o=F.purposes.find(x=>!same(x.term,p.term)&&!overlaps(x.purpose,p.purpose)); if(o) add("Remembering",`${cap(art(T))} ${isAre(T)} used to ${p.purpose.replace(/^to\s+/i,"")}`,`${cap(art(T))} ${isAre(T)} used to ${o.purpose.replace(/^to\s+/i,"")}`,p.src); }
       for(const e of exGroups){ const T=bare(e.term), o=[...D.map(bare)].find(x=>!same(x,T)); const ex=e.list[0].replace(/^"|"$/g,""); if(o) add("Remembering",`${/^[A-Z"]/.test(e.list[0])?`“${ex}”`:cap(ex)} is an example of ${art(T)}`,`${/^[A-Z"]/.test(e.list[0])?`“${ex}”`:cap(ex)} is an example of ${art(o)}`,e.src); }
       { const seen=new Set(); for(const [a0,b0] of pairs){ const a=bare(a0), b=bare(b0), k=[a,b].map(x=>x.toLowerCase()).sort().join("|"); if(seen.has(k)||same(a,b)||stepItems.has(String(a0).toLowerCase())||stepItems.has(String(b0).toLowerCase())) continue; seen.add(k); add("Understanding",`${cap(art(a))} and ${art(b)} are different ideas and should not be used as if they were the same`,`${cap(art(a))} and ${art(b)} mean the same thing, so either word can be used`); } }
@@ -777,7 +805,7 @@ const QGen = (() => {
           if(others.length>=2) push(`${lv[0]==="A"&&lv[1]==="n"?"N":lv[0]}.stmt.false`,lv,"mc",MC(STEM[lv][1], x.f, shuffle(others.map(o=>o.t),r)),{},x.src); }); } }
     // situational (case) items: a short situation, then a question that needs analysis, judgment or a plan
     for(const c of F.causes){ if(!c.verb||!NEG.test(c.effect)) continue; const eff=lc(c.effect), cau=lc(c.cause); const wrong=[...F.causes.filter(x=>x!==c&&!same(x.cause,c.cause)).map(x=>lc(x.cause)),`it happens by chance and has no clear cause`,`the opposite of ${cau.split(" ").slice(0,6).join(" ")}`];
-      const org2=orgFor(eff+" "+cau); push("N.case.cause","Analyzing","case",MC(isClause(eff)?`Situation: ${cap(org2)} notices that ${eff}. Which of the following is the most likely cause?`:`Situation: ${cap(org2)} keeps running into ${eff.replace(/^(an?|the)\s+/i,"")}. Which of the following is the most likely cause?`, cau, wrong),{cause:cau,effect:eff},c.src); }
+      const org2=orgFor(eff+" "+cau); for(let k=wrong.length-1;k>=0;k--){ const w=wrong[k]; if(F.causes.some(x=>lc(x.cause)===w && x!==c && overlaps0(x.effect,c.effect))) wrong.splice(k,1); } push("N.case.cause","Analyzing","case",MC(isClause(eff)?`Situation: ${cap(org2)} notices that ${eff}. Which of the following is the most likely cause?`:`Situation: ${cap(org2)} keeps running into ${eff.replace(/^(an?|the)\s+/i,"")}. Which of the following is the most likely cause?`, cau, wrong),{cause:cau,effect:eff},c.src); }
     for(const p of F.purposes){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""); const o=F.purposes.filter(x=>!same(x.term,p.term)&&!overlaps(x.purpose,purpose)&&!kin(x.term,p.term)&&!compared(x.term,p.term)); if(!o.length||kindOf(p.term)!=="tool") continue; const O=bare(o[0].term); const wT=reasonFor(T), wO=reasonFor(O); if(!wT||!wO) continue; const sc=scene(p,"must");
       push("E.case.suggest","Evaluating","case",MC(`Situation: ${sc.text} One co-worker suggests ${art(T)}, and another suggests ${art(O)}. Which suggestion is better, and why?`, `${cap(art(T))}, because ${wT}`, [`${cap(art(O))}, because ${wO}`,`${cap(art(O))}, because ${wT}`,`Both are equally good for this need`]),{term:T,purpose,ctx:sc.where},p.src); }
     { const ps=F.purposes.filter((p,i,A)=>A.findIndex(x=>same(x.term,p.term))===i && kindOf(p.term)==="tool");
@@ -788,7 +816,7 @@ const QGen = (() => {
       const combosOk=ps.filter(p=>kindOf(p.term)==="tool"); ps.length=0; ps.push(...combosOk);
       const combos=[]; for(let i=0;i<ps.length;i++) for(let j=i+1;j<ps.length;j++) if(!overlaps(ps[i].purpose,ps[j].purpose)) combos.push([i,j]);
       for(const [i,j] of shuffle(combos,r).slice(0,8)){ const A=bare(ps[i].term), B=bare(ps[j].term), pa=ps[i].purpose.replace(/^to\s+/i,""), pb=ps[j].purpose.replace(/^to\s+/i,"");
-        const others=ps.filter((x,k)=>k!==i&&k!==j).map(x=>bare(x.term));
+        const others=ps.filter((x,k)=>k!==i&&k!==j).map(x=>bare(x.term)).filter(x=>!compared(x,A)&&!compared(x,B)&&!related(x,A)&&!related(x,B));
         if(others.length>=2) push("N.mc.pair","Analyzing","mc",MC(`${cap(orgFor(pa+" "+pb+" "+A+" "+B))} needs a solution that can ${pa} and also ${pb}. Which pair of components meets both requirements?`, `${A} and ${B}`, [`${others[0]} and ${others[1]}`, `${A} and ${others[0]}`, `${others[1]} and ${B}`, `${others[0]} only`]),{a:A,b:B},ps[i].src+" "+ps[j].src);
         push("N.mc.combine","Analyzing","mc",MC(`${cap(orgFor(pa+" "+pb+" "+A+" "+B))} needs to ${pa} and also ${pb}. Which assignment of tools to these needs is correct?`, `Use ${art(A)} to ${pa}, and ${art(B)} to ${pb}`, [`Use ${art(A)} to ${pb}, and ${art(B)} to ${pa}`, `Use only ${art(A)} for both needs`, `Use only ${art(B)} for both needs`]),{a:A,b:B},ps[i].src+" "+ps[j].src); } }
     for(const st of F.steps){ if(st.steps.length<3) continue; const proc=procName(st);

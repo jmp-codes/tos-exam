@@ -1,0 +1,90 @@
+SIA 2 – Lesson 1: Advanced Enterprise Architecture Foundations
+Prepared by: Instructor.
+2nd Semester, AY 2025–2026.
+
+Learning Outcomes
+At the end of the lesson, students should be able to:
+Explain the role of enterprise architecture in system integration.
+Differentiate the EA domains.
+Evaluate EA frameworks for a given organization.
+
+Why Enterprise Architecture?
+Organizations run dozens of systems that were built at different times by different teams.
+Without a shared blueprint, systems overlap, data is duplicated and integration becomes expensive.
+Enterprise architecture (EA) gives leaders a complete view of how business, data, applications and technology fit together.
+
+Definition
+Enterprise Architecture is the practice of analyzing, designing, planning and implementing enterprise analysis to successfully execute business strategies.
+It bridges business goals and IT capabilities.
+EA is not a one-time project; it is a continuous process.
+
+EA Domains (BDAT)
+Business Architecture – Defines strategy, governance, organization and key business processes.
+Data Architecture – Describes the structure of logical and physical data assets and data management resources.
+Application Architecture – Provides a blueprint for individual applications, their interactions and relationships to business processes.
+Technology Architecture – Describes the software and hardware capabilities that support business, data and application services.
+
+As-Is vs To-Be
+Baseline (As-Is) Architecture: the current state of the enterprise.
+Target (To-Be) Architecture: the desired future state.
+Gap Analysis: identifies what must change to move from baseline to target.
+Transition Architecture: an intermediate state between baseline and target.
+
+Popular EA Frameworks
+TOGAF (The Open Group Architecture Framework) – Most widely used; centered on the Architecture Development Method (ADM).
+Zachman Framework – A 6x6 matrix that classifies artifacts by audience and by what, how, where, who, when and why.
+FEAF – Used by the U.S. federal government to standardize IT across agencies.
+Gartner EA Framework – Focuses on business outcomes rather than documentation.
+
+TOGAF ADM Cycle
+Preliminary.
+A. Architecture Vision.
+B. Business Architecture.
+C. Information Systems Architectures.
+D. Technology Architecture.
+E. Opportunities & Solutions.
+F. Migration Planning.
+G. Implementation Governance.
+H. Architecture Change Management.
+Requirements Management sits at the center of the cycle.
+
+Key Concepts
+Stakeholder – any person or group with an interest in the system or its architecture.
+Concern – an interest a stakeholder has in the architecture.
+View – a representation of a system from the perspective of related concerns.
+Viewpoint – the conventions for creating a view.
+Artifact – an architectural work product such as a catalog, matrix or diagram.
+Architecture Repository – stores all architecture outputs of the enterprise.
+
+Benefits of EA
+Better alignment of IT investments with business goals.
+Reduced complexity and redundancy of systems.
+Faster and better decision-making.
+Easier integration of new systems.
+Lower operating costs.
+
+Common Pitfalls
+Treating EA as documentation only – diagrams nobody reads.
+Lack of executive sponsorship leads to failed EA programs.
+Ivory-tower architecture: plans that ignore how people actually work.
+Trying to model everything at once causes the effort to stall.
+
+EA and System Integration
+EA identifies which systems must exchange data and how.
+Integration patterns such as point-to-point, hub-and-spoke and enterprise service bus are chosen based on the target architecture.
+Point-to-point integration is simpler than an ESB for a few systems, but an ESB is more scalable than point-to-point for many systems.
+
+Case: State University
+The university runs separate enrollment, library, accounting and HR systems.
+Student records are entered three times in different systems.
+The EA team performed a gap analysis and proposed a single student master data source.
+Result: fewer data errors and faster enrollment.
+
+Summary
+EA aligns business and IT through the BDAT domains.
+Frameworks like TOGAF and Zachman guide the work.
+Gap analysis connects the current and target states.
+
+Activity
+In groups, draw the As-Is architecture of your school's enrollment process.
+Identify at least three gaps.

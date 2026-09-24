@@ -115,7 +115,7 @@ Run `node dual.js x` to see each result.
 
 `tricky.tsv` was used while designing the reader rules, so its 100% is not a fair test; `tricky2.tsv`
 was written before the rules and is the honest measure. The shipped model also trains on all test sets.
-Run `node eval.js 40 0.5 0.001` to reproduce the cross-validation. (Older model versions used for the before/after tables are not included, to keep the upload under GitHub's 100-file limit.)
+Run `node eval.js 40 0.5 0.001` to reproduce the cross-validation.
 
 Limitations: the starter questions were written by an AI (Claude), not collected from real exams,
 so real-world accuracy will be lower until teacher-labeled questions are added. A question's true
@@ -341,6 +341,29 @@ new angles (other settings, other numbers, other wording) before reporting a sho
 
 A file that is only a sentence or two still cannot fill a large topic; the app says so and offers other types,
 another file, or leaving the items to the teacher.
+
+## Answer-key check (QGen v2.8)
+
+Earlier checks only confirmed that each answer letter pointed to a real choice. This round, independent reviewers
+checked whether each keyed answer is actually correct according to the source file.
+
+- The app never mixes up letters: in 13 of 13 checks the answer letter matched the answer text in the Generate tab,
+  after saving to the exam, and after "Shuffle choices".
+- Real slide decks were the weak spot. On a realistic 15-slide deck (fixtures/sia2-lesson1-real.pptx: sub-bullets,
+  "Result:" labels, a case slide, an ADM cycle with lettered phases, pitfalls with dashes, an A-vs-B comparison)
+  the reader misread several things, which is where wrong keys come from. Fixed:
+  "X is the practice of A, B and C" read as a list instead of a definition; labels such as "Result:" read as terms;
+  case and example slides read as facts; "Student records are …" read as the verb "records"; lettered cycle
+  phases missed; "TOGAF (The Open Group Architecture Framework)" and "Used by …" descriptions missed; noun-phrase
+  benefits missed; pitfalls "X – Y" now read as X leads to Y; "A is simpler than B …, but B is more scalable …";
+  abbreviations (EA = Enterprise Architecture) treated as one idea; the file's own subject (in its title) is never
+  used as a wrong choice; no text is cut off with "…".
+
+| Review of keyed answers | Items | Wrong key | Two defensible answers | Stem makes no sense |
+|---|---|---|---|---|
+| Previous version, realistic deck (sample) | 100 | 2 | 0 | 5 |
+| Test lessons (13 lessons, all templates) | 338 | 1 → fixed | 5 → fixed | 2 → fixed |
+| This version, realistic deck (every item) | 430 | 0 | 3 → fixed | 12 → fixed |
 
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
