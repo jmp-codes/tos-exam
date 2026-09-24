@@ -982,10 +982,7 @@ let sampleFn = null;
 const AI_LS = "tos-builder-ai-v1";
 function aiSettings(){ try{ return JSON.parse(localStorage.getItem(AI_LS)||"{}"); }catch(e){ return {}; } }
 function saveAiSettings(s){ try{ localStorage.setItem(AI_LS, JSON.stringify(s)); }catch(e){} }
-async function detectAI(){
-  try{ sampleFn = window.claude?.use ? await window.claude.use("sample") : null; }catch(e){ sampleFn=null; }
-  refreshEngine(); if(qView==="questions") renderQuestions();
-}
+async function detectAI(){ sampleFn=null; refreshEngine(); }
 function refreshEngine(){ aiEngine = sampleFn ? "claude" : (aiSettings().key ? "key" : null); }
 
 async function askAI(prompt){
@@ -1081,7 +1078,6 @@ function plannedMap(d){
 }
 function effLevel(q){
   if(q.manual) return {level:q.manual, col:COL_OF[q.manual], src:"You"};
-  if(q.ai) return {level:q.ai.level, col:COL_OF[q.ai.level], src:"AI"};
   const p=ourPredict(q.stem);
   if(p){ const r=Object.entries(p.probs).filter(([l])=>l!==p.level).sort((a,b)=>b[1]-a[1])[0]; p.alt = r && r[1]>=0.2 && p.confidence-r[1]<0.35 ? r[0] : null; }
   if(p && p.confidence>=0.35) return {level:p.level, col:COL_OF[p.level], src:"Our AI", conf:p.confidence, why:p.why, alt:p.overridden?null:p.alt, pattern:p.pattern};
@@ -1098,11 +1094,11 @@ function tabsHTML(d){
 function questionsViewHTML(d){
   return `<section class="sec" aria-labelledby="h-q">
     <div class="sec-head"><h2 id="h-q">Exam questions</h2>
-      <p>Paste or import your questions. Each one is checked against the cognitive level the TOS planned for its item number.</p>
+      <p>Paste or import your questions. Our AI reads each one offline and checks it against the cognitive level the TOS planned for its item number.</p>
       <div class="sp">
         <button class="btn sm" type="button" data-qa="toggleAdd">${(d.questions||[]).length?"Add or replace questions":"Add questions"}</button>
         <button class="btn sm ghost" type="button" data-qa="import">Import .docx / .txt</button>
-        <button class="btn sm ghost" type="button" data-qa="settings">AI settings</button>
+
         <input type="file" id="fileQ" accept=".docx,.txt,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
       </div>
     </div>
@@ -1142,9 +1138,9 @@ function renderQuestions(){
   const qs=(d.questions||[]).slice().sort((a,b)=>a.n-b.n);
   const {map,c}=plannedMap(d);
   const newEx = ourInfo ? bank.examples.length-ourInfo.mine : 0;
-  const ourLine = `<div class="ourai"><div><b>Our AI</b> <span class="hint">${training?"training in the background…":ourInfo?`reads each question’s sentence construction, offline · trained on ${(ourInfo.base+(ourInfo.gen||0)+ourInfo.mine).toLocaleString()} examples (${ourInfo.mine} yours) · ${bank.pairs.length} rewrite pair${bank.pairs.length===1?"":"s"} saved`:"training…"}</span></div>
+  const ourLine = `<div class="ourai"><div><b>Our AI</b> <span class="hint">${training?"training in the background…":ourInfo?`reads each question’s sentence construction, offline · trained on ${(ourInfo.base+(ourInfo.gen||0)+ourInfo.mine).toLocaleString()} examples (${ourInfo.mine} yours)`:"training…"}</span></div>
     <div class="row"><button class="btn sm ${newEx>0?"primary":""}" type="button" data-qa="retrain" ${training?"disabled":""}>${newEx>0?`Retrain with ${newEx} new example${newEx>1?"s":""}`:"Retrain"}</button><button class="btn sm ghost" type="button" data-qa="exportBank">Export dataset</button><button class="btn sm ghost" type="button" data-qa="importBank">Import dataset</button><input type="file" id="fileBank" accept=".json,application/json" hidden></div></div>`;
-  const aiLine = ourLine + (aiEngine==="claude" ? `<span class="chip ok">Online AI: your Claude account</span>` : aiEngine==="key" ? `<span class="chip ok">Online AI: your API key</span>` : `<button class="chip warn" type="button" data-qa="settings">Online AI for rewriting: not connected (set up)</button>`);
+  const aiLine = ourLine;
   if(!qs.length){
     area.innerHTML=`<div class="chips">${aiLine}</div><div class="empty" style="padding:24px 8px"><h3>No questions yet</h3><p>Add the exam’s questions to check each one’s Bloom’s level against the TOS${c.totalCells?` (items 1–${c.totalCells})`:""}.</p></div>`;
     return;
@@ -1167,7 +1163,7 @@ function renderQuestions(){
     </div>
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Filter questions">${filters.map(([k,t,n])=>`<button type="button" data-qf="${k}" aria-pressed="${qFilter===k}">${t} ${n}</button>`).join("")}</div>
-      <button class="btn sm" type="button" data-qa="checkAll" ${aiEngine?"":"disabled"}>${aiBusy.__all?"Checking…":"Check all with AI"}</button>
+
       <button class="btn sm" type="button" data-qa="exportQ">Export questions (.docx)</button>
       <button class="btn sm ghost danger" type="button" data-qa="clearQ">Clear all</button>
     </div>
@@ -1192,19 +1188,19 @@ function qCardHTML(d,{q,p,e,st}){
     <div class="qlevel">
       <span>Detected: ${e?`<b>${e.level}</b> <span class="hint">(${COL_SHORT[e.col]} · ${e.src}${e.conf?` · ${Math.round(e.conf*100)}% sure`:""}${e.kw?` “${esc(e.kw)}”`:""}${e.pattern?"":e.why&&e.why.length?` · cues: ${e.why.map(w=>"“"+esc(w)+"”").join(", ")}`:""})</span>${e.pattern?`<span class="qwhy">Sentence construction: ${esc(e.pattern)}</span>`:""}${e.alt?` <span class="pill st-unclear" title="Our AI is torn between two levels">could also be ${e.alt}</span>`:""}`:`<span class="hint">not detected yet</span>`}</span>
       ${e&&!q.manual?`<button class="btn sm ghost" type="button" data-qa="confirm" title="Confirm this level and add it to Our AI’s training examples">✓ Correct</button>`:""}${q.manual?`<span class="hint">Saved as a training example</span>`:""}
-      ${q.ai&&q.ai.reason?`<span class="qwhy">AI: ${esc(q.ai.reason)}</span>`:""}
+      
       <label class="qset">Set level <select data-qset="${q.id}"><option value="">Auto</option>${BLOOM.map(b=>`<option ${q.manual===b?"selected":""}>${b}</option>`).join("")}</select></label>
     </div>
     <div class="qact">
-      <button class="btn sm" type="button" data-qa="check" ${aiEngine&&!aiBusy[q.id]?"":"disabled"}>${aiBusy[q.id]==="check"?"Checking…":"Check with AI"}</button>
-      <label class="qset">Rewrite as <select data-qtarget="${q.id}">${[0,1,2].map(j=>`<option value="${j}" ${j===(rw?.target??target)?"selected":""}>${COL_NAMES[j]}</option>`).join("")}</select></label>
-      <button class="btn sm primary" type="button" data-qa="rewrite" ${aiEngine&&!aiBusy[q.id]?"":"disabled"}>${aiBusy[q.id]==="rewrite"?"Writing…":"Rewrite"}</button>
+
+
+
       <button class="btn sm ghost" type="button" data-qa="edit">Edit</button>
-      ${q.history&&q.history.length?`<button class="btn sm ghost" type="button" data-qa="undo">Undo rewrite</button>`:""}
+      ${q.history&&q.history.length?`<button class="btn sm ghost" type="button" data-qa="undo">Restore original</button>`:""}
       <button class="btn sm ghost danger" type="button" data-qa="delQ">Remove</button>
     </div>
     ${q._editing?`<div class="qpanel"><label class="lbl" for="qe-${q.id}">Edit question ${q.n}</label><textarea id="qe-${q.id}" rows="6">${esc(qToText(q))}</textarea><div class="row"><button class="btn primary sm" type="button" data-qa="saveEdit">Save</button><button class="btn sm ghost" type="button" data-qa="edit">Cancel</button></div></div>`:""}
-    ${rw?rewriteHTML(q,rw):""}
+    
   </article>`;
 }
 function rewriteHTML(q,rw){
@@ -1493,7 +1489,7 @@ async function exportDocx(docs, filename){
 }
 
 init();
-detectAI();
+// Online AI is switched off: Our AI (offline) is the only checker.
 </script>
 
 </body>
