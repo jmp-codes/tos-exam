@@ -1,4 +1,4 @@
-/* QGen v2.8 — offline question generator for TOS Builder.
+/* QGen v2.9 — offline question generator for TOS Builder.
    Reads a sentence or paragraph for definitions, names, dates, lists, steps, examples, classifications,
    formulas, causes, relationships, comparisons, purposes and limitations, then fills Bloom's-level
    question patterns. Every pattern has an id so the app can rank patterns by what teachers keep and
@@ -109,6 +109,7 @@ const QGen = (() => {
   }
   /* ================= reading ================= */
   function read(text){
+    text=String(text||"").replace(/^(?:\s*▸\s*)+/gm,"");
     CUR=String(text||""); const fil=isFilipino(text);
     const F={fil,text,defs:[],names:[],dates:[],lists:[],steps:[],examples:[],classes:[],formulas:[],causes:[],rels:[],comps:[],contrasts:[],purposes:[],limits:[],terms:new Map()};
     const addTerm=(t,w=1)=>{ t=noArt(t); if(!t||t.length<3||t.split(" ").length>5||PRON.test(t)||STOP.has(t.toLowerCase())||/[=]/.test(t)) return; const k=t.toLowerCase(); F.terms.set(k,{t,w:(F.terms.get(k)?.w||0)+w}); };
@@ -315,6 +316,15 @@ const QGen = (() => {
   const SETTINGS_FIL = ["isang barangay","isang sari-sari store","isang paaralan","isang health center","isang palengke","isang sakahan","isang kooperatiba","isang munisipyo","isang pamilya","isang karinderya","isang resort","isang tanggapan ng rehistro sa kolehiyo"];
   const DOMAIN_SETTINGS = {it:["school","gov","health","biz","office","tourism","agri"], math:["biz","home","school","agri","office"], sci:["home","agri","health","school","tourism"], econ:["biz","agri","gov","tourism","office","home"], eng:["school","home","gov"], hist:["gov","school","tourism"], other:["school","gov","biz","home"]};
   function generate(text, opts={}){
+    // slide decks and outlines: read them as titles + bullets (see outline.js), not as sentences
+    if(typeof Outline!=="undefined" && !opts.noOutline && !isFilipino(text) && Outline.looksOutline(text)){
+      const o=Outline.generate(text,{seed:opts.seed}); const stats=opts.stats||{};
+      let res=o.questions.map((q,i)=>{ const s=stats[q.tpl]; return {...q, score:(s?((s.kept+1)/(s.shown+2)-0.5)*4:0)-i*0.0001}; });
+      if(opts.level) res=res.filter(q=>q.level===opts.level);
+      if(opts.type&&opts.type!=="any") res=res.filter(q=>opts.type==="short"?(q.type==="short"||q.type==="essay"):q.type===opts.type);
+      res.sort((a,b)=>b.score-a.score);
+      const K=o.K; return {questions:res, outline:true, facts:{definitions:K.list.filter(c=>c.def.length).length, names:0, dates:0, lists:K.groups.length, steps:K.groups.filter(g=>g.ordered).length, examples:K.list.reduce((a,c)=>a+c.examples.length,0), classes:0, formulas:0, causes:0, relationships:0, comparisons:K.list.filter(c=>c.strengths.length||c.benefits.length).length, purposes:K.list.reduce((a,c)=>a+c.does.length+c.purpose.length,0), terms:K.list.slice(0,8).map(c=>c.name), filipino:false, main:K.list[0]?.name||""}};
+    }
     const F=read(text), r=rng(opts.seed||11);
     BACKUP = F.fil ? [] : (BANK[domain(text)]||[]);
     const IT_T=IT.test(text);

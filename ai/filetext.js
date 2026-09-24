@@ -58,14 +58,22 @@ const FileText = (() => {
     for(const n of names){
       const doc=new DOMParser().parseFromString(await zip.file(n).async("string"),"application/xml");
       let title="", text="";
-      for(const sp of doc.getElementsByTagNameNS(P,"sp")){
+      const nodes=Array.from(doc.getElementsByTagNameNS(P,"sp")).concat(Array.from(doc.getElementsByTagNameNS(P,"graphicFrame")));
+      nodes.sort((a,b)=>a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING?-1:1);
+      for(const sp of nodes){
+        if(sp.localName==="graphicFrame"){   // a table: one row per line, cells joined by " | "
+          for(const tr of sp.getElementsByTagNameNS(A,"tr")){ const cells=Array.from(tr.getElementsByTagNameNS(A,"tc")).map(tc=>Array.from(tc.getElementsByTagNameNS(A,"t")).map(t=>t.textContent).join(" ").replace(/\s+/g," ").trim()); if(cells.some(Boolean)) text+=cells.join(" | ")+"\n"; }
+          continue; }
         const ph=sp.getElementsByTagNameNS(P,"ph")[0]; const isTitle=ph && /title/i.test(ph.getAttribute("type")||"");
-        const paras=Array.from(sp.getElementsByTagNameNS(A,"p")).map(p=>({t:Array.from(p.getElementsByTagNameNS(A,"t")).map(t=>t.textContent).join("").trim(), lvl:+(p.getElementsByTagNameNS(A,"pPr")[0]?.getAttribute("lvl")||0)})).filter(x=>x.t);
-        if(isTitle) title=paras.map(x=>x.t).join(" ");
-        else for(let k=0;k<paras.length;k++){ const x=paras[k], nx=paras[k+1];
-          // a short bullet followed by an indented one: "Term" + "Defines …" → "Term – Defines …"
-          if(nx && nx.lvl>x.lvl && x.t.split(" ").length<=7 && !/[.:;]$/.test(x.t)){ text+=x.t+" – "+nx.t.replace(/[.;]$/,"")+".\n"; k++; continue; }
-          text+=x.t+(/[.?!:;]$/.test(x.t)?"":".")+"\n"; }
+        let paras=Array.from(sp.getElementsByTagNameNS(A,"p")).map(p=>({t:Array.from(p.getElementsByTagNameNS(A,"t")).map(t=>t.textContent).join("").replace(/\s+/g," ").trim(), lvl:+(p.getElementsByTagNameNS(A,"pPr")[0]?.getAttribute("lvl")||0)})).filter(x=>x.t);
+        // a line that wraps onto the next paragraph ("… from initial planning to" + "implementation and maintenance")
+        for(let k=paras.length-2;k>=0;k--) if(/\b(to|and|or|of|the|a|an|from|for|with|in|on|by|as|that|which)$/i.test(paras[k].t) && /^[a-z]/.test(paras[k+1].t) && paras[k+1].lvl===paras[k].lvl){ paras[k].t+=" "+paras[k+1].t; paras.splice(k+1,1); }
+        if(isTitle){ title=paras.map(x=>x.t).join(" "); continue; }
+        const base=paras.length?Math.min(...paras.map(x=>x.lvl)):0;
+        for(let k=0;k<paras.length;k++){ const x=paras[k], nx=paras[k+1], nn=paras[k+2];
+          // a short bullet with exactly one indented line under it: "Term" + "Defines …" → "Term – Defines …"
+          if(nx && nx.lvl>x.lvl && !(nn && nn.lvl===nx.lvl) && x.t.split(" ").length<=7 && !/[.:;]$/.test(x.t) && !/^(strengths?|weakness(es)?|benefits|advantages|disadvantages|examples?)$/i.test(x.t)){ text+="▸ ".repeat(x.lvl-base)+x.t+" – "+nx.t.replace(/[.;]$/,"")+".\n"; k++; continue; }
+          text+="▸ ".repeat(Math.max(0,x.lvl-base))+x.t+(/[.?!:;]$/.test(x.t)?"":".")+"\n"; }
       }
       secs.push({title,text});
     }
