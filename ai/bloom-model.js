@@ -70,11 +70,17 @@ const BloomAI = (() => {
     K("Applying","True or false that needs a computation or a prediction in a situation",
       /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*(if\b[^?]*\d[^?]*\bthen\b|(in [^,]+, )?if\b[^,]+,\s*(we can expect|expect|then))/i),
     K("Analyzing","True or false about a difference, a cause or the effect of changing a variable",
-      /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*(using [^,]+, (doubling|halving|tripling|increasing|decreasing)\b|the main difference between\b|according to the lesson, the most likely cause\b)/i),
+      /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*(using [^,]+, (doubling|halving|tripling|increasing|decreasing)\b|the main difference between\b|(according to the lesson, )?the most likely cause of\b)/i),
     K("Evaluating","True or false about the best choice or a claim",
       /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*[^?]*\b(is the best choice, because|the best choice is [^,]+, because|is the better choice than|always the better choice|is fully justified|is the most effective way)\b/i),
     K("Understanding","True or false about whether two ideas mean the same thing",
       /^(true or false|tama o mali|t\/f)\s*[:.\-]\s*[^?]*\bmean the same thing\b/i),
+    // ---- "which statement is correct" sets: the stem names the kind of thinking the statements need ----
+    K("Remembering","Asks which stated fact is (not) correct",/^which of the following statements is (not )?correct\?$/i),
+    K("Understanding","Asks which statement shows understanding or a misunderstanding",/^which of the following statements shows (a correct understanding|a misunderstanding)\b/i),
+    K("Applying","Asks which computed result is (not) correct",/^which of the following computed results is (not )?correct\?$/i),
+    K("Analyzing","Asks which conclusion is (not) valid",/^which of the following conclusions is (not )?valid\?$/i),
+    K("Evaluating","Asks which judgment is (not) justified",/^which of the following judgments is (best |not )?justified\?$/i),
     // ---- scenario constructions: a situation sentence, then a task ----
     K("Applying","Scenario that asks you to use an idea or procedure in the situation",
       /^[^?]{15,}[.:]\s+(explain|show|describe) (step by step )?how\b[^?]*\b(could|would|can|should) (be used|be applied|use|apply)\b|^suppose\b[^?]*\b(use|apply) (the lesson|what you know|the (rule|formula|relationship|principle))\b[^?]*\bpredict\b|^for (the |an? )?[^,]{6,}, explain where each of\b[^?]*\bwould be used\b|^use (the steps of|what you know about)\b[^?]*\b(on|to)\b/i),

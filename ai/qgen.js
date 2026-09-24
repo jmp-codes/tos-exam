@@ -1,4 +1,4 @@
-/* QGen v2.6 — offline question generator for TOS Builder.
+/* QGen v2.7 — offline question generator for TOS Builder.
    Reads a sentence or paragraph for definitions, names, dates, lists, steps, examples, classifications,
    formulas, causes, relationships, comparisons, purposes and limitations, then fills Bloom's-level
    question patterns. Every pattern has an id so the app can rank patterns by what teachers keep and
@@ -55,6 +55,7 @@ const QGen = (() => {
   function headNoun(h){ const ty=h.match(/^(?:the\s+)?(?:\w+\s+)?(?:types|kinds|categories|forms|classes)\s+of\s+(?:the\s+)?(.+)$/i); if(ty) return singular(ty[1].split(/\s+/).pop()); const w=h.replace(/[^A-Za-z\s-]/g," ").trim().split(/\s+/); const last=w[w.length-1]||""; if(!/s$/i.test(last)||/^(terms|concepts|definitions|basics|notes|foundations|fundamentals|essentials)$/i.test(last)) return null; return singular(last); }
   function kindOf(h){ return h.replace(/^(the|a|an)\s+/i,"").split(/\s+/).map(w=>/^[A-Z0-9]{2,}$/.test(w)?w:w.toLowerCase()).join(" "); }
   const pv=(v,rest)=>(lemma(v)+" "+rest).replace(/^(\w+) and (\w+?s)\b/,(m0,a,b)=>a+" and "+lemma(b));
+  const overlaps0=(a,b)=>{ const k=x=>new Set((String(x).toLowerCase().match(/[a-z]{4,}/g)||[]).map(w=>w.slice(0,5))); const A=k(a); for(const w of k(b)) if(A.has(w)) return true; return false; };
   function structured(text, F, addTerm){
     const blocks=String(text).replace(/\r/g,"").split(/\n\s*\n/); const keep=[];
     for(const blk of blocks){
@@ -108,6 +109,22 @@ const QGen = (() => {
     for(const raw of S){
       let s=raw.replace(/[.!?]$/,"").trim(); let m;
       if(fil){ readFil(s,raw,F,addTerm); continue; }
+      // ---- more ways lessons state facts ----
+      { let mm, handled=false; const T0=x=>termCase(noArt(trimP(x)));
+        if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s*,\s*(?:also\s+)?(?:known|called|referred to)\s+as\s+(?:an?\s+|the\s+)?([\w\s\-\/]{2,40}?)\s*,\s*(.+)$/i))){ const T=T0(mm[1]); addTerm(T,3); addTerm(mm[2],2); s=`${mm[1]} ${mm[3]}`; F.aliases=(F.aliases||[]).concat([[T,trimP(mm[2])]]); }
+        if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s*,\s*(?:which|that)\s+(\w+s)\s+(.+?),\s*(.+)$/i)) && looksVerb(mm[2]+" "+mm[3])){ F.purposes.push({term:T0(mm[1]),purpose:pv(mm[2],mm[3]),src:raw}); addTerm(mm[1],2); s=`${mm[1]} ${mm[4]}`; }
+        if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s+(?:consists? of|is made up of|are made up of|is composed of|are composed of|has|have)\s+(?:the following\s*:?\s*)?(.+?(?:,|\band\b).+)$/i)) && !PRON.test(mm[1]) && splitItems(mm[2]).length>=2 && !/\b(is|are|was|were)\b/.test(mm[2])){ F.lists.push({kind:"parts",subject:T0(mm[1]),items:splitItems(mm[2]),src:raw}); addTerm(mm[1],2); handled=true; }
+        else if((mm=s.match(/^(?:the\s+)?(?:main\s+|common\s+|key\s+)?([A-Za-z][\w\s\-\/]{2,40}?s)\s+(?:include|includes|are)\s+(?:the following\s*:?\s*)?([^.]+?(?:,|\band\b)[^.]+)$/i)) && !PRON.test(mm[1]) && splitItems(mm[2]).length>=2 && splitItems(mm[2]).every(x=>x.split(" ").length<=5) && !/^(advantages|benefits|disadvantages|types|kinds|steps)$/i.test(mm[1].trim())){ F.lists.push({kind:mm[1].toLowerCase().replace(/^(the|main|common|key)\s+/,""),subject:"",items:splitItems(mm[2]),src:raw}); handled=true; }
+        else if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\s\-\/]{1,40}?)\s+(?:can be|is|are|may be)\s+(?:classified|divided|grouped|categori[sz]ed|sorted)\s+into\s+(?:\w+\s+(?:types|kinds|groups|categories)\s*:?\s*)?(.+)$/i)) && splitItems(mm[2]).length>=2){ F.lists.push({kind:"types",subject:T0(mm[1]),items:splitItems(mm[2]),src:raw}); addTerm(mm[1],2); handled=true; }
+        else if((mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z0-9][\w\-\/]*(?:\s+[\w\-\/]+){0,3})\s+vs\.?\s+(?:an?\s+|the\s+)?([A-Za-z0-9][\w\-\/]*(?:\s+[\w\-\/]+){0,3})\s*:\s*(.+)$/i))){ s=mm[3]; }
+        if(!handled && (mm=s.match(/^(?:an?\s+|the\s+)?([\w\-\/]+(?:\s+[\w\-\/]+){0,3})\s+(?:is|are)\s+((?:more|less)\s+\w+|\w+er),\s*(?:while|whereas|but)\s+(?:an?\s+|the\s+)?([\w\-\/]+(?:\s+[\w\-\/]+){0,3})\s+(?:is|are)\s+((?:more|less)\s+\w+|\w+er)$/i))){ F.comps.push({a:noArt(mm[1]),comp:mm[2],b:noArt(mm[3]),src:raw}); F.comps.push({a:noArt(mm[3]),comp:mm[4],b:noArt(mm[1]),src:raw}); addTerm(mm[1],2); addTerm(mm[3],2); handled=true; }
+        if(!handled && (mm=s.match(/^(?:an?\s+|the\s+)?(.{2,40}?)\s+(spreads?|occurs?|happens?|fails?|crashes|breaks?|stops?|slows? down|increases?|decreases?)\s+when\s+(.+)$/i)) && !PRON.test(mm[1])){ F.causes.push({cause:trimP(mm[3]),effect:`${noArt(mm[1])} ${mm[2]}`,src:raw,cond:null}); handled=true; }
+        if(!handled && (mm=s.match(/^if\s+(.+?),\s*(?:then\s+)?(.+)$/i)) && !/\d/.test(mm[1]) && mm[2].split(" ").length>=3){ F.causes.push({cause:trimP(mm[1]),effect:trimP(mm[2]),src:raw}); handled=true; }
+        if(!handled && (mm=s.match(/^(?:one|another|a|the)?\s*(?:main\s+|major\s+|key\s+)?(disadvantage|limitation|drawback|weakness|problem)\s+of\s+(?:an?\s+|the\s+)?(.+?)\s+is\s+that\s+(?:it|they)\s+(.+)$/i))){ F.limits.push({term:T0(mm[2]),limit:trimP(mm[3]),src:raw}); handled=true; }
+        if(!handled && (mm=s.match(/^(?:one|another|a|the)?\s*(?:main\s+|major\s+|key\s+)?(advantage|benefit|strength)\s+of\s+(?:an?\s+|the\s+)?(.+?)\s+is\s+that\s+(?:it|they)\s+(\w+)\s+(.+)$/i))){ F.purposes.push({term:T0(mm[2]),purpose:pv(mm[3],mm[4]),src:raw,benefit:true}); handled=true; }
+        if(!handled && (mm=s.match(/^(?:an?\s+|the\s+)?([A-Za-z][\w\-\/]*(?:\s+[\w\-\/()]+){0,3})\s+(\w+s)\s+(.{6,})$/)) && !PRON.test(mm[1]) && DESC_VERB.test(mm[2]+" x") && !/\b(is|are|was|were|has|have|include|includes)\b/i.test(mm[2]) && !/^(this|that|these|those|it|they|there|each|every|some|many|most|all)\b/i.test(mm[1]) && !F.purposes.some(p=>same(p.term,mm[1])&&overlaps0(p.purpose,mm[3]))){ F.purposes.push({term:T0(mm[1]),purpose:pv(mm[2],mm[3]),src:raw}); addTerm(mm[1],2); }
+        if(handled) continue;
+      }
       // ---- formulas: "The formula for X is A = B * C, where P is …" / "V = I * R"
       if((m=s.match(/(?:the\s+)?formula(?:\s+for\s+(?:the\s+)?(.+?))?\s+is\s+([A-Za-z][\w]*\s*=\s*[^,]+?)(?:,\s*where\s+(.+))?$/i)) || (m=s.match(/^()([A-Za-z]\w*\s*=\s*[A-Za-z0-9\s*\/+\-().^]+?)(?:,\s*where\s+(.+))?$/)) || (m=s.match(/^(?:the\s+)?(.+?)\s+(?:is|are|can be)\s+(?:computed|calculated|found|obtained|given|determined|solved|expressed)\s+(?:as|by|using|with)(?:\s+the\s+formula)?\s+([A-Za-z]\w*\s*=\s*[A-Za-z0-9\s*\/+\-().^]+?)(?:,\s*where\s+(.+))?$/i))){
         const f=parseFormula(m[2], m[3]||"", m[1]||lastTerm||""); if(f){ f.src=raw; F.formulas.push(f); if(!f.vars[f.lhs].mean && f.lhs.length>2) f.vars[f.lhs].mean=f.lhs; }
@@ -182,6 +199,7 @@ const QGen = (() => {
       (s.match(/(?<=[a-z,]\s)(?:[A-Z][a-z]+\s?){2,3}/g)||[]).forEach(w=>addTerm(w,1));
     }
     if(ordered.length>=2 && !F.steps.length) F.steps.push({process:"",steps:ordered,src:"",ordered:true});
+    F.lists=F.lists.filter(l=>!l.items.some(x=>/^(true|false|yes|no|\d+)$/i.test(x.trim())||/\b(usually|written|often|called)\b/i.test(x)));
     F.defs.forEach(d=>{ d.term=termCase(d.term); d.head=(d.def.toLowerCase().replace(/^(an?|the)\s+/,"").split(/\s+/)[0]||""); d.entity=/^[A-Z]/.test(d.term)&&!/^[A-Z]{2,}/.test(d.term)&&!/\b(theorem|law|map|principle|rule|method|algorithm|gate|table|test|model|equation|formula|diagram|circuit|distribution|search|sort|code|protocol)s?$/i.test(d.term); d.tool=IT.test(text)||F.purposes.some(p=>same(p.term,d.term)); });
     F.termList=[...F.terms.values()].filter(x=>x.w>=1).sort((a,b)=>b.w-a.w).map(x=>termCase(x.t));
     F.main=F.defs[0]?.term||F.lists[0]?.subject||F.purposes[0]?.term||F.termList[0]||"";
@@ -300,7 +318,7 @@ const QGen = (() => {
     const ctx=fixed || (pool.length?CT:(F.fil ? "inyong paaralan o komunidad" : IT_T ? "a school information system" : "your school or community"));
     const hasCtx=!!fixed || pool.length>0;
     let ci=0; const nextCtx=()=>pool[(ci++)%pool.length];
-    const artifact=F.fil ? (IT_T?"isang sistema":"isang proyekto") : IT_T ? shuffle(["a system","a database design","a program","an application"],r)[0] : shuffle(["a project","a lesson activity","a plan","an information campaign"],r)[0];
+    const artifact=F.fil ? (IT_T?"isang sistema":"isang proyekto") : IT_T ? shuffle(["a system","a database design","a program","an application"],r)[0] : shuffle(["a project","a class activity","a plan","an information campaign"],r)[0];
     const out=[];
     const push=(tpl,level,type,q,slots,src)=>{ if(!q) return; if(typeof q==="string") q={stem:q};
       if(q.stem.includes(CT)){ const c=nextCtx(); q={...q,stem:q.stem.split(CT).join(c),setting:c}; slots={...(slots||{}),ctx:c}; } else if(slots&&slots.ctx===CT){ slots={...slots}; delete slots.ctx; } q.stem=cap(q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\./g,".")); out.push({tpl,level,type,...q,slots:slots||{},basis:src||""}); };
@@ -313,17 +331,20 @@ const QGen = (() => {
     F.lists.forEach(l=>{ if(l.items.length>=2) pairs.push([l.items[0],l.items[1]]); });
     const MC=(stem, answer, wrongs, extra, ordered)=>{ answer=String(answer).trim(); const w=[]; for(const x of wrongs){ const t=String(x||"").trim(); if(t && !w.some(y=>y.toLowerCase()===t.toLowerCase()) && t.toLowerCase()!==answer.toLowerCase()) w.push(t); }
       if(w.length<2) return null; const ch=shuffle([answer,...(ordered?w:shuffle(w,r)).slice(0,3)],r); return {stem, choices:ch.map(cap), answer:"abcdefgh"[ch.indexOf(answer)], answerText:cap(answer), ...(extra||{})}; };
-    const art=t=>{ if(/^(an?|the)\s/i.test(t)||/\//.test(t)) return t; const b=bare(t), key=b.toLowerCase().replace(/s$/,"");
+    const art=t=>{ if(/^(an?|the)\s/i.test(t)||/\//.test(t)||/^\w+ing\b/i.test(t)) return t; const b=bare(t), key=b.toLowerCase().replace(/s$/,"");
       if(/^[A-Z]{2,}\s+[a-z]/.test(b)){ const m1=new RegExp("\\b(a|an|the)\\s+"+reEsc(b)+"\\b","i").exec(CUR); return (m1?m1[1].toLowerCase():"a")+" "+b; }
       if(/^[A-Z]{2,}\b/.test(t)||TITLE(t)) return t;
       const d0=F.defs.find(d=>d.term.toLowerCase().replace(/s$/,"")===key); if(d0 && d0.art && d0.term.toLowerCase()===b.toLowerCase()) return d0.art+" "+b; if(/s$/.test(b)&&!/(ss|is|us)$/.test(b)&&d0) return b;
-      const m0=new RegExp("\\b(a|an|the)\\s+"+reEsc(b)+"\\b","i").exec(CUR); const bareUse=new RegExp("(^|[.!?]\\s+|\\n)"+reEsc(b)+"\\s+(is|are)\\b","i").test(CUR);
+      const m0=new RegExp("\\b(a|an|the)\\s+"+reEsc(b)+"\\b","i").exec(CUR); const bareUse=new RegExp("(^|[.!?]\\s+|\\n)"+reEsc(b)+"\\s+(is|are|was|were|states|refers|means|has|have|can|shows|gives|uses|helps|allows)\\b","i").test(CUR);
       if(bareUse && !(d0&&d0.art)) return b; if(m0) return m0[1].toLowerCase()+" "+b; return art0(t); };
     const art0=t=>/^(an?|the)\s/i.test(t)||/^[A-Z]{2,}/.test(t)||/s$/.test(t)&&!/ss$/.test(t)||/^[A-Z][a-z]+(?:'s|s')/.test(t)?t:(/^[aeiou]/i.test(t)?"an ":"a ")+t;
     const bare=t=>termCase(String(t).replace(/^(an?|the)\s+/i,""));
     const short=(t,n=22)=>{ t=lc(String(t).replace(/[.]$/,"")); const w=t.split(" "); return w.length>n?w.slice(0,n).join(" ")+"…":t; };
     const actorIn = fixed?`In ${fixed}, a staff member`:IT_T?"An IT staff member":"A student";
-    const defOf = t=>F.defs.find(d=>same(d.term,t)&&!(d.term.length<4&&!same(d.term,t)));
+    const normT=x=>String(x).toLowerCase().replace(/^(an?|the)\s+/,"").replace(/[^a-z0-9' ]/g,"").replace(/s\b/g,"").trim();
+    const defOf = t=>{ const k=normT(t); return F.defs.find(d=>normT(d.term)===k) || F.defs.find(d=>{ const dk=normT(d.term); return k.length>=4 && dk.length>=4 && (new RegExp("\\b"+reEsc(dk)+"\\b").test(k)||new RegExp("\\b"+reEsc(k)+"\\b").test(dk)); }); };
+    const isStmt=d=>d && /^states/.test(d.verb||"");
+    const beOf=d=>isStmt(d)?"states that":"is";
     const kw=x=>new Set(String(x).toLowerCase().match(/[a-z]{4,}/g)?.filter(w=>!STOP.has(w)&&!/^(that|this|with|from|into|used|make|makes|more|less|help|helps)$/.test(w)).map(w=>w.slice(0,5))||[]);
     const overlaps=(a,b)=>{ const A=kw(a); for(const w of kw(b)) if(A.has(w)) return true; return false; };
     const kin=(a,b)=>F.lists.some(l=>{ const k=l.kind.toLowerCase(); const inA=l.items.some(x=>same(x,a)), inB=l.items.some(x=>same(x,b)); return (inA&&k.includes(String(b).toLowerCase()))||(inB&&k.includes(String(a).toLowerCase())); });
@@ -412,7 +433,7 @@ const QGen = (() => {
       return {text:prob||`${cap(who)} ${verb||"needs to"} ${p.helps?"help "+purpose:purpose}.`, who, where, ro, problem:!!prob}; };
     const isAre=x=>/s$/.test(x)&&!/(ss|us|is|sis)$/.test(x)&&!/^[A-Z]{2,}$/.test(x)?"are":"is";
     const itThey=x=>isAre(x)==="are"?"they are":"it is";
-    const reasonFor=t=>{ const d=defOf(t); if(!d||d.entity) return null; const df=short(d.def,16); if(/^(the one that|each|every)\b/i.test(df)) return null; return `${itThey(bare(t))} ${df}`; };
+    const reasonFor=t=>{ const d=defOf(t); if(!d||d.entity||isStmt(d)) return null; const df=short(d.def,16); if(/^(the one that|each|every)\b/i.test(df)) return null; return `${itThey(bare(t))} ${df}`; };
     const theNP=x=>{ x=String(x).trim(); return /^(the|an?|this|that|its|their|his|her|our|your|[A-Z])\b/.test(x)||/s$/.test(x.split(" ")[0])&&!/ss$/.test(x.split(" ")[0])?x:"the "+x; };
     const stepNP=x=>{ const t=lc(x); if(/^\w+ing\b/i.test(t)) return t; if(/\b(phase|step|stage)$/i.test(t)) return /^the\s/i.test(t)?t:"the "+t; return `the “${t}” step`; };
     const doingProc=st=>{ const p0=st.process?st.process.replace(/^(the|an?)\s+/i,""):""; if(!p0) return "is following a procedure"; if(/^\w+ing\b/i.test(p0)) return "is "+p0.toLowerCase().replace(/\b(boolean|sql|togaf|html|css|ip|lan|wan)\b/gi,w=>w==="boolean"?"Boolean":w.toUpperCase()); return "is following the steps of "+(/^[A-Z]{2,}|^[A-Z][a-z]+\s[A-Z]/.test(p0)?"the "+p0:/ing$/i.test(p0)?p0:"the "+p0); };
@@ -443,7 +464,7 @@ const QGen = (() => {
       if(d.entity){
         push("N.ent.without","Analyzing","essay",`Analyze what would have changed if ${t} had not existed.`,S,d.src);
         push("N.ent.factors","Analyzing","essay",`Analyze the factors that made ${t} significant.`,S,d.src);
-        push("E.ent.sig","Evaluating","essay",`How significant was ${t}? Justify your answer with evidence from the lesson.`,S,d.src);
+        push("E.ent.sig","Evaluating","essay",`How significant was ${t}? Justify your answer with evidence.`,S,d.src);
         push("C.ent.timeline","Creating","essay",`Create an original timeline, story or presentation about ${t}.`,S,d.src);
         continue;
       }
@@ -456,13 +477,13 @@ const QGen = (() => {
         push("C.tool.design","Creating","essay",org?`Plan how ${st0} could adopt ${T1}. Describe the steps, the people involved and what the organization would gain.`:sys?`Design an improvement to ${st0} that makes use of ${T1}. Describe how the parts of your design work together.`:`Design a simple system for ${st0} that makes use of ${T1}. Describe how the parts of your design work together.`,{...S,ctx:st0},d.src);
       } else if(K0==="principle"){ const act=activityFor(d.term);
         push("A.prin.use","Applying","short",`Use ${T1} to work out a problem about ${act}. Show each step of your solution.`,S,d.src);
-        push("N.prin.when","Analyzing","essay",`Analyze how you can tell that a problem about ${act} calls for ${T1} rather than another rule from the lesson.`,S,d.src);
+        push("N.prin.when","Analyzing","essay",`Analyze how you can tell that a problem about ${act} calls for ${T1} rather than another rule.`,S,d.src);
         push("E.prin.claim","Evaluating","essay",`A classmate says ${T1} is only useful in the classroom. Do you agree? Justify your answer with a real example.`,S,d.src);
         push("C.prin.problem","Creating","essay",`Write an original word problem about ${activityFor(d.term+" x")} that is solved using ${T1}, then solve it.`,S,d.src);
       } else {
         push("U.con.observe","Understanding","short",`Describe a real situation where ${t} can be observed, and use the definition to show that it fits.`,S,d.src);
         push("N.con.parts","Analyzing","essay",`Break down the definition of ${t} into its key parts and explain how each part contributes to its meaning.`,S,d.src);
-        push("E.con.importance","Evaluating","essay",`How important is ${t} in the topic you studied? Justify your answer with reasons from the lesson.`,S,d.src);
+        push("E.con.importance","Evaluating","essay",`How important is ${t}? Justify your answer with reasons and examples.`,S,d.src);
         push("C.con.demo","Creating","essay",`Design an activity or demonstration that shows ${t} to your classmates.`,S,d.src);
       }
       push("C.def.original","Creating","essay",`Create an original example or scenario that illustrates ${t}.`,S,d.src);
@@ -532,7 +553,7 @@ const QGen = (() => {
     /* ---- formulas: number problems ---- */
     for(const f of F.formulas){
       const S={expr:f.expr};
-      push("R.form.what","Remembering","short",{stem:f.name?`What is the formula for ${f.name.replace(/^the\s+/i,"")}?`:`Write the formula given in the lesson.`,answer:f.expr},S,f.src);
+      push("R.form.what","Remembering","short",{stem:f.name?`What is the formula for ${f.name.replace(/^the\s+/i,"")}?`:`Write the formula that relates ${Object.keys(f.vars).join(", ")}.`,answer:f.expr},S,f.src);
       const syms=Object.keys(f.vars).filter(v=>f.vars[v].mean);
       if(syms.length>=3){ const v=shuffle(syms,r)[0]; push("R.form.symbol","Remembering","mc",mc(`In the formula ${f.expr}, what does ${v} stand for?`, f.vars[v].mean, syms.filter(x=>x!==v).map(x=>f.vars[x].mean), r, 4, false),S,f.src); }
       for(let k=0;k<2;k++){
@@ -566,7 +587,7 @@ const QGen = (() => {
       if(!p.benefit && kindOf(p.term)==="tool") push("A.purp.situation","Applying","case",mc(`Situation: ${sc.text} Which of the following should be used?`, bare(p.term), tools, r),{...S,ctx:sc.where},p.src);
       if(kindOf(p.term)==="tool"||p.benefit) push("A.purp.use","Applying","short",`${sc.text} Explain step by step how ${pt} could be used to ${sc.problem?"solve this":"do this"}.`,{...S,ctx:sc.where},p.src);
       else push("U.purp.explain","Understanding","short",`Use what you know about ${pt} to explain what would happen if ${isAre(bare(p.term))==="are"?"they":"it"} could no longer ${purpose}.`,S,p.src);
-      { const alt0=F.purposes.find(x=>!same(x.term,p.term)&&!overlaps(x.purpose,purpose)); push("E.purp.claim","Evaluating","essay",alt0?`A classmate says that ${art(bare(alt0.term))} could ${purpose} just as well as ${pt}. Evaluate this claim using what the lesson says about both.`:`A classmate says that ${pt} ${isAre(bare(p.term))==="are"?"are":"is"} not really needed to ${purpose}. Evaluate this claim using what the lesson says.`,S,p.src); }
+      { const alt0=F.purposes.find(x=>!same(x.term,p.term)&&!overlaps(x.purpose,purpose)); push("E.purp.claim","Evaluating","essay",alt0?`A classmate says that ${art(bare(alt0.term))} could ${purpose} just as well as ${pt}. Evaluate this claim by comparing what each one does.`:`A classmate says that ${pt} ${isAre(bare(p.term))==="are"?"are":"is"} not really needed to ${purpose}. Evaluate this claim.`,S,p.src); }
     }
     for(const l of F.limits){ const t=termCase(l.term); const stl=settingFor(t); push("E.limit.still","Evaluating","essay",`Considering that ${t} ${l.limit}, ${stl?`should ${stl} still adopt it`:"is it still worth using"}? Justify your answer.`,{term:t},l.src); }
     /* ---- causes, relationships, comparisons ---- */
@@ -595,8 +616,8 @@ const QGen = (() => {
     const OPP={increases:"decreases",decreases:"increases",rises:"falls",falls:"rises","goes up":"goes down","goes down":"goes up"};
     for(const rl of F.rels){
       const correct=`It ${rl.dy}`, ch=shuffle([correct,`It ${OPP[rl.dy]}`,"It stays the same","It becomes zero"],r);
-      push("U.rel.mc","Understanding","mc",{stem:`According to the lesson, when ${theNP(rl.x)} ${rl.dx}, what happens to ${theNP(rl.y)}?`,choices:ch,answer:"abcd"[ch.indexOf(correct)],answerText:correct},{x:rl.x,y:rl.y},rl.src);
-      push("A.rel.predict","Applying","short",`Suppose ${theNP(rl.x)} ${OPP[rl.dx]||rl.dx}. Use the lesson to predict what will happen to ${theNP(rl.y)}, and explain your answer.`,{x:rl.x,y:rl.y},rl.src);
+      push("R.rel.mc","Remembering","mc",{stem:`When ${theNP(rl.x)} ${rl.dx}, what happens to ${theNP(rl.y)}?`,choices:ch,answer:"abcd"[ch.indexOf(correct)],answerText:correct},{x:rl.x,y:rl.y},rl.src);
+      push("A.rel.predict","Applying","short",`Suppose ${theNP(rl.x)} ${OPP[rl.dx]||rl.dx}. Predict what will happen to ${theNP(rl.y)}, and explain your answer.`,{x:rl.x,y:rl.y},rl.src);
       push("N.rel.why","Analyzing","essay",`Analyze why ${theNP(rl.y)} ${rl.dy} when ${theNP(rl.x)} ${rl.dx}.`,{x:rl.x,y:rl.y},rl.src);
     }
     for(const cp of F.comps){
@@ -639,14 +660,14 @@ const QGen = (() => {
       if(!outs.length) continue; const odd=shuffle(outs,r)[0]; const ch=shuffle([...shuffle(l.items,r).slice(0,3),odd],r);
       push("N.mc.odd","Analyzing","mc",{stem:"Which of the following does not belong with the others?",choices:ch.map(cap),answer:"abcd"[ch.indexOf(odd)],answerText:cap(odd)},{what:l.kind},l.src); }
     const seenD=new Set();
-    for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db) continue; const a=bare(da.term), b=bare(db.term); const k=[a,b].sort().join("|"); if(seenD.has(k)) continue; seenD.add(k);
+    for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db||isStmt(da)!==isStmt(db)) continue; const be=beOf(da); const a=bare(da.term), b=bare(db.term); const k=[a,b].sort().join("|"); if(seenD.has(k)) continue; seenD.add(k);
       const A=short(da.def), B=short(db.def);
-      push("N.mc.diff","Analyzing","mc",MC(`Which of the following best explains the difference between ${art(a)} and ${art(b)}?`, `${cap(art(a))} is ${A}, while ${art(b)} is ${B}`, [`${cap(art(a))} is ${B}, while ${art(b)} is ${A}`, `${cap(art(a))} and ${art(b)} mean the same thing and can be used interchangeably`, `${cap(art(a))} is a special kind of ${b}, so they differ only in name`]),{a,b},da.src+" "+db.src);
-      push("E.mc.claimsame","Evaluating","mc",MC(`A classmate claims that ${art(a)} and ${art(b)} are the same thing. Which statement best evaluates this claim?`, `The claim is incorrect, because ${art(a)} is ${A}, while ${art(b)} is ${B}`, [`The claim is correct, because both are discussed in the same lesson`, `The claim is correct, because ${art(a)} is ${B}`, `The claim cannot be judged, because the lesson does not define ${art(b)}`]),{a,b},da.src+" "+db.src); }
+      push("N.mc.diff","Analyzing","mc",MC(`Which of the following best explains the difference between ${art(a)} and ${art(b)}?`, `${cap(art(a))} ${be} ${A}, while ${art(b)} ${be} ${B}`, [`${cap(art(a))} ${be} ${B}, while ${art(b)} ${be} ${A}`, `${cap(art(a))} and ${art(b)} mean the same thing and can be used interchangeably`, `${cap(art(a))} is a special kind of ${b}, so they differ only in name`]),{a,b},da.src+" "+db.src);
+      push("E.mc.claimsame","Evaluating","mc",MC(`A classmate claims that ${art(a)} and ${art(b)} are the same thing. Which statement best evaluates this claim?`, `The claim is incorrect, because ${art(a)} ${be} ${A}, while ${art(b)} ${be} ${B}`, [`The claim is correct, because both deal with the same topic`, `The claim is correct, because ${art(a)} ${be} ${B}`, `The claim cannot be judged, because there is not enough information about ${art(b)}`]),{a,b},da.src+" "+db.src); }
     for(const c of F.causes){ const eff=lc(c.effect), cau=lc(c.cause); if(eff.split(" ").length>14) continue;
       const wrong=[...F.causes.filter(x=>x!==c&&!same(x.cause,c.cause)).map(x=>lc(x.cause)),...F.causes.filter(x=>x!==c).map(x=>lc(x.effect))].filter(x=>!same(x,cau)&&!same(x,eff));
       const gen=[`it happens by chance and has no clear cause`,`the opposite of ${cau.split(" ").slice(0,6).join(" ")}`];
-      if(c.verb) push("N.mc.cause","Analyzing","mc",MC(`According to the lesson, which of the following is the most likely cause of ${/^(an?|the)\s/i.test(eff)||/^\w+ing\b/.test(eff)?eff:"the "+eff}?`, cau, wrong.concat(gen)),{cause:cau,effect:eff},c.src); }
+      if(c.verb) push("N.mc.cause","Analyzing","mc",MC(`Which of the following is the most likely cause of ${/^(an?|the)\s/i.test(eff)||/^\w+ing\b/.test(eff)?eff:"the "+eff}?`, cau, wrong.concat(gen)),{cause:cau,effect:eff},c.src); }
     for(const rl of F.rels){ const good=`When ${rl.x} ${rl.dx}, ${rl.y} ${rl.dy}`;
       push("N.mc.rel","Analyzing","mc",MC(`Which statement best describes the relationship between ${rl.x} and ${rl.y}?`, good, [`When ${rl.x} ${rl.dx}, ${rl.y} ${OPP2[rl.dy]}`, `${cap(rl.x)} and ${rl.y} are not related at all`, `When ${rl.y} ${rl.dy}, ${rl.x} always stays the same`]),{x:rl.x,y:rl.y},rl.src);
       push("C.mc.hypo","Creating","mc",MC(`Which hypothesis would you propose to test the relationship between ${rl.x} and ${rl.y} in an experiment?`, `If ${rl.x} ${rl.dx}, then ${rl.y} will ${({increases:"increase",decreases:"decrease",rises:"rise",falls:"fall","goes up":"go up","goes down":"go down"})[rl.dy]}`, [`If ${rl.x} ${rl.dx}, then ${rl.y} will ${({increases:"increase",decreases:"decrease",rises:"rise",falls:"fall","goes up":"go up","goes down":"go down"})[OPP2[rl.dy]]}`, `${cap(rl.y)} does not depend on ${rl.x}, so no experiment is needed`, `If ${rl.y} changes, ${rl.x} will always stay the same`]),{x:rl.x,y:rl.y},rl.src); }
@@ -663,11 +684,11 @@ const QGen = (() => {
         else { good=`${x} = ${L} * ${y}`; bad=[`${x} = ${L} / ${y}`,`${x} = ${y} / ${L}`,`${x} = ${L} + ${y}`]; }
         push("C.mc.derive","Creating","mc",MC(`Which formula would you derive from ${f.expr} to solve for ${f.vars[x].mean?`the ${f.vars[x].mean.replace(/^the\s+/i,"")} (${x})`:x}?`, good, bad),{expr:f.expr},f.src); } }
     // --- Evaluating: best choice with a reason; most effective action; judging a claim
-    const BADWHY=["because it is the most popular choice","because it was mentioned first in the lesson","because it is the newest option available"];
+    const BADWHY=["because it is the most popular choice","because it was the first option considered","because it is the newest option available"];
     for(const p of F.purposes){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""); const others=F.purposes.filter(x=>!same(x.term,p.term)); if(kindOf(p.term)!=="tool") continue;
       const why=reasonFor(T); const sc=scene(p,"must");
       let ans, alt;
-      if(why){ ans=`${cap(T)}, because ${why}`; alt=[...others.filter(o=>!overlaps(o.purpose,purpose)&&reasonFor(bare(o.term))&&!compared(o.term,T)).map(o=>`${cap(bare(o.term))}, because ${reasonFor(bare(o.term))}`), ...F.defs.filter(d=>!same(d.term,T)&&!d.entity&&!compared(d.term,T)&&!F.purposes.some(o=>same(o.term,d.term)&&overlaps(o.purpose,purpose))&&!kin(d.term,T)).slice(0,3).map(d=>`${cap(bare(d.term))}, because ${reasonFor(bare(d.term))||"it is part of the lesson"}`), `${cap(T)}, because ${shuffle(["it is the most popular choice","it was mentioned first in the lesson","it is the newest option available"],r)[0].replace(/^it is\b/,itThey(T))}`]; }
+      if(why){ ans=`${cap(T)}, because ${why}`; alt=[...others.filter(o=>!overlaps(o.purpose,purpose)&&reasonFor(bare(o.term))&&!compared(o.term,T)).map(o=>`${cap(bare(o.term))}, because ${reasonFor(bare(o.term))}`), ...F.defs.filter(d=>!same(d.term,T)&&!d.entity&&!compared(d.term,T)&&!F.purposes.some(o=>same(o.term,d.term)&&overlaps(o.purpose,purpose))&&!kin(d.term,T)).slice(0,3).map(d=>`${cap(bare(d.term))}, because ${reasonFor(bare(d.term))||"it is related to the topic"}`), `${cap(T)}, because ${shuffle(["it is the most popular choice","it was the first option considered","it is the newest option available"],r)[0].replace(/^it is\b/,itThey(T))}`]; }
       else continue;
       push("E.mc.bestwhy","Evaluating","mc",MC(`${sc.text} Which is the best choice, and why?`, ans, alt.filter(x=>x!==ans)),{term:T,purpose,ctx:sc.where},p.src); }
     const fix=c=>{ c=lc(c); let m;
@@ -682,16 +703,16 @@ const QGen = (() => {
       push("E.mc.effective","Evaluating","mc",MC(`${cap(org)} wants to ${verbN} ${effN}. Which of the following would be the most effective action?`, act, others.concat([`Fix each case as it appears, without changing ${lc(c.cause)}`,`Assign more people to handle the problem when it happens`,`Buy new equipment and hope it prevents the problem`])),{cause:lc(c.cause),effect:eff,ctx:org},c.src);
       push("C.mc.plan","Creating","mc",MC(`You are asked to help ${org} ${verbN} ${effN}. Which plan would you propose?`, `${act} first, then check regularly whether the problem goes down`, [`${act} once, and assume the problem is solved without checking`, ...(others.length?[`${others[0]} first, then check regularly whether the problem goes down`]:[]), `Train people to report the problem faster, and deal with each case as it comes`, `Check regularly whether the problem goes down, without changing ${lc(c.cause)}`]),{cause:lc(c.cause),effect:eff,ctx:org},c.src); }
     for(const cp of F.comps){ const a=bare(cp.a), qm=cp.b.match(/^(.+?)\s+((?:for|in|when|with|on|during)\s+.+)$/i), b=bare(qm?qm[1]:cp.b), q=qm?" "+qm[2]:"";
-      push("E.mc.claim","Evaluating","mc",MC(`A student claims that ${art(a)} is always a better choice than ${art(b)}. Which statement best evaluates this claim?`, `The claim goes too far: ${art(a)} is ${cp.comp} than ${art(b)}${q}, but the better choice depends on the situation`, [`The claim is fully correct, since ${art(a)} is ${cp.comp} than ${art(b)} in every way`, `The claim is wrong, because ${art(b)} is ${cp.comp} than ${art(a)}${q}`, `The claim cannot be judged, because the lesson says nothing about ${art(a)}`]),{a,b},cp.src); }
+      push("E.mc.claim","Evaluating","mc",MC(`A student claims that ${art(a)} is always a better choice than ${art(b)}. Which statement best evaluates this claim?`, `The claim goes too far: ${art(a)} is ${cp.comp} than ${art(b)}${q}, but the better choice depends on the situation`, [`The claim is fully correct, since ${art(a)} is ${cp.comp} than ${art(b)} in every way`, `The claim is wrong, because ${art(b)} is ${cp.comp} than ${art(a)}${q}`, `The claim cannot be judged, because there is no basis for comparing them`]),{a,b},cp.src); }
     // --- Evaluating: judging a classmate's definition, example, computation or order
-    for(const d of F.defs){ if(d.entity) continue; const T=bare(d.term), other=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity);
-      const useWrong=other && r()<0.6, said=useWrong?short(other.def,16):short(d.def,16);
-      const ans=useWrong?`The statement is incorrect, because ${art(T)} is ${short(d.def,16)}`:`The statement is correct, because it matches what ${art(T)} is`;
-      const wr=useWrong?[`The statement is correct, because it matches what ${art(T)} is`,`The statement is incorrect, because ${art(T)} is ${said} only in some cases`,`The statement cannot be judged without more examples`]
-                       :[other?`The statement is incorrect, because ${art(T)} is ${short(other.def,16)}`:`The statement is incorrect, because it describes a different concept`,`The statement is only partly correct, because ${art(T)} has no fixed meaning`,`The statement cannot be judged without more examples`];
-      push("E.mc.defjudge","Evaluating","mc",MC(`A classmate says that ${art(T)} is ${said}. Which statement best evaluates this claim?`, ans, wr),{term:T},d.src); }
+    for(const d of F.defs){ if(d.entity) continue; const T=bare(d.term), other=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity&&isStmt(x)===isStmt(d));
+      const useWrong=other && r()<0.6 && isStmt(other)===isStmt(d), said=useWrong?short(other.def,16):short(d.def,16);
+      const ans=useWrong?`The statement is incorrect, because ${art(T)} ${beOf(d)} ${short(d.def,16)}`:`The statement is correct, because it matches what ${art(T)} ${isStmt(d)?"states":"is"}`;
+      const wr=useWrong?[`The statement is correct, because it matches what ${art(T)} ${isStmt(d)?"states":"is"}`,`The statement is incorrect, because ${art(T)} ${beOf(useWrong?other:d)} ${said} only in some cases`,`The statement cannot be judged without more examples`]
+                       :[other?`The statement is incorrect, because ${art(T)} ${beOf(other)} ${short(other.def,16)}`:`The statement is incorrect, because it describes a different concept`,`The statement is only partly correct, because ${art(T)} has no fixed meaning`,`The statement cannot be judged without more examples`];
+      push("E.mc.defjudge","Evaluating","mc",MC(`A classmate says that ${art(T)} ${useWrong?beOf(other):beOf(d)} ${said}. Which statement best evaluates this claim?`, ans, wr),{term:T},d.src); }
     for(const e of exGroups){ const T=bare(e.term), ex=e.list[0].replace(/^"|"$/g,""), exq=/^[A-Z"]/.test(e.list[0])?`“${ex}”`:ex; const other=[...D.map(bare),...F.examples.map(x=>bare(x.term))].find(x=>!same(x,T)); if(!other) continue;
-      push("E.mc.exjudge","Evaluating","mc",MC(`A classmate says that ${exq} is an example of ${art(other)}. Which statement best evaluates this claim?`, `The claim is incorrect, because ${exq} is an example of ${art(T)}`, [`The claim is correct, because ${exq} fits the meaning of ${art(other)}`,`The claim is correct, because any example can belong to any concept`,`The claim cannot be judged, because the lesson gives no examples`]),{term:T,example:ex},e.src); }
+      push("E.mc.exjudge","Evaluating","mc",MC(`A classmate says that ${exq} is an example of ${art(other)}. Which statement best evaluates this claim?`, `The claim is incorrect, because ${exq} is an example of ${art(T)}`, [`The claim is correct, because ${exq} fits the meaning of ${art(other)}`,`The claim is correct, because any example can belong to any concept`,`The claim cannot be judged without more information`]),{term:T,example:ex},e.src); }
     for(const f of F.formulas){ const p=numberProblem(f,r); if(!p||!p.wrong.length) continue; const w=p.wrong[0];
       push("E.mc.calccheck","Evaluating","mc",MC(`${p.stem.replace(/^If /,"Given that ").replace(/, use .*$/,"")}, a classmate says the ${f.vars[f.lhs].mean?f.vars[f.lhs].mean.replace(/^the\s+/i,""):f.lhs} is ${w}. Which statement best evaluates this answer?`, `The answer is incorrect; using ${f.expr} gives ${p.answer}`, [`The answer is correct, because it follows ${f.expr}`,`The answer is incorrect; the correct value is ${p.wrong[1]||p.wrong[0]+"0"}`,`The answer cannot be checked without more data`]),{expr:f.expr},f.src); }
     for(const st of F.steps){ if(st.steps.length<3) continue; const proc=procName(st);
@@ -706,7 +727,7 @@ const QGen = (() => {
     /* ================= true or false and situational items above Remembering ================= */
     const TF=(stem,ans)=>({stem:`True or false: ${stem}`, answer:ans?"True":"False"});
     { const seenU=new Set(); for(const [a0,b0] of pairs){ const a=bare(a0), b=bare(b0); const k=[a,b].map(x=>x.toLowerCase()).sort().join("|"); if(seenU.has(k)||same(a,b)) continue; seenU.add(k);
-        push("U.tf.same","Understanding","tf",TF(`${cap(art(a))} and ${art(b)} mean the same thing.`,false),{a,b}); } }
+        if(stepItems.has(String(a0).toLowerCase())||stepItems.has(String(b0).toLowerCase())) continue; push("U.tf.same","Understanding","tf",TF(`${cap(art(a))} and ${art(b)} mean the same thing.`,false),{a,b}); } }
     for(const rl of F.rels){ const flip=r()<0.5, dy=flip?OPP2[rl.dy]:rl.dy; const ydo={increases:"increase",decreases:"decrease",rises:"rise",falls:"fall","goes up":"go up","goes down":"go down"}[dy];
       push("U.tf.predict","Understanding","tf",TF(`${fixed?`In ${fixed}, if`:"If"} ${theNP(rl.x)} ${rl.dx}, we can expect ${theNP(rl.y)} to ${ydo}.`,!flip),{x:rl.x,y:rl.y},rl.src); }
     for(const f of F.formulas){ const p=numberProblem(f,r); if(!p) continue; const flip=r()<0.5&&p.wrong.length; const val=flip?p.wrong[0]:p.answerNum;
@@ -714,10 +735,10 @@ const QGen = (() => {
       const ins=Object.keys(f.vars).filter(v=>v!==f.lhs); const base={}; ins.forEach(v=>base[v]=/!/.test(f.rhs)?6:4); const v=ins[0]; const a0=evalFormula(f,base), a1=v?evalFormula(f,{...base,[v]:base[v]*2}):null;
       if(a0&&a1){ const ratio=Math.round(a1/a0*1000)/1000; const say={2:"double",0.5:"cut in half",4:"become four times as large",1:"stay the same"}[ratio]; if(say){ const flip2=r()<0.5, s2=flip2?(say==="double"?"stay the same":"double"):say;
         push("N.tf.formula","Analyzing","tf",TF(`Using ${f.expr}, doubling ${f.vars[v].mean?`the ${f.vars[v].mean.replace(/^the\s+/i,"")}`:v} while keeping everything else the same makes ${f.vars[f.lhs].mean?`the ${f.vars[f.lhs].mean.replace(/^the\s+/i,"")}`:f.lhs} ${s2}.`,!flip2),{expr:f.expr},f.src); } } }
-    { const seenN=new Set(); for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db) continue; const a=bare(da.term), b=bare(db.term); const k=[a,b].sort().join("|"); if(seenN.has(k)) continue; seenN.add(k); const sw=r()<0.5;
-        push("N.tf.diff","Analyzing","tf",TF(`The main difference between ${art(a)} and ${art(b)} is that ${art(a)} is ${short(sw?db.def:da.def)}, while ${art(b)} is ${short(sw?da.def:db.def)}.`,!sw),{a,b},da.src+" "+db.src); } }
+    { const seenN=new Set(); for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db||isStmt(da)!==isStmt(db)) continue; const be=beOf(da); const a=bare(da.term), b=bare(db.term); const k=[a,b].sort().join("|"); if(seenN.has(k)) continue; seenN.add(k); const sw=r()<0.5;
+        push("N.tf.diff","Analyzing","tf",TF(`The main difference between ${art(a)} and ${art(b)} is that ${art(a)} ${be} ${short(sw?db.def:da.def)}, while ${art(b)} ${be} ${short(sw?da.def:db.def)}.`,!sw),{a,b},da.src+" "+db.src); } }
     for(const c of F.causes){ if(!c.verb) continue; const eff=lc(c.effect), cau=lc(c.cause); const other=F.causes.find(x=>x!==c&&x.verb&&!same(x.cause,c.cause)); const flip=other&&r()<0.5;
-      push("N.tf.cause","Analyzing","tf",TF(`According to the lesson, the most likely cause of ${/^(an?|the)\s/i.test(eff)||/^\w+ing\b/.test(eff)?eff:"the "+eff} is ${flip?lc(other.cause):cau}.`,!flip),{cause:cau,effect:eff},c.src); }
+      push("N.tf.cause","Analyzing","tf",TF(`The most likely cause of ${/^(an?|the)\s/i.test(eff)||/^\w+ing\b/.test(eff)?eff:"the "+eff} is ${flip?lc(other.cause):cau}.`,!flip),{cause:cau,effect:eff},c.src); }
     // (a true-or-false 'best choice because' item only matched a need to a definition, so it is no longer written)
     for(const cp of F.comps){ const a=bare(cp.a), qm=cp.b.match(/^(.+?)\s+((?:for|in|when|with|on|during)\s+.+)$/i), b=bare(qm?qm[1]:cp.b);
       push("E.tf.claim","Evaluating","tf",TF(`Because ${art(a)} is ${cp.comp} than ${art(b)}${qm?" "+qm[2]:""}, it is always the better choice in every situation.`,false),{a,b},cp.src); }
@@ -728,11 +749,37 @@ const QGen = (() => {
         const who=cap(orgFor(a+" "+b+" "+cp.b)); const A=art(a), B=art(b);
         push("E.case.criteria","Evaluating","case",MC(`Situation: ${who} must choose between ${A} and ${B}${qm&&!/^more important$/.test(comp)?" "+qm[2]:""}, and ${need}. Which choice is better, and why?`, `${cap(A)}, because ${A} ${isAre(a)} ${cp.comp} than ${B}${q}`, [`${cap(B)}, because ${B} ${isAre(b)} ${cp.comp} than ${A}${q}`, `${cap(B)}, because it is more widely used`, `Either one, because the requirement does not change the choice`]),{a,b},cp.src);
         const flip=r()<0.5; push("E.tf.criteria","Evaluating","tf",TF(`If ${need.replace(/^the most important requirement is /,"the most important requirement is ")}, ${flip?B:A} is the better choice than ${flip?A:B}${qm&&!/^more important$/.test(comp)?" "+qm[2]:""}.`,!flip),{a,b},cp.src); } }
+    /* ================= "Which statement is correct?" items, one set per level =================
+       Every fact gives a true and a false statement at the level it tests; mixing statements from different facts
+       makes many more multiple-choice items from the same file without repeating a stem. */
+    { const ST={Remembering:[],Understanding:[],Applying:[],Analyzing:[],Evaluating:[]}; const add=(lv,t,f,src)=>{ if(t&&f&&t!==f) ST[lv].push({t:cap(t.replace(/\.$/,"")),f:cap(f.replace(/\.$/,"")),src:src||""}); };
+      for(const d of F.defs){ if(d.entity) continue; const o=F.defs.find(x=>x!==d&&!same(x.term,d.term)&&!x.entity&&isStmt(x)===isStmt(d)); if(o) add("Remembering",`${cap(art(bare(d.term)))} ${d.verb} ${lc(d.def)}`,`${cap(art(bare(d.term)))} ${d.verb} ${lc(o.def)}`,d.src); }
+      for(const p of F.purposes){ const T=bare(p.term), o=F.purposes.find(x=>!same(x.term,p.term)&&!overlaps(x.purpose,p.purpose)); if(o) add("Remembering",`${cap(art(T))} ${isAre(T)} used to ${p.purpose.replace(/^to\s+/i,"")}`,`${cap(art(T))} ${isAre(T)} used to ${o.purpose.replace(/^to\s+/i,"")}`,p.src); }
+      for(const e of exGroups){ const T=bare(e.term), o=[...D.map(bare)].find(x=>!same(x,T)); const ex=e.list[0].replace(/^"|"$/g,""); if(o) add("Remembering",`${/^[A-Z"]/.test(e.list[0])?`“${ex}”`:cap(ex)} is an example of ${art(T)}`,`${/^[A-Z"]/.test(e.list[0])?`“${ex}”`:cap(ex)} is an example of ${art(o)}`,e.src); }
+      { const seen=new Set(); for(const [a0,b0] of pairs){ const a=bare(a0), b=bare(b0), k=[a,b].map(x=>x.toLowerCase()).sort().join("|"); if(seen.has(k)||same(a,b)||stepItems.has(String(a0).toLowerCase())||stepItems.has(String(b0).toLowerCase())) continue; seen.add(k); add("Understanding",`${cap(art(a))} and ${art(b)} are different ideas and should not be used as if they were the same`,`${cap(art(a))} and ${art(b)} mean the same thing, so either word can be used`); } }
+      const DO={increases:"increase",decreases:"decrease",rises:"rise",falls:"fall","goes up":"go up","goes down":"go down"};
+      for(const rl of F.rels){ add("Understanding",`If ${theNP(rl.x)} ${rl.dx}, we can expect ${theNP(rl.y)} to ${DO[rl.dy]}`,`If ${theNP(rl.x)} ${rl.dx}, we can expect ${theNP(rl.y)} to ${DO[OPP2[rl.dy]]}`,rl.src);
+        add("Analyzing",`${cap(theNP(rl.y))} depends on ${theNP(rl.x)}: when one ${rl.dx.replace(/s$/,"")==="goe"?"goes":rl.dx}, the other ${rl.dy}`,`${cap(theNP(rl.y))} depends on ${theNP(rl.x)}: when one ${rl.dx}, the other ${OPP2[rl.dy]}`,rl.src); }
+      for(const f of F.formulas) for(let k=0;k<3;k++){ const pp=numberProblem(f,r); if(!pp||!pp.wrong.length) continue; const head=pp.stem.replace(/, use (.+?) to compute (.+)\.$/,(m0,e,t)=>`, then ${t} is `); if(head===pp.stem) continue; add("Applying",`${head}${pp.answer} (using ${f.expr})`,`${head}${pp.wrong[0]}${pp.unit?" "+pp.unit:""} (using ${f.expr})`,f.src); }
+      for(const f of F.formulas){ const ins=Object.keys(f.vars).filter(v=>v!==f.lhs); const base={}; ins.forEach(v=>base[v]=/!/.test(f.rhs)?6:4); for(const v of ins){ const a0=evalFormula(f,base), a1=evalFormula(f,{...base,[v]:base[v]*2}); if(!a0||a1===null) continue; const ratio=Math.round(a1/a0*1000)/1000; const say={2:"doubles",0.5:"is cut in half",4:"becomes four times as large",1:"stays the same"}[ratio]; if(!say) continue; const nm=x=>f.vars[x].mean?`the ${f.vars[x].mean.replace(/^the\s+/i,"")}`:x;
+        add("Analyzing",`In ${f.expr}, doubling ${nm(v)} while everything else stays the same means ${nm(f.lhs)} ${say}`,`In ${f.expr}, doubling ${nm(v)} while everything else stays the same means ${nm(f.lhs)} ${say==="doubles"?"stays the same":"doubles"}`,f.src); } }
+      { const seen=new Set(); for(const [a0,b0] of pairs){ const da=defOf(a0), db=defOf(b0); if(!da||!db||da===db||isStmt(da)!==isStmt(db)) continue; const be=beOf(da); const a=bare(da.term), b=bare(db.term), k=[a,b].sort().join("|"); if(seen.has(k)) continue; seen.add(k);
+        add("Analyzing",`The main difference between ${art(a)} and ${art(b)} is that ${art(a)} ${be} ${short(da.def,30)}, while ${art(b)} ${be} ${short(db.def,30)}`,`The main difference between ${art(a)} and ${art(b)} is that ${art(a)} ${be} ${short(db.def,30)}, while ${art(b)} ${be} ${short(da.def,30)}`,da.src); } }
+      for(const c of F.causes){ if(!c.verb) continue; const o=F.causes.find(x=>x!==c&&!same(x.cause,c.cause)); const eff=lc(c.effect); const effN=/^(an?|the)\s/i.test(eff)||/^\w+ing\b/.test(eff)?eff:"the "+eff; const cv=x=>pluralNP(x)?"are":"is"; if(o) add("Analyzing",`${cap(lc(c.cause))} ${cv(c.cause)} the most likely cause of ${effN}`,`${cap(lc(o.cause))} ${cv(o.cause)} the most likely cause of ${effN}`,c.src); }
+      for(const cp of F.comps){ const a=bare(cp.a), qm=cp.b.match(/^(.+?)\s+((?:for|in|when|with|on|during)\s+.+)$/i), b=bare(qm?qm[1]:cp.b), q=qm?" "+qm[2]:"";
+        add("Evaluating",`${cap(art(a))} ${isAre(a)} ${cp.comp} than ${art(b)}${q}, but the better choice still depends on what the situation needs`,`Because ${art(a)} ${isAre(a)} ${cp.comp} than ${art(b)}${q}, it is always the better choice in every situation`,cp.src);
+        add("Evaluating",`When ${cp.comp.replace(/^more /,"being more ").replace(/^(\w+er)$/,"being $1")} matters most, ${art(a)} is the better choice than ${art(b)}${q}`,`When ${cp.comp.replace(/^more /,"being more ").replace(/^(\w+er)$/,"being $1")} matters most, ${art(b)} is the better choice than ${art(a)}${q}`,cp.src); }
+      for(const c of F.causes){ if(!NEG.test(c.effect)) continue; const act=fix(c.cause), o=F.causes.find(x=>x!==c&&!same(x.cause,c.cause)&&fix(x.cause)); if(!act) continue; const eff=lc(c.effect), effN=effNP(eff);
+        add("Evaluating",`To ${isClause(eff)?"prevent":"reduce"} ${effN}, the best first step is to ${act.charAt(0).toLowerCase()+act.slice(1)}`,o?`To ${isClause(eff)?"prevent":"reduce"} ${effN}, the best first step is to ${fix(o.cause).charAt(0).toLowerCase()+fix(o.cause).slice(1)}`:`To ${isClause(eff)?"prevent":"reduce"} ${effN}, the best first step is to fix each case as it appears`,c.src); }
+      const STEM={Remembering:["Which of the following statements is correct?","Which of the following statements is NOT correct?"],Understanding:["Which of the following statements shows a correct understanding of the ideas?","Which of the following statements shows a misunderstanding of the ideas?"],Applying:["Which of the following computed results is correct?","Which of the following computed results is NOT correct?"],Analyzing:["Which of the following conclusions is valid?","Which of the following conclusions is NOT valid?"],Evaluating:["Which of the following judgments is best justified?","Which of the following judgments is NOT justified?"]};
+      for(const [lv,list] of Object.entries(ST)){ if(list.length<2) continue; const L0=shuffle(list,r);
+        L0.forEach((x,i)=>{ const others=L0.filter((_,j)=>j!==i); push(`${lv[0]==="A"&&lv[1]==="n"?"N":lv[0]}.stmt.true`,lv,"mc",MC(STEM[lv][0], x.t, [x.f,...shuffle(others.map(o=>o.f),r)], null, true),{},x.src);
+          if(others.length>=2) push(`${lv[0]==="A"&&lv[1]==="n"?"N":lv[0]}.stmt.false`,lv,"mc",MC(STEM[lv][1], x.f, shuffle(others.map(o=>o.t),r)),{},x.src); }); } }
     // situational (case) items: a short situation, then a question that needs analysis, judgment or a plan
     for(const c of F.causes){ if(!c.verb||!NEG.test(c.effect)) continue; const eff=lc(c.effect), cau=lc(c.cause); const wrong=[...F.causes.filter(x=>x!==c&&!same(x.cause,c.cause)).map(x=>lc(x.cause)),`it happens by chance and has no clear cause`,`the opposite of ${cau.split(" ").slice(0,6).join(" ")}`];
-      const org2=orgFor(eff+" "+cau); push("N.case.cause","Analyzing","case",MC(isClause(eff)?`Situation: ${cap(org2)} notices that ${eff}. Based on the lesson, which of the following is the most likely cause?`:`Situation: ${cap(org2)} keeps running into ${eff.replace(/^(an?|the)\s+/i,"")}. Based on the lesson, which of the following is the most likely cause?`, cau, wrong),{cause:cau,effect:eff},c.src); }
+      const org2=orgFor(eff+" "+cau); push("N.case.cause","Analyzing","case",MC(isClause(eff)?`Situation: ${cap(org2)} notices that ${eff}. Which of the following is the most likely cause?`:`Situation: ${cap(org2)} keeps running into ${eff.replace(/^(an?|the)\s+/i,"")}. Which of the following is the most likely cause?`, cau, wrong),{cause:cau,effect:eff},c.src); }
     for(const p of F.purposes){ const T=bare(p.term), purpose=p.purpose.replace(/^to\s+/i,""); const o=F.purposes.filter(x=>!same(x.term,p.term)&&!overlaps(x.purpose,purpose)&&!kin(x.term,p.term)&&!compared(x.term,p.term)); if(!o.length||kindOf(p.term)!=="tool") continue; const O=bare(o[0].term); const wT=reasonFor(T), wO=reasonFor(O); if(!wT||!wO) continue; const sc=scene(p,"must");
-      push("E.case.suggest","Evaluating","case",MC(`Situation: ${sc.text} One co-worker suggests ${art(T)}, and another suggests ${art(O)}. Which suggestion is better, and why?`, `${cap(art(T))}, because ${wT}`, [`${cap(art(O))}, because ${wO}`,`${cap(art(O))}, because ${wT}`,`Both are equally good, because both are in the lesson`]),{term:T,purpose,ctx:sc.where},p.src); }
+      push("E.case.suggest","Evaluating","case",MC(`Situation: ${sc.text} One co-worker suggests ${art(T)}, and another suggests ${art(O)}. Which suggestion is better, and why?`, `${cap(art(T))}, because ${wT}`, [`${cap(art(O))}, because ${wO}`,`${cap(art(O))}, because ${wT}`,`Both are equally good for this need`]),{term:T,purpose,ctx:sc.where},p.src); }
     { const ps=F.purposes.filter((p,i,A)=>A.findIndex(x=>same(x.term,p.term))===i && kindOf(p.term)==="tool");
       for(let i=0;i+1<ps.length && i<2;i++){ const A=bare(ps[i].term), B=bare(ps[i+1].term), pa=ps[i].purpose.replace(/^to\s+/i,""), pb=ps[i+1].purpose.replace(/^to\s+/i,"");
         push("N.case.plan","Analyzing","case",MC(`Situation: ${cap(orgFor(pa+" "+pb+" "+A+" "+B))} needs to ${pa} and also ${pb}. Which assignment of tools to these needs is correct?`, `Use ${art(A)} to ${pa}, and ${art(B)} to ${pb}`, [`Use ${art(A)} to ${pb}, and ${art(B)} to ${pa}`, `Use only ${art(A)} for both needs`, `Use only ${art(B)} for both needs`]),{a:A,b:B},ps[i].src+" "+ps[i+1].src); } }
@@ -776,7 +823,7 @@ const QGen = (() => {
       push("R.fil.tukuyin","Remembering","ident",{stem:`Tukuyin ang tinutukoy: ${cap(d.def.replace(/[.]$/,""))}.`,answer:d.term},S,d.src);
       push("U.fil.own","Understanding","short",`Ipaliwanag sa sariling salita ang kahulugan ng ${d.term}.`,S,d.src);
       if(IT_T){ push("A.fil.gamit","Applying","short",`Gamitin ang ${d.term} sa isang sitwasyon sa ${ctx} at ipakita ang mga hakbang.`,S,d.src); push("N.fil.wala","Analyzing","essay",`Suriin ang mga problemang maaaring mangyari sa ${ctx} kung hindi gagamitin ang ${d.term}.`,S,d.src); push("E.fil.makatwiran","Evaluating","essay",`Makatwiran ba ang paggamit ng ${d.term} sa ${ctx}? Pangatwiranan ang iyong sagot.`,S,d.src); push("C.fil.disenyo","Creating","essay",`Magdisenyo ng ${artifact} para sa ${ctx} na gumagamit ng ${d.term}.`,S,d.src); }
-      else { push("A.fil.patunay","Applying","short",`Gamitin ang kahulugan ng ${d.term} upang patunayan na ito ay makikita sa isang tunay na sitwasyon na iyong naobserbahan.`,S,d.src); push("N.fil.wala","Analyzing","essay",`Suriin kung ano ang magbabago kung wala ang ${d.term}.`,S,d.src); push("E.fil.halaga","Evaluating","essay",`Gaano kahalaga ang ${d.term}? Pangatwiranan ang iyong sagot gamit ang mga natutunan sa aralin.`,S,d.src); push("C.fil.gawain","Creating","essay",`Magdisenyo ng isang gawain o demonstrasyon na nagpapakita ng ${d.term}.`,S,d.src); }
+      else { push("A.fil.patunay","Applying","short",`Gamitin ang kahulugan ng ${d.term} upang patunayan na ito ay makikita sa isang tunay na sitwasyon na iyong naobserbahan.`,S,d.src); push("N.fil.wala","Analyzing","essay",`Suriin kung ano ang magbabago kung wala ang ${d.term}.`,S,d.src); push("E.fil.halaga","Evaluating","essay",`Gaano kahalaga ang ${d.term}? Pangatwiranan ang iyong sagot.`,S,d.src); push("C.fil.gawain","Creating","essay",`Magdisenyo ng isang gawain o demonstrasyon na nagpapakita ng ${d.term}.`,S,d.src); }
       push("C.fil.orihinal","Creating","essay",`Bumuo ng orihinal na halimbawa na nagpapakita ng ${d.term}.`,S,d.src);
     }
     for(const l of F.lists){ push("R.fil.isa","Remembering","enum",{stem:`Isa-isahin ang mga ${l.kind} ng ${l.subject}.`,answer:l.items.join(", ")},{},l.src); push("N.fil.ugnay","Analyzing","essay",`Suriin kung paano nag-uugnayan ang mga ${l.kind} ng ${l.subject}.`,{},l.src); push("E.fil.pinaka","Evaluating","essay",`Alin sa mga ${l.kind} ng ${l.subject} ang pinakamahalaga? Pangatwiranan ang iyong sagot.`,{},l.src); }

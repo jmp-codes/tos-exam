@@ -310,6 +310,38 @@ should reword a few higher-level items (the app learns from those edits). Our ow
 usual Bloom's constructions, confirms 99.7% of the multiple-choice items on 28 lessons. Construction checks:
 `node scen-lint.js` (0 problems on 453 scenario items, 206 before), `node scen-dump.js` to read them all.
 
+## Reading more, filling every item, and no "According to the lesson" (QGen v2.7)
+
+**Questions stand on their own.** No stem or choice says "according to the lesson", "from the lesson" or "the lesson
+says"; the generator already reads the whole uploaded file, so the wording is neutral (checked on 3,072 generated
+questions: 0 mention the lesson). The TOS is never used as question material: it only decides how many questions each
+topic gets, at which level, and on which item numbers.
+
+**Reads more ways of stating facts.** New patterns: "X, also known as Y, …", "X, which forwards …, …", "X consists of /
+is made up of / has A, B and C", "Network topologies include A, B and C", "X can be classified into A, B and C",
+"A vs B: A is faster, while B is cheaper", "X spreads/occurs/fails when Y", "If Y, then Z", "One advantage/disadvantage
+of X is that it …", and any "Term + action verb + object" sentence ("A firewall protects a network from …", "RAM stores
+data temporarily …"). Definitions written as statements ("De Morgan's theorem states that …") stay statements.
+
+**"Which statement is correct?" sets at every level.** Each fact gives a true and a false statement at the level it
+tests (Remembering: facts; Understanding: meanings and predictions; Applying: computed results; Analyzing: conclusions
+about causes, differences and relationships; Evaluating: judgments about claims and choices). Mixing statements from
+different facts gives many more multiple-choice items from the same file, each with its own correct answer.
+
+**Filling every planned item.** When the distinct questions run out, the exam builder uses the same facts again from
+new angles (other settings, other numbers, other wording) before reporting a shortfall.
+
+| Test | Result |
+|---|---|
+| Build exam, Multiple choice only, 60-item TOS, 3 chapters | 60/60 filled, 60/60 match their TOS column (was 57/60) |
+| Same, with a 233-word lesson and two slide decks | 60/60 filled, 60/60 match |
+| 28 lessons, multiple choice made | 856 items, 99.8% level-confirmed, 0 answer-key problems |
+| Construction check (scen-lint) | 491 scenario items, 0 problems |
+| Level checker on sealed tests | sealed 100%, mc-levels-blind 96.7% |
+
+A file that is only a sentence or two still cannot fill a large topic; the app says so and offers other types,
+another file, or leaving the items to the teacher.
+
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
 - Compare this model with a small transformer (e.g., DistilBERT) fine-tuned on the same data.
