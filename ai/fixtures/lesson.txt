@@ -1,0 +1,23 @@
+Lesson 3: Data Structures
+
+A data structure is a way of organizing data so that it can be used efficiently. Unlike an array, a linked list does not store its elements in contiguous memory.
+
+3.1 Stacks
+
+A stack is a linear data structure that follows the Last In, First Out principle. For example, a pile of plates is a stack. Stacks are used to implement the undo feature in text editors.
+
+Push adds an element to the top of the stack.
+
+Pop removes the element at the top of the stack.
+
+3.2 Queues
+
+A queue is a linear data structure that follows the First In, First Out principle. For example, a line of customers at a bank is a queue. Queues are used to schedule jobs sent to a printer.
+
+3.3 Algorithms and Complexity
+
+An algorithm is a finite set of well-defined steps for solving a problem. The steps of problem solving are understanding the problem, planning a solution, coding the program and testing the result. Poor planning leads to programs that are hard to maintain.
+
+Binary search is faster than linear search because it halves the search space at each step. The average of a list is computed as A = S / n, where S is the sum of the values and n is the number of values.
+
+Ang algoritmo ay isang hanay ng mga hakbang para lutasin ang isang problema.

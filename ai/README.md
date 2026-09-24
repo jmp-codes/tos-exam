@@ -19,6 +19,7 @@ It trains and runs entirely in the browser (no server, no API key, works offline
 - `eval.js`: 5-fold cross-validation vs. the keyword baseline. Run: `node eval.js 40 0.5 0.001`
 - `blind.js`: trains on data/ and scores the blind set. Run: `node blind.js`
 - `qtype.js`: question-type detector (14 formats). Run the tests: `node types-eval.js` and `node types-eval.js types-blind.tsv`
+- `filetext.js`: reads lesson files offline (PDF, .docx, .pptx, .txt) and splits them into sections by headings. Test: `node filetext-test.js`
 - `types-test.tsv`, `types-blind.tsv`: labeled question-type test sets (type<TAB>question; `\n` marks a new line)
 
 ## How it works
@@ -153,6 +154,23 @@ read as fill-in-the-blank recall.
 
 Both type test sets were written by the developer, so real-world accuracy on teachers' own questions
 will be lower. Label real questions to measure it honestly.
+
+## Questions from an uploaded lesson file (`filetext.js`)
+
+In the Generate tab, **Upload a lesson file** reads a PDF, Word (.docx), PowerPoint (.pptx) or text file on the
+teacher's own device (nothing is sent online). The text is split into sections using the file's headings
+(Word heading styles, slide titles, or larger/bold lines in a PDF), and the teacher ticks which sections to use.
+The checked text goes into the generator, and each draft shows the section and sentence it came from.
+
+The PDF reader is built in (no library): it inflates compressed streams (Flate, ASCII85, hex), reads
+object streams, maps glyphs to letters with ToUnicode maps or WinAnsi/Differences encodings, rebuilds lines,
+paragraphs and headings from text positions, and drops repeated page headers, footers and page numbers.
+Limits: scanned PDFs (pictures of pages) have no text to read, password-protected PDFs can't be opened,
+old .doc/.ppt files must be saved as .docx/.pptx first, and multi-column layouts may mix columns.
+
+Tested on PDFs made by LibreOffice/Word export, Chrome "Save as PDF" (CID fonts) and ReportLab, plus
+.docx, .pptx and .txt versions of the same lesson: all six gave the same sections and the same 114 questions,
+112 (98%) confirmed at their level; a 4-page, 15-topic PDF gave 526 questions, 95% confirmed.
 
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).

@@ -20,7 +20,9 @@ const QGen = (() => {
   function termCase(t){ t=trimP(t); if(!t) return t; const f=t.split(" ")[0]; if(/^[A-Z0-9]{2,}/.test(f)||/[a-z][A-Z]/.test(f)||/^[A-Z][a-z]+'s$/.test(f)) return t;
     if(/^[A-Z]/.test(t)){ if(new RegExp("[a-z,;:]\\s+"+reEsc(f)+"\\b").test(CUR)) return t; return t.charAt(0).toLowerCase()+t.slice(1); } return t; }
   function sentences(text){
-    return String(text||"").replace(/\s+/g," ").replace(/(\b(e\.g|i\.e|etc|vs|Dr|Mr|Mrs|Ms))\./g,"$1<dot>").replace(/(\d)\.(\d)/g,"$1<dot>$2")
+    // a short title-like line (a heading) followed by a new line that starts with a capital ends a sentence
+    text=String(text||"").replace(/\r/g,"").replace(/^([0-9A-Z][^\n]{0,70}?[^.!?:;,\s-])[ \t]*\n(?=\s*[A-Z0-9"“])/gm,(m0,l)=>/\b(and|or|the|of|a|an|to|in|for|with|is|are|ng|ang|at|sa)$/i.test(l)?m0:l+".\n");
+    return text.replace(/\s+/g," ").replace(/(\b(e\.g|i\.e|etc|vs|Dr|Mr|Mrs|Ms))\./g,"$1<dot>").replace(/(\d)\.(\d)/g,"$1<dot>$2")
       .match(/[^.!?]+[.!?]?/g)?.map(s=>s.replace(/<dot>/g,".").trim()).filter(s=>s.split(" ").length>=3) || [];
   }
   function isFilipino(text){ const w=String(text).toLowerCase().match(/[a-zñ']+/g)||[]; const f=w.filter(x=>/^(ang|ng|mga|ay|sa|na|at|ito|kung|para|nito|siya|upang|dahil|hindi|tulad|halimbawa)$/.test(x)).length; return w.length>0 && f/w.length>0.12; }
@@ -52,7 +54,7 @@ const QGen = (() => {
       let s=raw.replace(/[.!?]$/,"").trim(); let m;
       if(fil){ readFil(s,raw,F,addTerm); continue; }
       // ---- formulas: "The formula for X is A = B * C, where P is …" / "V = I * R"
-      if((m=s.match(/(?:the\s+)?formula(?:\s+for\s+(?:the\s+)?(.+?))?\s+is\s+([A-Za-z][\w]*\s*=\s*[^,]+?)(?:,\s*where\s+(.+))?$/i)) || (m=s.match(/^()([A-Za-z]\w*\s*=\s*[A-Za-z0-9\s*\/+\-().^]+?)(?:,\s*where\s+(.+))?$/))){
+      if((m=s.match(/(?:the\s+)?formula(?:\s+for\s+(?:the\s+)?(.+?))?\s+is\s+([A-Za-z][\w]*\s*=\s*[^,]+?)(?:,\s*where\s+(.+))?$/i)) || (m=s.match(/^()([A-Za-z]\w*\s*=\s*[A-Za-z0-9\s*\/+\-().^]+?)(?:,\s*where\s+(.+))?$/)) || (m=s.match(/^(?:the\s+)?(.+?)\s+(?:is|are|can be)\s+(?:computed|calculated|found|obtained|given|determined|solved|expressed)\s+(?:as|by|using|with)(?:\s+the\s+formula)?\s+([A-Za-z]\w*\s*=\s*[A-Za-z0-9\s*\/+\-().^]+?)(?:,\s*where\s+(.+))?$/i))){
         const f=parseFormula(m[2], m[3]||"", m[1]||lastTerm||""); if(f){ f.src=raw; F.formulas.push(f); if(!f.vars[f.lhs].mean && f.lhs.length>2) f.vars[f.lhs].mean=f.lhs; }
         continue;
       }
