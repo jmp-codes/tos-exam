@@ -172,6 +172,16 @@ Tested on PDFs made by LibreOffice/Word export, Chrome "Save as PDF" (CID fonts)
 .docx, .pptx and .txt versions of the same lesson: all six gave the same sections and the same 114 questions,
 112 (98%) confirmed at their level; a 4-page, 15-topic PDF gave 526 questions, 95% confirmed.
 
+## Settings library (`QGen.SETTINGS`, v2.2)
+
+Applied, analysis, evaluation and creation questions need a real place to happen in. When the teacher leaves the
+"Setting" box blank, the generator takes a different setting for each question from a library of 94 Philippine
+places in 8 groups (school and campus, barangay and local government, health services, small business and market,
+farming and fisheries, tourism and transport, offices and companies, home and daily life) plus 12 Filipino ones.
+It picks the groups that fit the lesson's subject (for example, math lessons get stores, homes and farms) unless the
+teacher chooses the groups. Teachers can add their own settings; these are used first, saved with the teacher's
+data, and included in the dataset export. Typing a setting in the box still uses that one setting for every question.
+
 ## Next steps (research ideas)
 - Collect and label real exam questions from faculty (with two raters to measure agreement).
 - Compare this model with a small transformer (e.g., DistilBERT) fine-tuned on the same data.

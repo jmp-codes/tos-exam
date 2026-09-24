@@ -1,4 +1,4 @@
-/* QGen v2.2 — offline question generator for TOS Builder.
+/* QGen v2.1 — offline question generator for TOS Builder.
    Reads a sentence or paragraph for definitions, names, dates, lists, steps, examples, classifications,
    formulas, causes, relationships, comparisons, purposes and limitations, then fills Bloom's-level
    question patterns. Every pattern has an id so the app can rank patterns by what teachers keep and
@@ -201,42 +201,15 @@ const QGen = (() => {
     const ch=shuffle([answer,...shuffle(d,r).slice(0,Math.min(n-1,d.length))],r);
     return {stem, choices:ch.map(x=>cap(String(x))), answer:"abcdefgh"[ch.indexOf(answer)], answerText:cap(String(answer))};
   }
-  /* ---- settings library: real places used in applied, analysis, evaluation and creation questions ---- */
-  const SETTINGS = [
-    {id:"school", label:"School and campus", items:["a state university's registrar's office","a college library","a senior high school canteen","a campus clinic","a university's enrollment process","a school's guidance office","a computer laboratory","a campus dormitory","a school's supply office","a student council election","a college's scholarship office","a school's grading and class records","a campus bookstore","a school's alumni office","a college's online learning platform"]},
-    {id:"gov", label:"Barangay and local government", items:["a barangay hall","a barangay health center","the municipal treasurer's office","a municipal disaster risk reduction office","the barangay tanod's incident logbook","a municipal civil registry","a public library run by the municipality","the barangay's senior citizen assistance program","a city business permit office","a municipal social welfare office","a barangay's waste collection schedule","a provincial agriculture office"]},
-    {id:"health", label:"Health services", items:["a rural health unit","a community pharmacy","a district hospital's emergency room","a dental clinic","a vaccination drive in a barangay","a hospital's patient records section","a medical laboratory","a maternity clinic","a school feeding program","a blood donation drive"]},
-    {id:"biz", label:"Small business and market", items:["a sari-sari store","a public market","a small bakery","a carinderia","a motorcycle repair shop","an online shop that sells local products","a water refilling station","a computer shop","a small printing and photocopy business","a hardware store","a cooperative store","a pawnshop","a laundry shop","a milk tea shop","a mini-grocery"]},
-    {id:"agri", label:"Farming and fisheries", items:["a rice farm","a fishing cooperative","a coconut plantation","a vegetable farm","a poultry farm","a seaweed farm","a mango orchard","an irrigation association","a fish port","a farmers' market"]},
-    {id:"tourism", label:"Tourism and transport", items:["a beach resort","a small hotel","a travel agency","a tricycle terminal","a bus company","a port's passenger terminal","a local tour guide association","a restaurant near a tourist spot","a homestay business","an island-hopping tour"]},
-    {id:"office", label:"Offices and companies", items:["a bank branch","a call center","a small accounting firm","an insurance office","a logistics and delivery company","a manufacturing plant","a software development company","a real estate office","a telecommunications company's customer service","an electric cooperative's billing office","a water district's billing office","a remittance center"]},
-    {id:"home", label:"Home and daily life", items:["a household kitchen","a family's monthly budget","a family's backyard garden","a jeepney ride to school","a household's electricity use","a family's savings plan","a neighborhood clean-up drive","a birthday party preparation","a family's water use at home","a trip to the market"]}
-  ];
-  const SETTINGS_FIL = ["isang barangay","isang sari-sari store","isang paaralan","isang health center","isang palengke","isang sakahan","isang kooperatiba","isang munisipyo","isang pamilya","isang karinderya","isang resort","isang tanggapan ng rehistro sa kolehiyo"];
-  const DOMAIN_SETTINGS = {it:["school","gov","health","biz","office","tourism","agri"], math:["biz","home","school","agri","office"], sci:["home","agri","health","school","tourism"], econ:["biz","agri","gov","tourism","office","home"], eng:["school","home","gov"], hist:["gov","school","tourism"], other:["school","gov","biz","home"]};
   function generate(text, opts={}){
     const F=read(text), r=rng(opts.seed||11);
     BACKUP = F.fil ? [] : (BANK[domain(text)]||[]);
     const IT_T=IT.test(text);
-    // setting: the teacher's own text, else settings from the library that fit the subject (one per question, rotating)
-    const fixed=trimP(opts.context);
-    let pool=[];
-    if(!fixed && opts.useLibrary!==false){
-      const dom=IT_T?"it":(domain(text)||"other"), cats=opts.categories||DOMAIN_SETTINGS[dom]||DOMAIN_SETTINGS.other;
-      if(F.fil) pool=(opts.filSettings||[]).concat(SETTINGS_FIL);
-      else pool=SETTINGS.filter(c=>cats.includes(c.id)).flatMap(c=>c.items);
-      const mine=(opts.mySettings||[]).map(trimP).filter(x=>x && !F.fil===!isFilipino(x));
-      pool=shuffle(pool,rng((opts.seed||11)*7+3)); pool=shuffle(mine,rng((opts.seed||11)*5+1)).concat(pool);   // yours first
-      pool=[...new Set(pool)];
-    }
-    const CT="\u27e8ctx\u27e9";
-    const ctx=fixed || (pool.length?CT:(F.fil ? "inyong paaralan o komunidad" : IT_T ? "a school information system" : "your school or community"));
-    const hasCtx=!!fixed || pool.length>0;
-    let ci=0; const nextCtx=()=>pool[(ci++)%pool.length];
+    const ctx=trimP(opts.context) || (F.fil ? "inyong paaralan o komunidad" : IT_T ? "a school information system" : "your school or community");
+    const hasCtx=!!trimP(opts.context);
     const artifact=F.fil ? (IT_T?"isang sistema":"isang proyekto") : IT_T ? shuffle(["a system","a database design","a program","an application"],r)[0] : shuffle(["a project","a lesson activity","a plan","an information campaign"],r)[0];
     const out=[];
-    const push=(tpl,level,type,q,slots,src)=>{ if(!q) return; if(typeof q==="string") q={stem:q};
-      if(q.stem.includes(CT)){ const c=nextCtx(); q={...q,stem:q.stem.split(CT).join(c),setting:c}; slots={...(slots||{}),ctx:c}; } else if(slots&&slots.ctx===CT){ slots={...slots}; delete slots.ctx; } q.stem=cap(q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\./g,".")); out.push({tpl,level,type,...q,slots:slots||{},basis:src||""}); };
+    const push=(tpl,level,type,q,slots,src)=>{ if(!q) return; if(typeof q==="string") q={stem:q}; q.stem=cap(q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\./g,".")); out.push({tpl,level,type,...q,slots:slots||{},basis:src||""}); };
     const D=F.defs.map(d=>d.term), terms=F.termList.filter(t=>!/\b(commonly|used|main|types?|parts?|kinds?)\b/i.test(t));
     const withArt=d=>(d.art&&!/^[A-Z]{2,}/.test(d.term)?d.art+" ":"")+d.term;
     const allEffects=F.causes.map(c=>c.effect), allItems=F.lists.flatMap(l=>l.items);
@@ -325,7 +298,7 @@ const QGen = (() => {
       push("R.step.order","Remembering","seq",{stem:`Arrange the steps of ${proc} in the correct order: ${shuffle(st.steps,r).map(x=>lc(x)).join("; ")}.`,answer:st.steps.map(x=>lc(x)).join(" → ")},{process:proc},st.src);
       push("A.step.use","Applying","short",`Use the steps of ${proc} to investigate or solve a problem in ${ctx}. Show what you would do at each step.`,{process:proc},st.src);
       push("N.step.why","Analyzing","essay",`Analyze why the steps of ${proc} must be done in that order.`,{process:proc},st.src);
-      push("C.step.new","Creating","essay",`Design a new checklist based on ${proc} that people in ${ctx} can follow.`,{process:proc},st.src);
+      push("C.step.new","Creating","essay",`Design a new checklist based on ${proc} that students in ${ctx} can follow.`,{process:proc},st.src);
     }
     /* ---- examples and classifications ---- */
     const exGroups=[]; for(const e of F.examples){ const g=exGroups.find(x=>same(x.term,e.term)&&x.src===e.src); if(g) g.list.push(e.example); else exGroups.push({...e,list:[e.example]}); }
@@ -427,7 +400,7 @@ const QGen = (() => {
     }
     // ---- teachers' own patterns (learned from their edits)
     const termPool=[]; [...F.defs.map(d=>withArt(d)),...F.purposes.map(p=>termCase(p.term).replace(/^(\w+)s$/,"$1"))].forEach(t=>{ if(!termPool.some(x=>same(noArt(x),noArt(t)))) termPool.push(t); });
-    const pools={term:termPool,a:pairs.map(p=>p[0]),b:pairs.map(p=>p[1]),cause:F.causes.map(c=>lc(c.cause)),effect:F.causes.map(c=>lc(c.effect)),ctx:pool.length?pool.slice(0,6):[ctx],example:F.examples.map(e=>e.example),process:F.steps.map(s=>s.process).filter(Boolean)};
+    const pools={term:termPool,a:pairs.map(p=>p[0]),b:pairs.map(p=>p[1]),cause:F.causes.map(c=>lc(c.cause)),effect:F.causes.map(c=>lc(c.effect)),ctx:[ctx],example:F.examples.map(e=>e.example),process:F.steps.map(s=>s.process).filter(Boolean)};
     for(const mt of (opts.myTemplates||[])){
       if(!!mt.fil!==!!F.fil) continue;
       const slots=[...new Set((mt.text.match(/\{(\w+)\}/g)||[]).map(x=>x.slice(1,-1)))];
@@ -470,6 +443,6 @@ const QGen = (() => {
     t=t.trim(); if(!used || !/\{(term|a|b|cause|effect|example|process)\}/.test(t)) return null;
     return {id:"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), text:t, level, type:type==="mc"?"short":type, fil:!!fil, at:Date.now()};
   }
-  return {read, generate, isFilipino, learnTemplate, parseFormula, evalFormula, SETTINGS, SETTINGS_FIL, DOMAIN_SETTINGS};
+  return {read, generate, isFilipino, learnTemplate, parseFormula, evalFormula};
 })();
 if(typeof module!=="undefined") module.exports=QGen;
