@@ -93,6 +93,26 @@ const BloomAI = (() => {
     for(const r of READER){ if(r.rx.test(t) && !(r.not && r.not.test(t))) return {level:r.level, name:r.name}; }
     return null;
   }
+
+  /* Multi-demand reading: split a question into its separate demands ("… and decide …", "… then explain …")
+     and read each part on its own. Bloom's rule: the main level is the highest level a student must use;
+     the next demand down is what the question "also involves". */
+  const ORDER = {Remembering:0,Understanding:1,Applying:2,Analyzing:3,Evaluating:4,Creating:5};
+  const VERB = "(?:compute|calculate|solve|find|use|apply|convert|simplify|run|trace|show|draw|write|list|name|state|give|define|recall|identify|explain|describe|summari[sz]e|discuss|interpret|classify|differentiate|distinguish|compare|contrast|analy[sz]e|examine|determine|infer|justify|defend|decide|recommend|judge|assess|evaluate|rate|rank|argue|critique|choose|select|conclude|verify|design|create|develop|propose|build|compose|formulate|plan|construct|devise|make|prepare|predict|prove|ipaliwanag|ilarawan|lutasin|kalkulahin|suriin|ihambing|tukuyin|pangatwiranan|tayahin|bumuo|lumikha|magdisenyo|gumawa)";
+  const SPLIT = new RegExp("\\s*(?:,?\\s+(?:and|then|and then|at|saka)\\s+(?=(?:then\\s+)?"+VERB+"\\b)|;\\s*|,\\s+then\\s+)","i");
+  function clauseLevel(c){
+    const k=construct(c); if(k) return {level:k.level, why:k.name};
+    const ps=patterns(c); if(!ps.length) return null;
+    const v={}; ps.forEach(p=>v[p.level]=(v[p.level]||0)+1);
+    const lv=Object.entries(v).sort((a,b)=>b[1]-a[1]||ORDER[b[0]]-ORDER[a[0]])[0][0];
+    return {level:lv, why:ps.find(p=>p.level===lv).name};
+  }
+  function demands(text){
+    const parts=String(text||"").trim().split(SPLIT).map(x=>x.trim()).filter(x=>x.length>3);
+    if(parts.length<2) return [];
+    const out=[]; for(const c of parts){ const r=clauseLevel(c.charAt(0).toUpperCase()+c.slice(1)); if(r && !out.some(o=>o.level===r.level)) out.push({...r, part:c}); }
+    return out;
+  }
   function patterns(text){ const t=String(text||"").trim(); return PATTERNS.filter(p=>p.rx.test(t)); }
   function words(text){
     return String(text||"").toLowerCase()
@@ -156,6 +176,14 @@ const BloomAI = (() => {
     // the construction reader is very precise when it fires, so it has the final say
     const kc=construct(text);
     if(kc && model.levels[best]!==kc.level){ best=model.levels.indexOf(kc.level); overridden=true; }
+    // several demands in one question: the highest one is the main level
+    const ds=demands(text);
+    if(ds.length>1){ const top=ds.reduce((a,b)=>ORDER[b.level]>ORDER[a.level]?b:a); if(ORDER[top.level]>ORDER[model.levels[best]]){ best=model.levels.indexOf(top.level); overridden=true; } }
+    const mainLv=model.levels[best];
+    let also=null;
+    const others=ds.filter(d=>d.level!==mainLv).sort((a,b)=>ORDER[b.level]-ORDER[a.level]);
+    if(others.length) also={level:others[0].level, reason:`also asks: “${others[0].part.replace(/[.?]$/,"")}”`, source:"demand"};
+    else { const r=model.levels.map((l,i)=>[l,p[i]]).filter(([l])=>l!==mainLv).sort((a,b)=>b[1]-a[1])[0]; if(r && r[1]>=0.2) also={level:r[0], reason:`the wording is close to ${r[0]} questions`, source:"model", prob:r[1]}; }
     // top words that pushed toward the chosen level, for explanation
     const NICE={"x:reasoning_ask":"asks for reasons","x:code":"code","w:blankslot":"fill-in blank","x:has_numbers":"numbers","x:many_numbers":"numbers"};
     const SKIP=/^(p:|k:|x:(short|medium|long|very_long|question_mark)|[a-z0-9]+:(the|is|are|a|an|of|which|what|to|in|it|this|that|0)$)/;
@@ -170,8 +198,8 @@ const BloomAI = (() => {
       if(t && !seen.has(t) && ![...seen].some(x=>x.includes(t)||t.includes(x))){ seen.add(t); why.push(t); }
     });
     const pats=patterns(text), agree=pats.filter(x=>x.level===model.levels[best]), k=kc;
-    return {level:model.levels[best], confidence: overridden ? Math.max(0.75,p[best]) : (kc ? Math.max(p[best],0.85) : p[best]), overridden, probs:Object.fromEntries(model.levels.map((l,i)=>[l,p[i]])), why, pattern: (k&&k.level===model.levels[best]) ? k.name : (agree[0]?agree[0].name:null), construction: k, patterns:pats.map(x=>({level:x.level,name:x.name}))};
+    return {also, demands:ds, level:model.levels[best], confidence: overridden ? Math.max(0.75,p[best]) : (kc ? Math.max(p[best],0.85) : p[best]), overridden, probs:Object.fromEntries(model.levels.map((l,i)=>[l,p[i]])), why, pattern: (k&&k.level===model.levels[best]) ? k.name : (agree[0]?agree[0].name:null), construction: k, patterns:pats.map(x=>({level:x.level,name:x.name}))};
   }
-  return {LEVELS, PATTERNS, patterns, construct, features, train, predict};
+  return {LEVELS, PATTERNS, patterns, construct, demands, features, train, predict};
 })();
 if(typeof module!=="undefined") module.exports=BloomAI;

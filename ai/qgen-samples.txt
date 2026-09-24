@@ -1,0 +1,11 @@
+Normalization is the process of organizing data in a database to reduce redundancy. Unlike denormalization, normalization splits data into related tables. The three types of normal forms commonly used are first normal form, second normal form and third normal form. A primary key is a column that uniquely identifies each row in a table. Poor normalization leads to update anomalies.
+===
+A tautology is a proposition that is always true regardless of the truth values of its variables. A contradiction is a proposition that is always false. A truth table is used to determine the truth value of a compound proposition for every combination of its variables. The basic logical connectives are conjunction, disjunction, negation and implication.
+===
+Photosynthesis is the process by which green plants use sunlight to make food from carbon dioxide and water. Chlorophyll is the green pigment that absorbs light energy. The main parts of a leaf are the blade, the petiole and the veins. Deforestation reduces the amount of oxygen released into the atmosphere.
+===
+A web service is a software system that allows different applications to communicate over a network. SOAP is a protocol that uses XML to exchange structured messages. Unlike SOAP, REST uses simple HTTP methods and can return data in JSON. Middleware is used to connect systems that were not designed to work together.
+===
+The Katipunan was a secret revolutionary society founded in 1892. Its main goal was to gain independence from Spain through armed revolution. The Philippine Revolution began in 1896 because Filipinos wanted freedom from Spanish abuses. Andres Bonifacio is known as the Father of the Katipunan.
+===
+Ang fotosintesis ay ang proseso kung saan ang mga halaman ay gumagawa ng pagkain gamit ang sikat ng araw. Ang klorupila ay ang berdeng pigment na sumisipsip ng liwanag. Ang mga bahagi ng dahon ay talim, tangkay at ugat. Nababawasan ang oxygen sa hangin dahil sa pagputol ng mga puno.

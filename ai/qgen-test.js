@@ -1,0 +1,15 @@
+const fs=require('fs'); const Q=require('./qgen.js'); const AI=require('./bloom-model.js'); const L=AI.LEVELS; const COL={Remembering:0,Understanding:0,Applying:1,Analyzing:1,Evaluating:2,Creating:2};
+const tsv=f=>fs.readFileSync(f,'utf8').trim().split('\n').map(l=>l.split('\t'));
+const ex=[]; for(const l of L) for(const f of [`data/${l.toLowerCase()}.txt`,`data/${l.toLowerCase()}_2.txt`]) fs.readFileSync(f,'utf8').split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>ex.push({text:t,level:l}));
+for(const f of ['hard.tsv','blind.tsv','blind2.tsv','blind3.tsv','tricky.tsv','tricky2.tsv']) tsv(f).forEach(([lv,t])=>ex.push({text:t,level:lv}));
+tsv('data/generated.tsv').forEach(([lv,t])=>ex.push({text:t,level:lv,weight:0.5}));
+const m=AI.train(ex,{epochs:40,lr:0.5,l2:0.001});
+const paras=fs.readFileSync('qgen-samples.txt','utf8').split('===').map(s=>s.trim());
+let tot=0,conf=0,conf3=0; const per={}; const show=process.argv[2];
+paras.forEach((p,pi)=>{ const r=Q.generate(p,{seed:pi+3});
+  if(show) console.log(`\n### Paragraph ${pi+1} facts:`, JSON.stringify(r.facts));
+  for(const q of r.questions){ tot++; const pr=AI.predict(m,q.stem); const ok=pr.level===q.level, ok3=COL[pr.level]===COL[q.level]; if(ok)conf++; if(ok3)conf3++;
+    per[q.level]=per[q.level]||[0,0]; per[q.level][0]++; if(ok3) per[q.level][1]++;
+    if(show && (show==='all' || !ok3)) console.log(`${ok?'✓':ok3?'~':'✗'} [${q.level}/${q.type}] ${q.stem}${q.choices?'  ('+q.choices.join(' | ')+') ans '+q.answer:''}${q.answer&&!q.choices?'  → '+q.answer:''}${!ok?'   (AI: '+pr.level+')':''}`); } });
+console.log(`\n${tot} questions generated; Our AI confirms the exact level for ${Math.round(100*conf/tot)}%, the TOS column for ${Math.round(100*conf3/tot)}%`);
+console.log(Object.entries(per).map(([k,[n,o]])=>`${k}: ${n} (${Math.round(100*o/n)}% confirmed)`).join(' · '));
