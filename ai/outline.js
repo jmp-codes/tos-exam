@@ -62,6 +62,8 @@ const Outline = (() => {
   /* ---------------- concept names ---------------- */
   const COUNT_HEAD = /\b(layer|framework|method|phase|level|model|pattern|map|continuum|scorecard|diagram|system|engine|block|view|graph|matrix|standard|stage|step|tier|pillar|cycle|schema|scheme)$/i;
   const stripParen = s => String(s).replace(/\s*\([^)]*\)\s*/g," ").trim();
+  // "1. Point -to-Point Integration" → "Point-to-Point Integration"
+  const unnum = s => String(s||"").replace(/^\s*(?:\(?\d{1,2}[.)]|\(?[a-hA-H][.)](?=\s+[A-Z]))\s+/,"").replace(/(\w)\s+([-–])(?=\w)/g,"$1$2").replace(/(\w)([-–])\s+(?=[a-z])/g,"$1$2");
   const lcWords = s => String(s||"").split(" ").map(w=>/^[A-Z][a-z]+$/.test(w)?w.toLowerCase():w).join(" ");
   function singularKey(s){ const w=s.split(" "); const l=w[w.length-1]; if(pluralWord(l) && l.length>3) w[w.length-1]=l.replace(/ies$/,"y").replace(/(ches|shes|xes)$/,m=>m.slice(0,-2)).replace(/([^s])s$/,"$1"); return w.join(" "); }
   const keyOf = s => singularKey(stripParen(String(s)).toLowerCase().replace(/^(the|an?)\s+/,"").replace(/[“”"']/g,"").replace(/\s*&\s*/g," and ").replace(/[^a-z0-9\s\/-]/g," ").replace(/\s+/g," ").trim());
@@ -86,7 +88,7 @@ const Outline = (() => {
       if(kw.length===1){ const t1=cand.filter(c=>c.from==="title"); if(t1.length===1) return t1[0]; if(cand.length) return null; }
       if(cand.length===1) return cand[0]; if(kw.length===1){ const g=cand.filter(c=>!c.groups.length); if(g.length===1) return g[0]; }
       return null; };
-    const concept=(name, from)=>{ name=clean(name).replace(/\s*\((?:in|of|for)\s[^)]*\)\s*$/i,"").trim(); if(!name) return null; let c=find(name); if(c) { if(from==="title" && c.from!=="title"){ c.name=displayName(name,c); c.from="title"; } addKeys(c,name); return c; }
+    const concept=(name, from)=>{ name=unnum(clean(name)).replace(/\s*\((?:in|of|for)\s[^)]*\)\s*$/i,"").trim(); if(!name) return null; let c=find(name); if(c) { if(from==="title" && c.from!=="title"){ c.name=displayName(name,c); c.from="title"; } addKeys(c,name); return c; }
       c={name:"", keys:new Set(), from, abbr:"", expansion:"", def:[], does:[], traits:[], facts:[], purpose:[], focus:[], uses:[], benefits:[], challenges:[], strengths:[], weaknesses:[], applications:[], examples:[], creator:"", year:"", not:[], groups:[], partOf:[], results:[], src:[]};
       c.name=displayName(name,c); addKeys(c,name); K.list.push(c); return c; };
     function displayName(name,c){ const m=name.match(/^(.+?)\s*\(([^)]+)\)$/); if(m){ const a=clean(m[1]), b=clean(m[2]); if(/^[A-Z][A-Za-z]*[A-Z][A-Za-z]*$/.test(a) && words(b).length>=2){ c.abbr=a; c.expansion=c.expansion||b; return a; } if(/^[A-Z][A-Za-z]*[A-Z]+$/.test(b)){ c.abbr=b; return `${a} (${b})`; } } return name.replace(/^the\s+/i,"").trim(); }
@@ -100,7 +102,7 @@ const Outline = (() => {
     for(const b of String(text||"").replace(/\r/g,"").split(/\n\s*\n/)){
       let lines=b.split("\n").map(x=>x.replace(/\(group shape\)/g,"").replace(/\s+$/,"")).filter(x=>x.trim());
       if(!lines.length) continue;
-      lines=lines.map(x=>{ const m=x.match(/^((?:\s*▸\s*)*)(.*)$/); const lvl=(m[1].match(/▸/g)||[]).length || (/^\s{2,}/.test(x)?1:0); return {t:m[2].replace(/^\s*[-•▪◦●*]\s+/,"").replace(/\.$/,"").trim(), lvl}; }).filter(x=>x.t);
+      lines=lines.map(x=>x.replace(/(\w)\s+-(?=\w)/g,"$1-")).map(x=>{ const m=x.match(/^((?:\s*▸\s*)*)(.*)$/); const lvl=(m[1].match(/▸/g)||[]).length || (/^\s{2,}/.test(x)?1:0); return {t:m[2].replace(/^\s*[-•▪◦●*]\s+/,"").replace(/\.$/,"").trim(), lvl}; }).filter(x=>x.t);
       for(let k=lines.length-2;k>=0;k--) if(/\b(to|and|or|of|the|a|an|from|for|with|in|on|by|as)$/i.test(lines[k].t) && /^[a-z]/.test(lines[k+1].t)){ lines[k].t+=" "+lines[k+1].t; lines.splice(k+1,1); }
       let title=lines.shift().t; const lines0title=title; const segs=title.split(/\s+—\s+/); if(segs.length>1) title=segs.filter(s=>!/^(topic|lesson|module|unit|chapter|part)\s*\d+$|^prepared by|^presented by/i.test(s.trim())).pop()||segs[segs.length-1];
       blocks.push({title:title.replace(/[.:]$/,"").trim(), rawTitle:lines0title, lines});
@@ -139,6 +141,7 @@ const Outline = (() => {
           const sL=s.split(" ").map(w=>/^[A-Z][a-z]+$/.test(w)?w.toLowerCase():w).join(" "); const kind=/^(types|kinds|levels|categories|forms)$/i.test(m[2])?`${noun} of ${s}`:/^in$/i.test(m[3])&&/^(deliverables)$/i.test(m[2])?noun:`${m[1]&&/^core$/i.test(m[1])?"core ":""}${noun} ${m[3].toLowerCase()} ${sL}`;
           g=group({kind, noun, subject:subj, src:B.title, memberNoun:/^(types|kinds)$/i.test(m[2])?s:""}); mode="group"; }
         else if((m=t.match(/^(common|typical|core|key|main|major|popular|standard)\s+(.+s)$/i))){ g=group({kind:singularKey(lc1(m[2])), noun:singularKey(m[2].toLowerCase().split(" ").pop()), src:B.title}); mode="group"; }
+        else if(/^[A-Z][\w-]*(\s+[A-Z&][\w-]*){0,3}$/.test(t) && pluralWord(t.split(" ").pop()) && !/(ss|us|is)$/i.test(t) && B.lines.filter(x=>glossary(x.t)).length>=2 && B.lines.filter(x=>glossary(x.t)).length>=B.lines.length*0.6){ g=group({kind:singularKey(lcWords(t)), noun:singularKey(t.split(" ").pop().toLowerCase()), src:B.title}); mode="group"; }
         else if((m=t.match(/^(.+?)\s+criteria$/i))){ g=group({kind:`${lc1(m[1])} criterion`, noun:"criterion", src:B.title, role:"criterion"}); mode="group"; }
         else if((m=t.match(/^(?:the\s+)?role\s+of\s+(.+?)(?:\s+in\s+.+)?$/i))){ subj=concept(m[1],"title"); }
         else if((m=t.match(/^(.+?)\s+as\s+an?\s+.+$/i))){ subj=concept(m[1],"title"); }
@@ -160,7 +163,7 @@ const Outline = (() => {
       if(g && g.noun && g.members.some(c=>keyOf(c.name)===keyOf(g.noun))) g.kind=null;
       if(g && g.kind && g.subject && / for mapping$/.test(g.kind)) g.kind=g.kind.replace(/ for mapping$/," for "+lcWords(g.subject.name));
     }
-    function glossary(x){ const m=x.match(/^([^:]{1,60}?)\s*(?:\(([^)]{2,60})\))?\s*(?::|\s[–—-]\s)\s*(.{2,})$/); if(!m) return null; let term=clean(m[1]); if(m[2]) term=`${term} (${m[2]})`;
+    function glossary(x){ x=unnum(x); const m=x.match(/^([^:]{1,60}?)\s*(?:\(([^)]{2,60})\))?\s*(?::|\s[–—-]\s)\s*(.{2,})$/); if(!m) return null; let term=clean(m[1]); if(m[2]) term=`${term} (${m[2]})`;
       const pre=x.slice(0,x.indexOf(m[3])); if(/:/.test(m[3]) && /\s[–—]\s/.test(m[1]+" ")) {}
       if(ATTR_LABEL.test(clean(m[1]))) return null; if(!nameLike(clean(m[1])) && !/^\d{3,}/.test(m[1])) return null; if(/^(in|when|if|for|with|without|because|to)\s/i.test(m[1])) return null;
       // "Phase A – Vision: Define scope" → term "Phase A – Vision"
@@ -327,7 +330,7 @@ const Outline = (() => {
     const push=(tpl,level,type,q,term,src,slide)=>{ if(typeof q==="string") q={stem:q}; if(!q||!q.stem) return;
       if(q.choices && q.answerText){ const ac=byName.get(String(q.answerText).toLowerCase()); if(ac && giveaway(ac,q.stem.replace(/^Which [^?]*?(is|are|does|do|would|should|has)\b/,"")) && !q.choices.every(ch=>giveaway({name:ch},q.stem))) return; } q.stem=q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\.$/,".").replace(/\?\.$/,"?"); out.push({tpl,level,type,...q,slots:{term:term||""},basis:src||"",slide:slide||""}); };
     const MC=(stem,answer,wrongs,keep)=>{ answer=String(answer).trim(); const w=[]; for(const x of wrongs){ const t=String(x||"").trim(); if(t && !w.some(y=>y.toLowerCase()===t.toLowerCase()) && t.toLowerCase()!==answer.toLowerCase()) w.push(t); }
-      if(w.length<2) return null; const ch=shuffle([answer,...(keep?w:shuffle(w,r)).slice(0,3)],r); return {stem, choices:ch.map(cap), answer:"abcdefgh"[ch.indexOf(answer)], answerText:cap(answer)}; };
+      if(w.length<3) return null; const ch=shuffle([answer,...(keep?w:shuffle(w,r)).slice(0,3)],r); return {stem, choices:ch.map(cap), answer:"abcdefgh"[ch.indexOf(answer)], answerText:cap(answer)}; };
     const TF=(s,ans)=>({stem:`True or false: ${cap(s.replace(/\.$/,""))}.`, answer:ans?"True":"False"});
     const C=K.list.filter(c=>c.name);
     C.forEach(c=>{ if(c.abbr && c.name.includes("(") && words(stripParen(c.name)).length>4) c.name=c.abbr; });
@@ -446,7 +449,7 @@ const Outline = (() => {
       const otherKinds=G.filter(h=>h!==g && h.kind && !h.members.some(m=>g.members.includes(m)) && h.role!=="application").map(h=>pluralKind(h.kind));
       const echo=x=>{ const kw=(kind+" "+(g.subject?g.subject.name+" "+(g.subject.abbr||""):"")+" "+(g.memberNoun||"")).toLowerCase().match(/[a-z]{3,}/g)||[]; return (S(x).toLowerCase().match(/[a-z]{3,}/g)||[]).some(w=>!/^(the|and)$/.test(w) && kw.some(k=>k.slice(0,4)===w.slice(0,4))) || /\band\b|&/.test(x.name); };
       const MC2=M.filter(x=>!echo(x));
-      if(otherKinds.length>=2 && MC2.length>=2){ const [a,b]=shuffle(MC2,r); push("O.N.common","Analyzing","mc",MC(`What do ${S(a)} and ${S(b)} have in common?`,`Both are ${PK}${g.subject&&!/\s(of|for|in)\s/.test(kind)&&!mentions(g.subject,kind)?` of ${g.subject.name}`:""}`,shuffle(otherKinds,r).slice(0,3).map(k=>`Both are ${k}`)),a.name,g.src,g.src);
+      if(otherKinds.length>=3 && MC2.length>=2){ const [a,b]=shuffle(MC2,r); push("O.N.common","Analyzing","mc",MC(`What do ${S(a)} and ${S(b)} have in common?`,`Both are ${PK}${g.subject&&!/\s(of|for|in)\s/.test(kind)&&!mentions(g.subject,kind)?` of ${g.subject.name}`:""}`,shuffle(otherKinds,r).slice(0,3).map(k=>`Both are ${k}`)),a.name,g.src,g.src);
         if(false){ const x=shuffle(M,r)[0]; push("O.N.relation","Analyzing","mc",MC(`How is ${S(x)} related to ${subjOf(g.subject)}?`,`It is one of the ${PK}${!mentions(g.subject,kind)&&!/\s(of|for|in)\s/.test(kind)?` of ${g.subject.name}`:""}`,shuffle(otherKinds,r).slice(0,3).map(k=>`It is one of the ${k}`)),x.name,g.src,g.src); } }
       // Analyzing: a list that contains only one kind of point (benefits vs challenges of the same subject)
       const opp={benefit:"challenge",challenge:"benefit"}[g.role]; const og=opp&&G.find(h=>h.subject===g.subject&&h.role===opp);
