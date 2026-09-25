@@ -64,6 +64,13 @@ const BloomAI = (() => {
   const K = (level, name, rx, not) => ({level, name, rx, not});
   const HAS_ORIGINAL = /\b(original|your own|own design|own plan|sarili (mong|nating|ninyong|kong)|orihinal)\b/i;
   const READER = [
+    // ---- question patterns written by the slide reader (outline.js): the pattern itself names the thinking ----
+    K("Evaluating","Judges a stated claim or a plan against the facts",/\bwhich judgment of this statement is correct\?$|\bwhich is the best judgment of this plan\?$|\bthat it should weigh before deciding\?$|\bwhich [\w -]+ would you recommend\?$/i),
+    K("Analyzing","Tells ideas apart, relates them or sorts them",/^which statement correctly distinguishes\b|^which pairing correctly describes\b|^what do .+ have in common\?$|^how is .+ related to .+\?$|^which list contains only\b|\bhas this profile\b/i),
+    K("Creating","Puts parts together into a design that meets several requirements",/\bis designing a solution (with two requirements|that must \(1\))/i),
+    K("Applying","Uses an idea in a described situation",/^in one (system|organization|system-of-systems), .+ which .+ does this describe\?$|\bis reviewing a design and finds this problem\b|\balready has .+ which .+ should they add\?$|\bwants a design where it is\b|\bwould a team use to show\b|\bare they using to judge the options\?$|\bwhich [\w -]+ would contain “|\bis planning a project that follows the\b|^situation: /i),
+    K("Understanding","Checks the meaning of statements about ideas",/^which statement about .+ is (not )?correct\?$|\bdiffer in their \w+\. which of the following is\b|^which of the following is a (strength|benefit) of\b|\bis an example of which\b/i),
+    K("Remembering","Recalls a fact, a pairing or an order from the lesson",/^complete the statement:|^which pair is correctly matched\?$|^among the .+, which .+ comes right after\b/i),
     K("Remembering","Asks you to state a formula or definition",
       /^(give|state|what is|what are|write down|recall|ibigay ang) the (formula|definition|pormula)|^ibigay ang (pormula|kahulugan)\b/i, /\b(and|then) (use|compute|calculate|apply|solve)\b/i),
     // ---- true-or-false items: the statement after "True or false:" carries the level ----

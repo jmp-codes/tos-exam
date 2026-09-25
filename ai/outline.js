@@ -271,8 +271,11 @@ const Outline = (() => {
 
   /* ---------------- writing questions ---------------- */
   const GENERIC = new Set("system systems enterprise enterprises architecture architectures architectural organization organizations organizational business businesses based using used help helps make makes provide provides support supports ensure ensures within across between their them they that this with from into over under about more most less such other each every all some many much also only just data component components service services process processes model models level levels".split(" "));
-  const STOPW = new Set("a an the of to in on at for from by with and or but is are was were be been being it its this that these those their there which who what when where how why as into than then also can may not no so very e g etc".split(" "));
-  const stems = t => new Set((String(t).toLowerCase().match(/[a-z][a-z-]{2,}/g)||[]).filter(w=>!STOPW.has(w)&&!GENERIC.has(w)).map(w=>w.replace(/(ing|ed|es|s|ity|ies|ility|ation|ations|ment|ments)$/,"").slice(0,6)));
+  const STOPW = new Set("too a an the of to in on at for from by with and or but is are was were be been being it its this that these those their there which who what when where how why as into than then also can may not no so very e g etc".split(" "));
+  const stems = t => new Set((String(t).toLowerCase().match(/[a-z][a-z-]{2,}/g)||[]).filter(w=>!STOPW.has(w)&&!GENERIC.has(w)).map(w=>{ for(const x of ["ations","ation","ments","ment","ility","ity","ing","ies","ed","es","s"]) if(w.endsWith(x) && w.length-x.length>=4) return w.slice(0,-x.length).slice(0,5); return w.slice(0,5); }));
+  const roots4 = t => new Set([...stems(t)].map(w=>w.slice(0,4)));
+  const near = (a,b) => { const A=roots4(a), B=roots4(b); for(const w of A) if(B.has(w)) return true; return false; };
+  const nearAny = (c,t) => allText(c).concat([...c.weaknesses,...c.challenges].map(x=>x.text)).some(x=>near(x,t));
   function overlap(a,b){ const A=stems(a), B=stems(b); if(!A.size||!B.size) return 0; let n=0; for(const w of A) if(B.has(w)) n++; return n/Math.min(A.size,B.size); }
   const allText = c => [...c.def,...c.does,...c.traits,...c.purpose,...c.focus,...c.uses,...c.benefits,...c.strengths,...c.facts,...c.applications].map(x=>x.text+(x.desc?" "+x.desc:"")).concat(c.groups.map(g=>g.desc.get(c)?.text||"")).filter(Boolean);
   const trueOf = (c,t,th=0.5) => allText(c).some(x=>overlap(x,t)>=th) ;
@@ -320,7 +323,9 @@ const Outline = (() => {
     const K=read(text), r=rng(opts.seed||11), out=[]; const IT=/\b(system|software|data|architecture|network|IT|application|database|cloud|framework|UML|API)\b/.test(text);
     const ROLES=IT?["An enterprise architect","A systems analyst","An IT project team","A solutions architect","An IT manager","A development team"]:["A student","A project team","A group of researchers","A teacher"];
     let ri=Math.floor(r()*ROLES.length); const role=()=>ROLES[(ri++)%ROLES.length];
-    const push=(tpl,level,type,q,term,src,slide)=>{ if(typeof q==="string") q={stem:q}; if(!q||!q.stem) return; q.stem=q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\.$/,".").replace(/\?\.$/,"?"); out.push({tpl,level,type,...q,slots:{term:term||""},basis:src||"",slide:slide||""}); };
+    const byName=new Map(); K.list.forEach(c=>byName.set(c.name.toLowerCase(),c));
+    const push=(tpl,level,type,q,term,src,slide)=>{ if(typeof q==="string") q={stem:q}; if(!q||!q.stem) return;
+      if(q.choices && q.answerText){ const ac=byName.get(String(q.answerText).toLowerCase()); if(ac && giveaway(ac,q.stem.replace(/^Which [^?]*?(is|are|does|do|would|should|has)\b/,"")) && !q.choices.every(ch=>giveaway({name:ch},q.stem))) return; } q.stem=q.stem.replace(/\s+/g," ").replace(/\s+([?.,])/g,"$1").replace(/\.\.$/,".").replace(/\?\.$/,"?"); out.push({tpl,level,type,...q,slots:{term:term||""},basis:src||"",slide:slide||""}); };
     const MC=(stem,answer,wrongs,keep)=>{ answer=String(answer).trim(); const w=[]; for(const x of wrongs){ const t=String(x||"").trim(); if(t && !w.some(y=>y.toLowerCase()===t.toLowerCase()) && t.toLowerCase()!==answer.toLowerCase()) w.push(t); }
       if(w.length<2) return null; const ch=shuffle([answer,...(keep?w:shuffle(w,r)).slice(0,3)],r); return {stem, choices:ch.map(cap), answer:"abcdefgh"[ch.indexOf(answer)], answerText:cap(answer)}; };
     const TF=(s,ans)=>({stem:`True or false: ${cap(s.replace(/\.$/,""))}.`, answer:ans?"True":"False"});
@@ -339,6 +344,7 @@ const Outline = (() => {
     const quoteOK = t => words(t).length<=24;
 
     const unique = (c,t) => !C.some(x=>x!==c && !related(x,c) && (trueOf(x,t,0.3) || giveaway(x,t)));
+    const SPEAK=["A classmate says","During a design review, a team member states","A new analyst writes in a report","A student explains","In a project meeting, a manager says"]; let spk=Math.floor(r()*5);
     const setting = kind => /interaction|pattern|component|layer|method|diagram/i.test(kind||"")?"one system":/sos|system-of-systems/i.test(kind||"")?"one system-of-systems":"one organization";
     // a need taken from a slide's verb phrase, reworded so it reads as something a person needs to do
     const needOf = t => { let n=lc1(toBase(t)).replace(/^helps?\s+(?:to\s+|in\s+)?/i,"").replace(/^aims?\s+for\s+/i,"achieve ").replace(/^focus(?:es)?\s+on\s+how\b/i,"show how").replace(/^(provide|offer|define|give)\s+(?!an?\b|the\b|all\b|each\b|clear\b|common\b)([a-z]+(?:\s[a-z]+)?\s+(?:approach|way|language|roadmap|blueprint|structure|view|model|framework)\b)/i,(m0,v,np)=>`${v} a ${np}`).replace(/^(provide|offer)\s+common\b/i,"$1 a common");
@@ -361,15 +367,17 @@ const Outline = (() => {
         if(d.form==="clause" && kind && !g.ordered && !/^(standard|real-world)/.test(kind) && !(g.role==="challenge" && /\b(must|should|requires?|need to)\b/i.test(t)) && !/^(one|many|some|each)\b/i.test(t)){
           if(g.role==="challenge"){ const q=`${role()} is reviewing a design and finds this problem: “${cap(t)}.” Which ${kind} is this?`; push("O.A.facing","Applying","mc",MC(q,c.name,wr),c.name,d.src,sl); push("O.A.facing.case","Applying","case",MC("Situation: "+q,c.name,wr),c.name,d.src,sl); }
           else { const q=`In ${setting(kind)}, ${lc1(t)}. Which ${kind} does this describe?`; push("O.A.which","Applying","mc",MC(q,c.name,wr),c.name,d.src,sl); push("O.A.which.case","Applying","case",MC("Situation: "+q,c.name,wr),c.name,d.src,sl); } }
-        if(g.role==="criterion" && d.form==="question") push("O.E.criterion","Evaluating","mc",MC(`While comparing frameworks, ${lc1(role())} asks, “${t}” Which ${kind} are they using to judge the options?`,c.name,wr),c.name,d.src,sl);
+        if(g.role==="criterion" && d.form==="question") push("O.A.criterion","Applying","mc",MC(`While comparing frameworks, ${lc1(role())} asks, “${t}” Which ${kind} are they using to judge the options?`,c.name,wr),c.name,d.src,sl);
         if(g.role==="benefit" && (d.form==="vp"||d.form==="adj")) push("O.A.benefit","Applying","mc",MC(`${role()} wants a design where it is ${d.form==="vp"?"possible to "+lc1(toBase(t)):lc1(t)}. Which ${kind} are they looking for?`,c.name,wr),c.name,d.src,sl);
         // evaluating: judge a classmate's claim; analyzing: tell two members apart
         const o2=wrN.filter(x=>g.desc.get(x) && overlap(g.desc.get(x).text,t)<0.34 && !trueOf(c,g.desc.get(x).text,0.34) && quoteOK(g.desc.get(x).text));
         if(!noClaim && o2.length>=2 && quoteOK(t)){ const [y,z,w]=shuffle(o2,r); const dy=g.desc.get(y), dz=g.desc.get(z);
           if(overlap(dz.text,dy.text)<0.34){ const S=subjOf(c,g), Y=subjOf(y,g), Z=subjOf(z,g), W=w?subjOf(w,g):null; const lab=g.label&&kind?` (a ${kind})`:"";
             const none=`Incorrect — it describes none of the ${kind?pluralKind(kind):"ideas in the lesson"}`;
-            push("O.E.claim","Evaluating","mc",MC(`A classmate says ${claimOf(c,dy,g).replace(/describes (.+)\.$/,`describes $1${lab}.`)} Which evaluation of this claim is correct?`,`Incorrect — that describes ${Y}, not ${S}`,[`Correct — that is an accurate description of ${S}`,`Incorrect — that describes ${Z}, not ${S}`,W?`Incorrect — that describes ${W}, not ${S}`:none]),c.name,d.src+" / "+dy.src,sl);
-            push("O.E.claim.true","Evaluating","mc",MC(`A classmate says ${claimOf(c,d,g).replace(/describes (.+)\.$/,`describes $1${lab}.`)} Which evaluation of this claim is correct?`,`Correct — that is an accurate description of ${S}`,[`Incorrect — that describes ${Y}, not ${S}`,`Incorrect — that describes ${Z}, not ${S}`,W?`Incorrect — that describes ${W}, not ${S}`:none]),c.name,d.src,sl);
+            const who=SPEAK[(spk++)%SPEAK.length];
+            const said=x=>/^“/.test(x)?", "+x:" "+x;
+            push("O.E.claim","Evaluating","mc",MC(`${who}${said(claimOf(c,dy,g)).replace(/describes (.+)\.$/,`describes $1${lab}.`)} Which judgment of this statement is correct?`,`Incorrect — that describes ${Y}, not ${S}`,[`Correct — that is an accurate description of ${S}`,`Incorrect — that describes ${Z}, not ${S}`,W?`Incorrect — that describes ${W}, not ${S}`:none]),c.name,d.src+" / "+dy.src,sl);
+            push("O.E.claim","Evaluating","mc",MC(`${SPEAK[(spk++)%SPEAK.length]}${said(claimOf(c,d,g)).replace(/describes (.+)\.$/,`describes $1${lab}.`)} Which judgment of this statement is correct?`,`Correct — that is an accurate description of ${S}`,[`Incorrect — that describes ${Y}, not ${S}`,`Incorrect — that describes ${Z}, not ${S}`,W?`Incorrect — that describes ${W}, not ${S}`:none]),c.name,d.src,sl);
             const a1=stmt(c,d,g), b1=stmt(y,dy,g), a2=stmt(c,dy,g), b2=stmt(y,d,g), bz=stmt(y,dz,g), az=stmt(c,dz,g);
             // balanced choices: every half appears twice, so the key cannot be spotted by counting halves
             const a_y=stmt(c,dy,g), y_c=stmt(y,d,g), a_z=stmt(c,dz,g), y_z=stmt(y,dz,g), a_c=stmt(c,d,g), y_y=stmt(y,dy,g);
@@ -407,6 +415,55 @@ const Outline = (() => {
       if(kind && g.members.length>=3) push("O.E.rank","Evaluating","essay",`Which of the ${pluralKind(kind)}${ofS} matters most for a growing organization? Defend your choice with reasons.`,"",g.src,g.src);
     }
 
+    /* ---- more ways to ask, at every level (each key still comes from one slide fact) ---- */
+    for(const g of G){ const kind=g.kind; if(!kind || g.role==="application") continue;
+      const M=g.members.filter(x=>g.desc.get(x) && !giveaway(x,g.desc.get(x).text) && !mentions(x,g.desc.get(x).text));
+      const dOf=x=>g.desc.get(x), txt=x=>dOf(x).text, S=x=>subjOf(x,g), vf=x=>dOf(x).form==="vp"?cap(agree(txt(x),false)):cap(txt(x));
+      const distinct=(a,b)=>overlap(txt(a),txt(b))<0.34 && !trueOf(a,txt(b),0.34) && !trueOf(b,txt(a),0.34);
+      if(M.length<3) continue; const PK=pluralKind(kind);
+      for(const c of M){ const others=M.filter(x=>x!==c && distinct(c,x)); if(others.length<2) continue; const sl=g.src;
+        // Remembering: a correctly matched pair
+        const [y,z,w]=shuffle(others,r); const pairOK=[y,z,w].filter(Boolean).every((a,i,A)=>A.every((b,j)=>i===j||distinct(a,b)));
+        if(pairOK) push("O.R.pair","Remembering","mc",MC(`Which pair is correctly matched?`,`${c.name} — ${lc1(txt(c))}`,[`${y.name} — ${lc1(txt(z))}`,`${z.name} — ${lc1(txt(w||c))}`,`${(w||y).name} — ${lc1(txt(w?y:c))}`].filter(x=>!x.startsWith(c.name+" — "+lc1(txt(c))))),c.name,dOf(c).src,sl);
+        // Remembering: complete the statement
+        const s0=stmt(c,dOf(c),g); if(s0){ const pre=S(c); const blanks=others.map(x=>stmt(c,dOf(x),g)).filter(Boolean).map(t=>t.slice(cap(pre).length).trim()); const key=s0.slice(cap(pre).length).trim();
+          const lead=key.match(/^(is|are|was|were)\s/i); const allLead=lead && blanks.every(b=>b.toLowerCase().startsWith(lead[1].toLowerCase()+" "));
+          const cut=x=>allLead?x.slice(lead[0].length):x;
+          if(blanks.length>=2) push("O.R.complete","Remembering","mc",MC(`Complete the statement: ${cap(pre)}${allLead?" "+lead[1].toLowerCase():""} ________.`,cut(key),blanks.map(cut)),c.name,dOf(c).src,sl); }
+        // Understanding: which does NOT describe this member (the others are true of other members, the key is the only one that is wrong for it)
+        // Understanding: which statement about the group is NOT correct
+        if(!g.label){ const trues=others.slice(0,3).map(x=>stmt(x,dOf(x),g)).filter(Boolean); const swapped=stmt(c,dOf(y),g);
+          if(trues.length>=3 && swapped) push("O.U.false","Understanding","mc",MC(`Which statement about the ${PK} is NOT correct?`,swapped,trues),c.name,dOf(c).src+" / "+dOf(y).src,sl);
+          const t1=stmt(c,dOf(c),g), f1=[y,z,w].filter(Boolean).map(x=>stmt(c,dOf(x),g)).filter(Boolean);
+          if(t1 && f1.length>=2) push("O.U.true","Understanding","mc",MC(`Which statement about ${S(c)} is correct?`,t1,f1),c.name,dOf(c).src,sl); }
+        // Applying: a team that has already used one member needs another next
+        if(!g.label && !g.ordered && dOf(c).form==="vp" && dOf(y).form==="vp"){ const need=needOf(txt(c)), done=lc1(agree(txt(y),isPlural(y.name))); const wr=wrongNames(c,txt(c),M.filter(x=>x!==c)).map(x=>x.name);
+          if(need && wr.length>=2) push("O.A.next","Applying","mc",MC(`${role()} already has ${S(y)}, which ${done}. The team now also needs to ${need}. Which ${kind} should they add?`,c.name,wr),c.name,dOf(c).src,sl); }
+        // Evaluating: critique a plan that picks the wrong member
+        if(!g.label && dOf(c).form==="vp" && !g.ordered){ const need=needOf(txt(c)); if(need) push("O.E.critique","Evaluating","mc",MC(`${role()} plans to use ${S(y)} to ${need}. Which is the best judgment of this plan?`,`It is a weak plan — this is what ${S(c)} ${isPlural(c.name)?"are":"is"} for`,[`It is a sound plan — this is what ${S(y)} ${isPlural(y.name)?"are":"is"} for`,`It is a weak plan — this is what ${S(z)} ${isPlural(z.name)?"are":"is"} for`,`It is a sound plan — any of the ${PK} would work equally well`]),c.name,dOf(c).src+" / "+dOf(y).src,sl); }
+      }
+      // Analyzing: what two members have in common; how a member relates to the subject
+      const otherKinds=G.filter(h=>h!==g && h.kind && !h.members.some(m=>g.members.includes(m)) && h.role!=="application").map(h=>pluralKind(h.kind));
+      const echo=x=>{ const kw=(kind+" "+(g.subject?g.subject.name+" "+(g.subject.abbr||""):"")+" "+(g.memberNoun||"")).toLowerCase().match(/[a-z]{3,}/g)||[]; return (S(x).toLowerCase().match(/[a-z]{3,}/g)||[]).some(w=>!/^(the|and)$/.test(w) && kw.some(k=>k.slice(0,4)===w.slice(0,4))) || /\band\b|&/.test(x.name); };
+      const MC2=M.filter(x=>!echo(x));
+      if(otherKinds.length>=2 && MC2.length>=2){ const [a,b]=shuffle(MC2,r); push("O.N.common","Analyzing","mc",MC(`What do ${S(a)} and ${S(b)} have in common?`,`Both are ${PK}${g.subject&&!/\s(of|for|in)\s/.test(kind)&&!mentions(g.subject,kind)?` of ${g.subject.name}`:""}`,shuffle(otherKinds,r).slice(0,3).map(k=>`Both are ${k}`)),a.name,g.src,g.src);
+        if(false){ const x=shuffle(M,r)[0]; push("O.N.relation","Analyzing","mc",MC(`How is ${S(x)} related to ${subjOf(g.subject)}?`,`It is one of the ${PK}${!mentions(g.subject,kind)&&!/\s(of|for|in)\s/.test(kind)?` of ${g.subject.name}`:""}`,shuffle(otherKinds,r).slice(0,3).map(k=>`It is one of the ${k}`)),x.name,g.src,g.src); } }
+      // Analyzing: a list that contains only one kind of point (benefits vs challenges of the same subject)
+      const opp={benefit:"challenge",challenge:"benefit"}[g.role]; const og=opp&&G.find(h=>h.subject===g.subject&&h.role===opp);
+      if(og && g.members.length>=4 && og.members.length>=3){ const P=shuffle(g.members,r).map(x=>x.name), B=shuffle(og.members,r).map(x=>x.name); const A=P.slice(0,3), a4=P[3];
+        const wrongLists=[[A[1],a4,B[0]],[A[0],a4,B[1]],[A[2],a4,B[2]]].map(l=>shuffle(l,r).join(", "));
+        push("O.N.sort","Analyzing","mc",MC(`Which list contains ONLY ${PK}?`,A.join(", "),wrongLists),"",g.src,g.src); }
+      // Creating: a design that needs three members at once
+      if(!g.label && !g.ordered){ const V=M.filter(x=>dOf(x).form==="vp" && needOf(txt(x))); if(V.length>=4){ const pick=shuffle(V,r).slice(0,3), out1=V.find(x=>!pick.includes(x)); const needs=pick.map(x=>needOf(txt(x)));
+        if(needs.every((n,i)=>needs.every((m,j)=>i===j||overlap(n,m)<0.34))){ const names=pick.map(x=>x.name);
+          push("O.C.combine","Creating","mc",MC(`${role()} is designing a solution that must (1) ${needs[0]}, (2) ${needs[1]}, and (3) ${needs[2]}. Which set of ${PK} should the design include?`,names.join(", "),[0,1,2].map(i=>names.map((n,j)=>j===i?out1.name:n).join(", "))),names[0],pick.map(x=>dOf(x).src).join(" / "),g.src); } } }
+    }
+    // Evaluating: which risk matters most for this framework / which option fits a stated priority
+    for(const c of C){ const kg=c.groups.find(g=>g.kind && !g.label); if(!kg) continue; const sib=kg.members.filter(x=>x!==c); const S=subjOf(c);
+      if(c.weaknesses.length){ const ow=[]; for(const x of sib) for(const b of x.weaknesses){ if(nearAny(c,b.text)||trueOf(c,b.text,0.2)||c.weaknesses.some(z=>overlap(z.text,b.text)>=0.2)||giveaway(x,b.text)||ow.some(y=>overlap(y,b.text)>=0.3)) continue; ow.push(b.text); }
+        for(const n of c.weaknesses.slice(0,2)) if(ow.length>=2 && !giveaway(c,n.text)) push("O.E.risk","Evaluating","mc",MC(`An organization is about to adopt ${S}. Which of the following is a weakness of ${S} that it should weigh before deciding?`,cap(n.text),shuffle(ow,r)),c.name,n.src,n.slide); }
+      for(const p of c.strengths.slice(0,2)){ if(giveaway(c,p.text)) continue; const wr=sib.filter(x=>!trueOf(x,p.text,0.3) && !x.strengths.some(z=>overlap(z.text,p.text)>=0.3)).map(x=>x.name); if(wr.length>=2) push("O.E.recommend","Evaluating","mc",MC(`${role()} says the organization's top priority is ${aNP(kg.kind)} with this strength: “${lc1(p.text)}.” Which ${kg.kind} would you recommend?`,c.name,wr),c.name,p.src,p.slide); }
+    }
     /* ---- one idea at a time ---- */
     for(const c of C){ if(!major(c) && !c.def.length && !c.does.length && !c.strengths.length && !c.benefits.length) continue;
       const sib=siblings(c), sibG=siblings(c,"group");
@@ -438,10 +495,10 @@ const Outline = (() => {
       const lab=x=>named?`${x.name}: ${lc1(x.desc||"")}`.replace(/: $/,""):(x.desc?cap(x.desc):x.text.replace(/\s*→.*$/,"").replace(/^[^:]{2,40}:\s*/,m0=>x.name?"":m0));
       if(pos.length>=1 && neg.length>=2){ const wStr=c.strengths.length?"strength":"benefit"; const wWk=c.weaknesses.length?"weakness":"challenge"; const pl=w=>w==="weakness"?"weaknesses":w+"s";
         // wrong choices are the same kind of point (another framework's strength), never an obvious opposite
-        const otherPts=(field)=>{ const res=[]; for(const x of pool0) for(const b of x[field]){ if(trueOf(c,b.text,0.3)||[...c.strengths,...c.weaknesses,...c.benefits,...c.challenges].some(z=>overlap(z.text,b.text)>=0.3)||giveaway(x,b.text)||giveaway(c,b.text)||res.some(y=>overlap(y.b.text,b.text)>=0.3)) continue; res.push({x,b}); } return res; };
+        const otherPts=(field)=>{ const res=[]; for(const x of pool0) for(const b of x[field]){ if(nearAny(c,b.text)||trueOf(c,b.text,0.2)||[...c.strengths,...c.weaknesses,...c.benefits,...c.challenges].some(z=>overlap(z.text,b.text)>=0.2)||giveaway(x,b.text)||giveaway(c,b.text)||res.some(y=>overlap(y.b.text,b.text)>=0.3)) continue; res.push({x,b}); } return res; };
         if(K0){ const oS=otherPts(c.strengths.length?"strengths":"benefits"), oW=otherPts(c.weaknesses.length?"weaknesses":"challenges");
           if(oS.length>=2) for(const p of pos.slice(0,3)) if(!giveaway(c,p.text)) push("O.U.pos","Understanding","mc",MC(`Which of the following is a ${wStr} of ${S}?`,lab(p),shuffle(oS,r).map(o=>o.b.text)),c.name,p.src,p.slide);
-          if(oW.length>=2) for(const n of neg.slice(0,3)) if(!giveaway(c,n.text)) push("O.N.classify","Analyzing","mc",MC(`${cap(pluralKind(K0))} differ in their ${pl(wWk)}. Which of the following is a ${wWk} of ${S}?`,lab(n),shuffle(oW,r).map(o=>o.b.text)),c.name,n.src,n.slide); }
+          if(oW.length>=2) for(const n of neg.slice(0,3)) if(!giveaway(c,n.text)) push("O.U.neg","Understanding","mc",MC(`${cap(pluralKind(K0))} differ in their ${pl(wWk)}. Which of the following is a ${wWk} of ${S}?`,lab(n),shuffle(oW,r).map(o=>o.b.text)),c.name,n.src,n.slide); }
         const sw=`${cap(pl(wStr))}: ${pos.map(lab).join("; ")}. ${cap(pl(wWk))}: ${neg.map(lab).join("; ")}.`;
         push("O.E.essay","Evaluating","essay",{stem:`Would you recommend ${S} to a small organization that changes quickly? Weigh its ${pl(wStr)} and ${pl(wWk)}, and justify your answer.`,answer:sw},c.name,c.src[0]);
         push("O.N.essay","Analyzing","essay",{stem:`Analyze how the ${pl(wStr)} and ${pl(wWk)} of ${S} affect where it should be used.`,answer:sw},c.name,c.src[0]); }
