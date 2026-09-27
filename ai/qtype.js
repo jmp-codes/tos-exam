@@ -41,6 +41,8 @@ const QType = (() => {
     if(q && q.columns) return out("match","has Column A and Column B");
     if(q && q.qtype && TYPES[q.qtype]) return out(q.qtype,"set when the question was created");
     if(q && q.underline) return out("mtf","has an underlined word to correct");
+    // a question with lettered choices is multiple choice, whatever its stem looks like (a situation, a blank, an order…)
+    if(q && q.choices && q.choices.length>=2 && !(q.choices.length===2 && q.choices.every(c=>/^(true|false|tama|mali)$/i.test(String(c).trim())))) return out("mc","has "+q.choices.length+" choices");
     for(const r of RULES){
       if(r.type==="problem"){ const digits=(stem.match(/\d/g)||[]).length; if(digits && PROBLEM_ASK.test(stem) && !/_{3,}/.test(stem)) return out("problem",r.why); continue; }
       if(r.type==="mc"){ if(q && q.choices && q.choices.length>=2) return out("mc","has "+q.choices.length+" choices"); if(r.rx.test(text)) return out("mc",r.why); continue; }
