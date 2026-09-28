@@ -48,6 +48,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .status i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .status.saving i{background:var(--warn)}
 .status.local i{background:var(--muted)}
+.status.err{color:#b42318}.status.err i{background:#d92d20}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .status.err{color:#ff8a80} }
+:root[data-theme="dark"] .status.err{color:#ff8a80}
 .actions{display:flex;flex-wrap:wrap;gap:8px}
 
 .btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--r);padding:7px 12px;cursor:pointer;font-weight:500;font-size:13px;white-space:nowrap}
@@ -457,21 +460,79 @@ function fmtPct(x,dec){ return (+x).toFixed(dec).replace(/(\.\d*?)0+$/,"$1").rep
 const saveTimers = {};
 function setStatus(kind,text){ const s=document.getElementById("status"); s.className="status "+kind; document.getElementById("statusText").textContent=text; }
 const clean = d => JSON.parse(JSON.stringify(d,(k,v)=>k.startsWith("_")?undefined:v));
-function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({lib:lib.map(clean),currentId})); }catch(e){} }
+/* Saved storage keeps each document under 256 KB, so the big parts of a TOS (lesson text, questions, logo) and the
+   question bank are written as numbered pieces next to a small main document. Writes to one TOS go one at a time,
+   pending saves are sent at once when the page is closed, and a save that fails is reported instead of hidden. */
+const HEAVY=["lessons","questions","logo"], PIECE=60000;
+let localOK=true, warnedLocal=false, warnedOnline=false;
+function cacheLocal(){
+  const put=()=>localStorage.setItem(LS_KEY, JSON.stringify({lib:lib.map(clean),currentId}));
+  try{ put(); localOK=true; return true; }catch(e){}
+  // the browser's storage is full: drop the AI's cached training (it rebuilds itself) and try again
+  try{ localStorage.removeItem("tos-builder-model-v7"); put(); localOK=true; return true; }catch(e){}
+  localOK=false;
+  if(!warnedLocal){ warnedLocal=true; toast("This browser’s storage is full. Download a Backup (.json) to keep your work safe."); }
+  return false;
+}
+async function writePieces(coll, id, mainObj, heavyStr, prevN){
+  const n=Math.max(1,Math.ceil(heavyStr.length/PIECE)), v=Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  for(let k=0;k<n;k++) await db.collection(coll+"parts").doc(`${id}_${k}`).set({owner:id,k,n,v,s:heavyStr.slice(k*PIECE,(k+1)*PIECE)});
+  await db.collection(coll).doc(id).set({...mainObj, parts:{n,v}});
+  for(let k=n;k<(prevN||0);k++) await db.collection(coll+"parts").doc(`${id}_${k}`).delete().catch(()=>{});
+  return n;
+}
+function readPieces(list, main){   // list: piece bodies for one owner; returns the parsed heavy object or null
+  const byV={}; for(const p of list) (byV[p.v]=byV[p.v]||[]).push(p);
+  const want=main&&main.parts; const order=Object.keys(byV).sort((a,b)=>(a===want?.v?-1:b===want?.v?1:0));
+  for(const v of order){ const ps=byV[v].sort((a,b)=>a.k-b.k); const n=ps[0].n; if(ps.length>=n && ps.slice(0,n).every((p,i)=>p.k===i)){ try{ return JSON.parse(ps.slice(0,n).map(p=>p.s).join("")); }catch(e){} } }
+  return null;
+}
+const writing={}, again={}, partsN={};
+async function writeTos(d){ const c=clean(d), heavy={}; for(const k of HEAVY) if(c[k]!==undefined){ heavy[k]=c[k]; delete c[k]; } partsN[d.id]=await writePieces("tos", d.id, c, JSON.stringify(heavy), partsN[d.id]); }
+function saveFailed(e){
+  const code=e&&e.code; console.error("save failed",code,e);
+  const why=code==="invalid_argument"?"too large to save online":code==="resource_exhausted"?"too many saves at once":code==="revoked"||code==="not_granted"?"this view can’t save online":"saved storage didn’t answer";
+  setStatus("err", localOK?`Not saved online (${why}) — kept in this browser`:`Not saved (${why}) — download a Backup`);
+  if(!warnedOnline){ warnedOnline=true; toast(localOK?"Couldn’t save online. Your work is kept in this browser; download a Backup (.json) to be safe.":"Couldn’t save your work. Download a Backup (.json) now."); }
+}
+function queueSave(id){
+  again[id]=true; if(writing[id]) return;
+  writing[id]=true;
+  (async()=>{ let tries=0;
+    while(again[id]){ again[id]=false; const d=lib.find(x=>x.id===id); if(!d) break;
+      try{ await writeTos(d); tries=0; }
+      catch(e){ if((e&&(e.code==="unavailable"||e.code==="resource_exhausted")) && tries<3){ tries++; again[id]=true; await new Promise(r=>setTimeout(r,1500*tries+Math.random()*500)); continue; } saveFailed(e); writing[id]=false; return; } }
+    writing[id]=false;
+    if(!Object.values(writing).some(Boolean)) setStatus(localOK?"ok":"err", localOK?"All changes saved":"Saved online — this browser’s storage is full");
+  })();
+}
 function persist(d){
   d.updatedAt = Date.now();
   cacheLocal();
-  if(mode!=="db"){ setStatus("local","Saved in this browser"); return; }
+  if(mode!=="db"){ setStatus(localOK?"local":"err", localOK?"Saved in this browser":"Not saved — this browser’s storage is full. Download a Backup"); return; }
   setStatus("saving","Saving…");
   clearTimeout(saveTimers[d.id]);
-  saveTimers[d.id] = setTimeout(async()=>{
-    try{ await db.collection("tos").doc(d.id).set(clean(d)); setStatus("ok","All changes saved"); }
-    catch(e){ setStatus("local","Couldn’t reach saved storage — kept in this browser"); }
-  }, 700);
+  saveTimers[d.id] = setTimeout(()=>{ delete saveTimers[d.id]; queueSave(d.id); }, 700);
 }
+// closing or switching away: send any save still waiting
+function flushSaves(){ for(const id of Object.keys(saveTimers)){ clearTimeout(saveTimers[id]); delete saveTimers[id]; if(mode==="db") queueSave(id); } flushBank(); }
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") flushSaves(); });
+window.addEventListener("pagehide",flushSaves);
+window.addEventListener("beforeunload",e=>{ if(Object.keys(saveTimers).length||Object.values(writing).some(Boolean)){ flushSaves(); e.preventDefault(); e.returnValue=""; } });
 async function removeDoc(id){
   lib = lib.filter(d=>d.id!==id); cacheLocal();
-  if(mode==="db"){ try{ await db.collection("tos").doc(id).delete(); }catch(e){} }
+  if(mode==="db"){ try{ await db.collection("tos").doc(id).delete(); for(let k=0;k<(partsN[id]||0);k++) await db.collection("tosparts").doc(`${id}_${k}`).delete().catch(()=>{}); }catch(e){} }
+}
+async function loadRemoteTos(){
+  const snap = await db.collection("tos").limit(1000).get();
+  let pieces=[]; try{ pieces=(await db.collection("tosparts").limit(1000).get()).docs.map(x=>x.data()); }catch(e){}
+  const own={}; for(const p of pieces) (own[p.owner]=own[p.owner]||[]).push(p);
+  const out=[];
+  for(const s0 of snap.docs){ const x=Object.assign({id:s0.id}, s0.data());
+    if(x.parts){ const heavy=readPieces(own[s0.id]||[], x); partsN[s0.id]=Math.max(x.parts.n||0,...(own[s0.id]||[]).map(p=>p.k+1)); delete x.parts;
+      if(heavy) Object.assign(x,heavy); else { const loc=lib.find(d=>d.id===s0.id); if(loc) for(const k of HEAVY) if(loc[k]!==undefined) x[k]=loc[k]; x._incomplete=true; } }
+    out.push(normalize(x)); }
+  return out;
 }
 async function init(){
   try{ const c=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(c&&Array.isArray(c.lib)){ lib=c.lib.map(normalize); currentId=c.currentId; } }catch(e){}
@@ -481,20 +542,18 @@ async function init(){
   try{
     db = window.claude?.use ? await window.claude.use("db") : null;
     if(db){
-      const snap = await db.collection("tos").get();
-      const remote = snap.docs.map(s=>normalize(Object.assign({id:s.id}, s.data())));
+      const remote = await loadRemoteTos();
       mode="db";
-      if(remote.length){
-        const byId = new Map(remote.map(d=>[d.id,d]));
-        for(const d of lib){ const r=byId.get(d.id); if(!r || (d.updatedAt||0)>(r.updatedAt||0)){ byId.set(d.id,d); db.collection("tos").doc(d.id).set(clean(d)).catch(()=>{}); } }
-        lib=[...byId.values()];
-      } else { for(const d of lib) db.collection("tos").doc(d.id).set(clean(d)).catch(()=>{}); }
+      const byId = new Map(remote.map(d=>[d.id,d]));
+      // keep whichever copy was changed last; push local copies the saved storage doesn't have yet
+      for(const d of lib){ const r=byId.get(d.id); if(!r || (d.updatedAt||0)>(r.updatedAt||0) || r._incomplete){ byId.set(d.id,d); queueSave(d.id); } }
+      lib=[...byId.values()];
       lib.sort((a,b)=>(a.order??0)-(b.order??0)||(a.updatedAt||0)-(b.updatedAt||0));
       if(!lib.find(d=>d.id===currentId)) currentId = lib[0]?.id || null;
-      cacheLocal(); renderAll(); setStatus("ok","All changes saved");
-      try{ const bs=await db.collection("bank").doc("main").get(); if(bs.exists){ if(mergeBank(bs.data())){ saveBank(); trainOurAI(); if(qView==="questions") renderQuestions(); } } else if(bank.examples.length||bank.pairs.length) saveBank(); }catch(e){}
+      cacheLocal(); renderAll(); if(!Object.values(writing).some(Boolean)) setStatus("ok","All changes saved");
+      try{ const other=await loadRemoteBank(); if(other){ if(mergeBank(other)){ saveBank(); trainOurAI(); if(qView==="questions") renderQuestions(); } } else if(bank.examples.length||bank.pairs.length||bank.settings?.letterhead) saveBank(); }catch(e){}
     }
-  }catch(e){ mode="local"; setStatus("local","Saved in this browser"); }
+  }catch(e){ console.error(e); mode="local"; setStatus(localOK?"local":"err", localOK?"Saved in this browser":"Not saved — this browser’s storage is full"); }
 }
 
 /* ---------------- rendering ---------------- */
@@ -2806,9 +2865,24 @@ const BLOOM_BASE = {"Remembering": ["What is the full meaning of the acronym HTM
 const BANK_LS="tos-builder-bank-v1";
 let bank = loadBank(), ourModel=null, ourInfo=null;
 function loadBank(){ try{ const b=JSON.parse(localStorage.getItem(BANK_LS)||"null"); if(b&&Array.isArray(b.examples)) return {examples:b.examples,pairs:b.pairs||[],gens:b.gens||[],myTemplates:b.myTemplates||[],tplStats:b.tplStats||{},settings:b.settings||{use:true,cats:null,mine:[]}}; }catch(e){} return {examples:[],pairs:[],gens:[],myTemplates:[],tplStats:{},settings:{use:true,cats:null,mine:[]}}; }
+let bankTimer=null, bankWriting=false, bankAgain=false, bankPartsN=0;
 function saveBank(){
-  try{ localStorage.setItem(BANK_LS, JSON.stringify(bank)); }catch(e){}
-  if(mode==="db" && db) db.collection("bank").doc("main").set({examples:bank.examples,pairs:bank.pairs,gens:bank.gens||[],myTemplates:bank.myTemplates||[],tplStats:bank.tplStats||{},settings:bank.settings||{},updatedAt:Date.now()}).catch(()=>{});
+  try{ localStorage.setItem(BANK_LS, JSON.stringify(bank)); }catch(e){ try{ localStorage.removeItem("tos-builder-model-v7"); localStorage.setItem(BANK_LS, JSON.stringify(bank)); }catch(e2){} }
+  if(mode==="db" && db){ clearTimeout(bankTimer); bankTimer=setTimeout(()=>{ bankTimer=null; writeBank(); },900); }
+}
+function flushBank(){ if(bankTimer){ clearTimeout(bankTimer); bankTimer=null; writeBank(); } }
+async function writeBank(){
+  bankAgain=true; if(bankWriting) return; bankWriting=true;
+  while(bankAgain){ bankAgain=false;
+    const heavy=JSON.stringify({examples:bank.examples,pairs:bank.pairs,gens:bank.gens||[],myTemplates:bank.myTemplates||[],tplStats:bank.tplStats||{},settings:bank.settings||{}});
+    try{ bankPartsN=await writePieces("bank","main",{updatedAt:Date.now()},heavy,bankPartsN); }catch(e){ console.error("bank save failed",e); if(!warnedOnline){ warnedOnline=true; toast("Couldn’t save your settings online. They are kept in this browser."); } break; } }
+  bankWriting=false;
+}
+async function loadRemoteBank(){
+  const m=await db.collection("bank").doc("main").get(); if(!m.exists) return null; const x=m.data();
+  if(!x.parts) return x;   // saved before pieces were used
+  const ps=(await db.collection("bankparts").where("owner","==","main").limit(1000).get()).docs.map(d=>d.data()); bankPartsN=Math.max(x.parts.n||0,...ps.map(p=>p.k+1));
+  return readPieces(ps,x);
 }
 function mergeBank(other){
   let added=0;
@@ -2820,6 +2894,7 @@ function mergeBank(other){
   bank.myTemplates=bank.myTemplates||[]; for(const t of (other.myTemplates||other.myPatterns||[])){ if(t&&t.text&&!bank.myTemplates.some(x=>x.text.toLowerCase()===t.text.toLowerCase())){ bank.myTemplates.push(t); added++; } }
   bank.tplStats=bank.tplStats||{}; for(const [k,v] of Object.entries(other.tplStats||other.patternStats||{})){ const s0=bank.tplStats[k]||(bank.tplStats[k]={shown:0,kept:0}); s0.shown=Math.max(s0.shown,v.shown||0); s0.kept=Math.max(s0.kept,v.kept||0); }
   bank.settings=bank.settings||{use:true,cats:null,mine:[]}; bank.settings.mine=bank.settings.mine||[];
+  { const ol=other.settings&&other.settings.letterhead; if(ol && (other.settings.letterheadAt||0)>(bank.settings.letterheadAt||0)){ bank.settings.letterhead=ol; bank.settings.letterheadAt=other.settings.letterheadAt||0; added++; } }
   if(other.settings && other.settings.cats && !bank.settings.cats){ bank.settings.cats=other.settings.cats; added++; }
   if(other.settings && other.settings.use===false && bank.settings.use!==false){ bank.settings.use=false; }
   for(const t of ((other.settings&&other.settings.mine)||other.mySettings||[])){ if(t&&!bank.settings.mine.some(x=>x.toLowerCase()===String(t).toLowerCase())){ bank.settings.mine.push(String(t)); added++; } }
@@ -3772,7 +3847,7 @@ document.addEventListener("click",e=>{
   if(t.id==="lhReset"){ document.querySelectorAll("#lhDialog [data-lh]").forEach(i=>i.value=LH_DEFAULT[i.dataset.lh]); document.getElementById("lhPreview").innerHTML=lhPreviewHTML(LH_DEFAULT); return; }
 });
 document.addEventListener("submit",e=>{ if(e.target.id!=="lhForm") return; e.preventDefault(); const o=lhFromForm(); if(!o.school){ toast("Enter the school name."); document.getElementById("lh-school").focus(); return; }
-  bank.settings=bank.settings||{}; bank.settings.letterhead=o; saveBank(); document.getElementById("lhDialog").close(); try{ renderWork(); }catch(err){} toast("Letterhead saved for the TOS and the exam"); });
+  bank.settings=bank.settings||{}; bank.settings.letterhead=o; bank.settings.letterheadAt=Date.now(); saveBank(); document.getElementById("lhDialog").close(); try{ renderWork(); }catch(err){} toast("Letterhead saved for the TOS and the exam"); });
 function headerXML(d, logoRid, title){
   const sp = s => P(R(s),{jc:"center"}); const lh=LH();
   const rule = '<w:pBdr><w:bottom w:val="thinThickSmallGap" w:sz="24" w:space="1" w:color="000000"/></w:pBdr>';
